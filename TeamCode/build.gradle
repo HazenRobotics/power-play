@@ -19,7 +19,7 @@ android {
     androidResources {
         noCompress 'tflite'
     }
-    buildToolsVersion '31.0.0'
+    buildToolsVersion '3.0.0'
 }
 
 dependencies {
@@ -28,7 +28,7 @@ dependencies {
 
     implementation 'org.apache.commons:commons-math3:3.6.1'
 
-    implementation 'com.acmerobotics.roadrunner:core:0.5.4'
+    implementation 'com.acmerobotics.roadrunner:core:0.5.5'
 
-    implementation 'org.openftc:easyopencv:1.5.0'
+    implementation 'org.openftc:easyopencv:1.5.1'
 }

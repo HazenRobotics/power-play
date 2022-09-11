@@ -39,19 +39,12 @@ public class LifterTeleOp extends OpMode {
 
         move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-//        if( aWasPressed && !gamepad1.a ) {
-//            claw( );
-//        }
+        displayTelemetry();
 
         double power = gamepad1.right_trigger - gamepad1.left_trigger;
 
         liftMotor.setPower( power );
-        telemetry.addData( "ly: ", gamepad1.left_stick_y );
-        telemetry.addData( "lx: ", gamepad1.left_stick_x );
-        telemetry.addData( "rx: ", gamepad1.right_stick_x );
 
-//        aWasPressed = gamepad1.a;
-        telemetry.update( );
     }
 
     /**
@@ -98,6 +91,18 @@ public class LifterTeleOp extends OpMode {
         while( (startTime + mills) > System.currentTimeMillis( ) ) {
             telemetry.update( );
         }
+    }
 
+    public void displayTelemetry() {
+        telemetry.addData( "ly: ", -gamepad1.left_stick_y );
+        telemetry.addData( "lx: ", gamepad1.left_stick_x );
+        telemetry.addData( "rx: ", gamepad1.right_stick_x );
+        telemetry.addLine("");
+        telemetry.addData("flp: ", frontLeftMotor.getPower());
+        telemetry.addData("blp: ", backLeftMotor.getPower());
+        telemetry.addData("frp: ", frontRightMotor.getPower());
+        telemetry.addData("brp: ", backRightMotor.getPower());
+
+        telemetry.update( );
     }
 }
