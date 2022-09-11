@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.localization;
 /**
  * Static variables for parts of the field that could be useful.
  */
-public class Field {
+public class FFField {
 
 	public static final double TILE_SIZE = 23;
 	public static final double TILE_CONNECTOR = 0.75;
