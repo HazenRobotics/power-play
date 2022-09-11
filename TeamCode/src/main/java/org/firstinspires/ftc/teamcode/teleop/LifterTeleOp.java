@@ -3,15 +3,16 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "PowerPlayBot", group = "TeleOp")
+@TeleOp(name = "LifterTeleOp2", group = "TeleOp")
 //@Disabled
 public class LifterTeleOp extends OpMode {
 
-    DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, LiftMotor;
-    Servo clawServo;
+    DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, LiftMotor;
+//    Servo clawServo;
     boolean aWasPressed = false;
 
     @Override
@@ -20,18 +21,18 @@ public class LifterTeleOp extends OpMode {
         telemetry.addData( "Mode", "Initiating robot..." );
         telemetry.update( );
 
-        frontLeftMotor = hardwareMap.get( DcMotor.class, "frontLeft" );
-        backLeftMotor = hardwareMap.get( DcMotor.class, "backLeft" );
-        frontRightMotor = hardwareMap.get( DcMotor.class, "frontRight" );
-        backRightMotor = hardwareMap.get( DcMotor.class, "backRight" );
-        LiftMotor = hardwareMap.get( DcMotor.class, "lift" );
+        frontLeftMotor = hardwareMap.get( DcMotorEx.class, "frontLeft" );
+        backLeftMotor = hardwareMap.get( DcMotorEx.class, "backLeft" );
+        frontRightMotor = hardwareMap.get( DcMotorEx.class, "frontRight" );
+        backRightMotor = hardwareMap.get( DcMotorEx.class, "backRight" );
+        LiftMotor = hardwareMap.get( DcMotorEx.class, "lift" );
 
-        clawServo = hardwareMap.servo.get( "claw" );
+//        clawServo = hardwareMap.servo.get( "claw" );
 
         frontLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
         backLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 
-        telemetry.addData( "Mode", "waiting for start" );
+        telemetry.addData( "Mode", "waiting for start??" );
         telemetry.update( );
     }
 
@@ -40,13 +41,17 @@ public class LifterTeleOp extends OpMode {
 
         move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-        if( aWasPressed && !gamepad1.a ) {
-            claw( );
-        }
-        double power = gamepad1.left_trigger - gamepad1.right_trigger;
+//        if( aWasPressed && !gamepad1.a ) {
+//            claw( );
+//        }
+        double power = gamepad1.right_trigger - gamepad1.left_trigger;
 
         LiftMotor.setPower( power );
-        aWasPressed = gamepad1.a;
+        telemetry.addData( "ly: ", gamepad1.left_stick_y );
+        telemetry.addData( "lx: ", gamepad1.left_stick_x );
+        telemetry.addData( "rx: ", gamepad1.right_stick_x );
+
+//        aWasPressed = gamepad1.a;
         telemetry.update( );
     }
 
@@ -81,13 +86,13 @@ public class LifterTeleOp extends OpMode {
         backRightMotor.setPower( backRightPower );
     }
 
-    public void claw( ) {
-        if( clawServo.getPosition( ) == 0 ) {
-            clawServo.setPosition( 0.5 );
-        } else {
-            clawServo.setPosition( 0 );
-        }
-    }
+//    public void claw( ) {
+//        if( clawServo.getPosition( ) == 0 ) {
+//            clawServo.setPosition( 0.5 );
+//        } else {
+//            clawServo.setPosition( 0 );
+//        }
+//    }
 
     public void waitRobot( int mills ) {
         long startTime = System.currentTimeMillis( );
