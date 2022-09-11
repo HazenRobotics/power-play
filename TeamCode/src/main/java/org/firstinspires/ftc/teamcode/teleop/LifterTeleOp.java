@@ -98,6 +98,5 @@ public class LifterTeleOp extends OpMode {
         while( (startTime + mills) > System.currentTimeMillis( ) ) {
             telemetry.update( );
         }
-
     }
 }
