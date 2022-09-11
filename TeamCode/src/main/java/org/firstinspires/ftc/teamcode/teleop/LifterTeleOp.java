@@ -2,16 +2,14 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "LifterTeleOp2", group = "TeleOp")
 //@Disabled
 public class LifterTeleOp extends OpMode {
 
-    DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, LiftMotor;
+    DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, liftMotor;
 //    Servo clawServo;
     boolean aWasPressed = false;
 
@@ -25,7 +23,7 @@ public class LifterTeleOp extends OpMode {
         backLeftMotor = hardwareMap.get( DcMotorEx.class, "backLeft" );
         frontRightMotor = hardwareMap.get( DcMotorEx.class, "frontRight" );
         backRightMotor = hardwareMap.get( DcMotorEx.class, "backRight" );
-        LiftMotor = hardwareMap.get( DcMotorEx.class, "lift" );
+        liftMotor = hardwareMap.get( DcMotorEx.class, "lift" );
 
 //        clawServo = hardwareMap.servo.get( "claw" );
 
@@ -44,9 +42,10 @@ public class LifterTeleOp extends OpMode {
 //        if( aWasPressed && !gamepad1.a ) {
 //            claw( );
 //        }
+
         double power = gamepad1.right_trigger - gamepad1.left_trigger;
 
-        LiftMotor.setPower( power );
+        liftMotor.setPower( power );
         telemetry.addData( "ly: ", gamepad1.left_stick_y );
         telemetry.addData( "lx: ", gamepad1.left_stick_x );
         telemetry.addData( "rx: ", gamepad1.right_stick_x );
