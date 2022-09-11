@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-@TeleOp(name = "PowerPlayBot", group = "TeleOp")
+@TeleOp(name = "MotorTest", group = "TeleOp")
 //@Disabled
 public class MotorTest extends OpMode {
 
@@ -18,6 +18,11 @@ public class MotorTest extends OpMode {
 
     @Override
     public void loop() {
+        if (gamepad1.a)
+            motor.setPower(-0.25);
+        else if (gamepad1.b)
+            motor.setPower(0.25);
 
+        motor.setPower(0);
     }
 }
