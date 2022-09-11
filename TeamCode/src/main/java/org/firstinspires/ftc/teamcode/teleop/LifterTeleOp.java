@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "PowerPlayBot", group = "TeleOp")
 //@Disabled
-public class PowerPlayTeleOp extends OpMode {
+public class LifterTeleOp extends OpMode {
 
     DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, LiftMotor;
     Servo clawServo;
