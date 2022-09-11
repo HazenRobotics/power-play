@@ -8,10 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drives.Drive;
-import org.firstinspires.ftc.teamcode.localization.Field;
+import org.firstinspires.ftc.teamcode.localization.FFField;
 import org.firstinspires.ftc.teamcode.utils.Logger;
-
-import java.io.IOException;
 
 /**
  * This class sets up and manages a robot
@@ -119,8 +117,8 @@ public abstract class Robot {
 	 */
 	public static Pose2d getHubPosition( double robotLength, double angle, double angleOffset, double indent, boolean blueSide ) {
 		double negate = Math.toRadians( angle * (blueSide ? 1 : -1) );
-		double x = Field.TILE_CONNECTOR / 2 + Field.TILE_SIZE / 2 + Math.sin( negate ) * (Field.HUB_RADIUS + indent + robotLength / 2);
-		double y = Field.TILE_CONNECTOR + Field.TILE_SIZE + Math.cos( negate ) * (Field.HUB_RADIUS + indent + robotLength / 2);
+		double x = FFField.TILE_CONNECTOR / 2 + FFField.TILE_SIZE / 2 + Math.sin( negate ) * (FFField.HUB_RADIUS + indent + robotLength / 2);
+		double y = FFField.TILE_CONNECTOR + FFField.TILE_SIZE + Math.cos( negate ) * (FFField.HUB_RADIUS + indent + robotLength / 2);
 		return new Pose2d( -x, y * (blueSide ? 1 : -1), Math.toRadians( angleOffset + angle ) );
 		// ( -23.631, 35.506, toRadians( 270 + 45 ) )
 	}
