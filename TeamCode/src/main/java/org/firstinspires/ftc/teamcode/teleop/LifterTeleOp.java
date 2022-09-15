@@ -4,14 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "LifterTeleOp2", group = "TeleOp")
 //@Disabled
 public class LifterTeleOp extends OpMode {
 
     DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, liftMotor;
-//    Servo clawServo;
+    Servo clawServo;
     boolean aWasPressed = false;
+    double closedPosition = 0.5;
+    double openPosition = 0.9;
 
     @Override
     public void init( ) {
@@ -25,7 +28,7 @@ public class LifterTeleOp extends OpMode {
         backRightMotor = hardwareMap.get( DcMotorEx.class, "backRight" );
         liftMotor = hardwareMap.get( DcMotorEx.class, "lift" );
 
-//        clawServo = hardwareMap.servo.get( "claw" );
+        clawServo = hardwareMap.servo.get( "claw" );
 
         frontLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
         backLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
@@ -45,6 +48,10 @@ public class LifterTeleOp extends OpMode {
 
         liftMotor.setPower( power );
 
+        if(gamepad1.a)
+            clawServo.setPosition(openPosition);
+        else if(gamepad1.b)
+            clawServo.setPosition(closedPosition);
     }
 
     /**
