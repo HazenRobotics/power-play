@@ -10,25 +10,26 @@ public class MassPartTester extends OpMode {
 
     @Override
     public void init() {
-        for(int i=0; i<servos.length; i++) {
-            servos[i] = hardwareMap.servo.get( "servo"+i );
+        for (int i = 0; i < servos.length; i++) {
+            servos[i] = hardwareMap.servo.get("servo" + i);
         }
     }
 
     @Override
     public void loop() {
-        while(gamepad1.right_trigger+gamepad2.right_trigger==2);
-        for(int i=0; i<servos.length; i++) {
+        while (gamepad1.right_trigger + gamepad2.right_trigger == 2) ;
+        for (int i = 0; i < servos.length; i++) {
             servos[i].setPosition(1);
             waitRobot(500);
             servos[i].setPosition(0);
         }
 
     }
-    public void waitRobot( int mills ) {
-        long startTime = System.currentTimeMillis( );
-        while( (startTime + mills) > System.currentTimeMillis( ) ) {
-            telemetry.update( );
+
+    public void waitRobot(int mills) {
+        long startTime = System.currentTimeMillis();
+        while ((startTime + mills) > System.currentTimeMillis()) {
+            telemetry.update();
         }
     }
 }
