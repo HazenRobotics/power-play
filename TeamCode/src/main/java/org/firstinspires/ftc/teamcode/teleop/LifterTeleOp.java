@@ -4,20 +4,28 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp(name = "LifterTeleOp2", group = "TeleOp")
 //@Disabled
 public class LifterTeleOp extends OpMode {
 
-    DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, liftMotor;
+    DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
+    DcMotorEx liftMotor;
 //    Servo clawServo;
     boolean aWasPressed = false;
+
+    GamepadEvents controller;
 
     @Override
     public void init( ) {
 
         telemetry.addData( "Mode", "Initiating robot..." );
         telemetry.update( );
+
+        controller = new GamepadEvents( gamepad1 );
 
         frontLeftMotor = hardwareMap.get( DcMotorEx.class, "frontLeft" );
         backLeftMotor = hardwareMap.get( DcMotorEx.class, "backLeft" );
@@ -39,7 +47,7 @@ public class LifterTeleOp extends OpMode {
 
         move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-//        if( aWasPressed && !gamepad1.a ) {
+//        if( gamepad1.a.onPress( ) ) {
 //            claw( );
 //        }
 
