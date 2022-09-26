@@ -25,29 +25,39 @@ public class LearnAuto extends LinearOpMode {
 		backRight.setDirection( DcMotorSimple.Direction.REVERSE );
 
 
-
 		int distanceToMove = Math.round( convertDistTicks( 24 ) );
-		frontLeft.setTargetPosition( distanceToMove );
-		backRight.setTargetPosition( distanceToMove );
-		frontRight.setTargetPosition( distanceToMove );
-		backLeft.setTargetPosition( distanceToMove );
-
-		frontLeft.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+		backLeft.setTargetPosition( distanceToMove + backLeft.getCurrentPosition( ) );
+		frontRight.setTargetPosition( distanceToMove + frontRight.getCurrentPosition( ) );
 		backLeft.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 		frontRight.setMode( DcMotor.RunMode.RUN_TO_POSITION );
-		backRight.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 		waitForStart( );
-		frontLeft.setPower( -0.5 );
-		backLeft.setPower( -1 );
-		frontRight.setPower( 0.5 );
-		backRight.setPower( 1 );
-		while(frontLeft.isBusy());
+		frontLeft.setPower( 0 );
+		backLeft.setPower( 0.75 );
+		frontRight.setPower( 0.75 );
+		backRight.setPower( 0 );
+		while( backLeft.isBusy( ) ) {
+
+			telemetry.addData( "frontLeft", frontLeft.getPower( ) );
+			telemetry.addData( "backLeft", backLeft.getPower( ) );
+			telemetry.addData( "frontRight", frontRight.getPower( ) );
+			telemetry.addData( "backRight", backRight.getPower( ) );
+			telemetry.update( );
+		}
 		frontLeft.setPower( 0 );
 		backLeft.setPower( 0 );
 		frontRight.setPower( 0 );
 		backRight.setPower( 0 );
 
 	}
+	/*
+	public void drive( 1, 0, 1 ) {
+
+		frontLeft.setPower( 1 );
+		backLeft.setPower( 1 + 0 - 1 );
+		frontRight.setPower( 1 - 0 - 1 );
+		backRight.setPower( 1 - 0 + 1 );        //then you're gonna write this horrible piece of code in loop, right? go to loop, right?
+	}
+	 */
 
 
 	/**

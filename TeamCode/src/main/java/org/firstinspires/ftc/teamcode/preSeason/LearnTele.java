@@ -17,13 +17,17 @@ public class LearnTele extends OpMode {
 		frontRight = hardwareMap.dcMotor.get( "frontRight" );
 		backRight = hardwareMap.dcMotor.get( "backRight" );
 
-		frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-		backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
+		frontRight.setDirection( DcMotorSimple.Direction.REVERSE );
+		backRight.setDirection( DcMotorSimple.Direction.REVERSE );
 	}
 
 	@Override
 	public void loop( ) {
 		drive( -gamepad1.left_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x );
+		telemetry.addData( "frontLeft",frontLeft.getPower() );
+		telemetry.addData( "backLeft",backLeft.getPower() );
+		telemetry.addData( "frontRight",frontRight.getPower() );
+		telemetry.addData( "backRight",backRight.getPower() );
 	}
 
 	public void drive( double drive, double rotate, double strafe ) {
