@@ -25,17 +25,23 @@ public class LearnAuto extends LinearOpMode {
 		backRight.setDirection( DcMotorSimple.Direction.REVERSE );
 
 
-		int distanceToMove = Math.round( convertDistTicks( 24 ) );
+		int distanceToMove = Math.round( convertDistTicks( 48 ) );
+		frontLeft.setTargetPosition( distanceToMove + frontLeft.getCurrentPosition( ) );
 		backLeft.setTargetPosition( distanceToMove + backLeft.getCurrentPosition( ) );
 		frontRight.setTargetPosition( distanceToMove + frontRight.getCurrentPosition( ) );
+		backRight.setTargetPosition( distanceToMove + backRight.getCurrentPosition( ) );
+
+		frontLeft.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 		backLeft.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 		frontRight.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+		backRight.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+
 		waitForStart( );
-		frontLeft.setPower( 0 );
-		backLeft.setPower( 0.75 );
-		frontRight.setPower( 0.75 );
-		backRight.setPower( 0 );
-		while( backLeft.isBusy( ) ) {
+		frontLeft.setPower( 0.5 );
+		backLeft.setPower( -0.25 );
+		frontRight.setPower( -0.25 );
+		backRight.setPower( 0.5 );
+		while( frontLeft.isBusy() ) {
 
 			telemetry.addData( "frontLeft", frontLeft.getPower( ) );
 			telemetry.addData( "backLeft", backLeft.getPower( ) );
