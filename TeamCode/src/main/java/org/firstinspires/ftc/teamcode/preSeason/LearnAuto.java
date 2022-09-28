@@ -25,7 +25,7 @@ public class LearnAuto extends LinearOpMode {
 		backRight.setDirection( DcMotorSimple.Direction.REVERSE );
 
 
-		int distanceToMove = Math.round( convertDistTicks( 48 ) );
+		int distanceToMove = Math.round( convertDistTicks( 34 ) );
 		frontLeft.setTargetPosition( distanceToMove + frontLeft.getCurrentPosition( ) );
 		backLeft.setTargetPosition( distanceToMove + backLeft.getCurrentPosition( ) );
 		frontRight.setTargetPosition( distanceToMove + frontRight.getCurrentPosition( ) );
@@ -38,8 +38,8 @@ public class LearnAuto extends LinearOpMode {
 
 		waitForStart( );
 		frontLeft.setPower( 0.5 );
-		backLeft.setPower( -0.25 );
-		frontRight.setPower( -0.25 );
+		backLeft.setPower( -0.05 );
+		frontRight.setPower( -0.05 );
 		backRight.setPower( 0.5 );
 		while( frontLeft.isBusy() ) {
 

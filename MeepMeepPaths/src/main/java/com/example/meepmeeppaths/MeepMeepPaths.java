@@ -26,7 +26,6 @@ public class MeepMeepPaths {
 		MeepMeep mm = new MeepMeep( 700 )
 				.setBackground( MeepMeep.Background.FIELD_FREIGHT_FRENZY )
 				.setTheme( new ColorSchemeRedDark() )
-//				.set
 				.setBackgroundAlpha( 1f )
 				.setBotDimensions( robotWidth, robotLength )
 				.setConstraints( 30, 30, Math.toRadians( 60 ), Math.toRadians( 60 ), 17 )
