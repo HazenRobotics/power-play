@@ -4,14 +4,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "LifterTeleOp2", group = "TeleOp")
 //@Disabled
 public class LifterTeleOp extends OpMode {
 
     DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, liftMotor;
-//    Servo clawServo;
+    Servo clawServo;
     boolean aWasPressed = false;
+    double closedPosition = 0.5;
+    double openPosition = 0.9;
 
     @Override
     public void init( ) {
@@ -25,7 +28,7 @@ public class LifterTeleOp extends OpMode {
         backRightMotor = hardwareMap.get( DcMotorEx.class, "backRight" );
         liftMotor = hardwareMap.get( DcMotorEx.class, "lift" );
 
-//        clawServo = hardwareMap.servo.get( "claw" );
+        clawServo = hardwareMap.servo.get( "claw" );
 
         frontLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
         backLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
@@ -39,19 +42,16 @@ public class LifterTeleOp extends OpMode {
 
         move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-//        if( aWasPressed && !gamepad1.a ) {
-//            claw( );
-//        }
+        displayTelemetry();
 
         double power = gamepad1.right_trigger - gamepad1.left_trigger;
 
         liftMotor.setPower( power );
-        telemetry.addData( "ly: ", gamepad1.left_stick_y );
-        telemetry.addData( "lx: ", gamepad1.left_stick_x );
-        telemetry.addData( "rx: ", gamepad1.right_stick_x );
 
-//        aWasPressed = gamepad1.a;
-        telemetry.update( );
+        if(gamepad1.a)
+            clawServo.setPosition(openPosition);
+        else if(gamepad1.b)
+            clawServo.setPosition(closedPosition);
     }
 
     /**
@@ -98,6 +98,18 @@ public class LifterTeleOp extends OpMode {
         while( (startTime + mills) > System.currentTimeMillis( ) ) {
             telemetry.update( );
         }
+    }
 
+    public void displayTelemetry() {
+        telemetry.addData( "ly: ", -gamepad1.left_stick_y );
+        telemetry.addData( "lx: ", gamepad1.left_stick_x );
+        telemetry.addData( "rx: ", gamepad1.right_stick_x );
+        telemetry.addLine("");
+        telemetry.addData("flp: ", frontLeftMotor.getPower());
+        telemetry.addData("blp: ", backLeftMotor.getPower());
+        telemetry.addData("frp: ", frontRightMotor.getPower());
+        telemetry.addData("brp: ", backRightMotor.getPower());
+
+        telemetry.update( );
     }
 }
