@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.drives.Drive;
 
 public class EncoderTracker {
 
@@ -122,39 +123,11 @@ public class EncoderTracker {
 	// conversions
 
 	public int convertDistTicks( double distance ) {
-		return convertDistTicks( distance, encoderRadius, ppr, gearRatio );
+		return Drive.convertDistTicks( distance, encoderRadius, ppr, gearRatio );
 	}
 
 	public double convertTicksDist( int ticks ) {
-		return convertTicksDist( ticks, encoderRadius, ppr, gearRatio );
-	}
-
-	/**
-	 * convert a distance (in inches) to ticks
-	 *
-	 * @param distance            the distance you want to convert to ticks
-	 * @param wheelRadius         the diameter of the encoder wheel
-	 * @param pulsesPerRevolution the encoder's pulses per revolution
-	 * @param gearRatio           the ratio of the gears
-	 * @return the number of ticks in that distance
-	 */
-	public static int convertDistTicks( double distance, double wheelRadius, double pulsesPerRevolution, double gearRatio ) {
-		double revolutions = distance / Math.PI * 2 * wheelRadius;
-		return (int) Math.round( (revolutions * pulsesPerRevolution) / gearRatio );
-	}
-
-	/**
-	 * convert a number of ticks to distance (in inches)
-	 *
-	 * @param ticks               the ticks you want to convert to distance
-	 * @param wheelRadius         the radius of the encoder wheel
-	 * @param pulsesPerRevolution the encoder's pulses per revolution
-	 * @param gearRatio           the ratio of the gears
-	 * @return the distance (in inches) in that number of ticks
-	 */
-	public static double convertTicksDist( int ticks, double wheelRadius, double pulsesPerRevolution, double gearRatio ) {
-		double circumference = 2 * Math.PI * wheelRadius;
-		return (ticks * circumference * gearRatio) / pulsesPerRevolution;
+		return Drive.convertTicksDist( ticks, encoderRadius, ppr, gearRatio );
 	}
 
 	// setters and getters

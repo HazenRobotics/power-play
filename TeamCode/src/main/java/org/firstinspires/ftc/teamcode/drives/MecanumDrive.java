@@ -32,13 +32,12 @@ public class MecanumDrive extends FourWheelDrive {
 	}
 
 	public int convertDistTicks( double distanceToTravel ) {
-		return convertDistTicks( distanceToTravel, Math.PI * WHEEL_DIAMETER );
+		return Drive.convertDistTicks( distanceToTravel, 2 * Math.PI * WHEEL_DIAMETER, PULSES_PER_REVOLUTION, GEAR_RATIO );
 	}
 
-	public int convertTicksDist( double ticksToTravel ) {
-		return convertTicksDist( ticksToTravel, Math.PI * WHEEL_DIAMETER );
+	public double convertTicksDist( int ticksToTravel ) {
+		return Drive.convertTicksDist( ticksToTravel, 2 * Math.PI * WHEEL_DIAMETER, PULSES_PER_REVOLUTION, GEAR_RATIO );
 	}
-
 
 	/**
 	 * Sets specified power to the motors
