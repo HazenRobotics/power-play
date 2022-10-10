@@ -145,8 +145,8 @@ public class MecanumDrivePR extends MecanumDrive {
 
 		// TODO: if desired, use setLocalizer() to change the localization method
 		// for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-		//rightFront.setDirection( DcMotorSimple.Direction.REVERSE);
-		//rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+		rightFront.setDirection( DcMotorSimple.Direction.REVERSE);
+		rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 		trajectorySequenceRunner = new TrajectorySequenceRunner( follower, HEADING_PID );
 	}
 
