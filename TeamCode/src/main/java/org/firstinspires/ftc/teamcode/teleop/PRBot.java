@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "PR bot", group = "TeleOp")
 //@Disabled
+
 public class PRBot extends OpMode {
 
 	DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, launcherLeft, launcherRight;
@@ -28,7 +29,7 @@ public class PRBot extends OpMode {
 		launcherRight = hardwareMap.get( DcMotor.class, "launchRight" );
 
 		launcherServo = hardwareMap.servo.get( "launcher" );
-
+		launcherServo.setPosition( 0.5 );
 		frontLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 		backLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 		launcherLeft.setDirection( DcMotorSimple.Direction.REVERSE );
@@ -40,7 +41,7 @@ public class PRBot extends OpMode {
 	@Override
 	public void loop( ) {
 
-		move( gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
+		move( gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x );
 
 		if( aWasPressed && !gamepad1.a ) {
 			ring( );
@@ -49,8 +50,15 @@ public class PRBot extends OpMode {
 		if( power > 1 ) {
 			power = 1;
 		}
+		if( gamepad1.start ) {
+			launcherLeft.setPower( 1 );
+			launcherRight.setPower( 1 );
+			ring( );
+			waitRobot( 200 );
+		}
+
 		launcherLeft.setPower( power );
-		launcherRight.setPower( power * 0.95 );
+		launcherRight.setPower( power );
 		aWasPressed = gamepad1.a;
 
 		telemetry.update( );
@@ -88,9 +96,9 @@ public class PRBot extends OpMode {
 	}
 
 	public void ring( ) {
+		launcherServo.setPosition( 0.75 );
+		waitRobot( 400 );
 		launcherServo.setPosition( 0.5 );
-		waitRobot( 500 );
-		launcherServo.setPosition( 1 );
 	}
 
 	public void waitRobot( int mills ) {
