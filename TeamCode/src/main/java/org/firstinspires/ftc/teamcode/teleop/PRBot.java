@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,6 +14,7 @@ public class PRBot extends OpMode {
 
 	DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, launcherLeft, launcherRight;
 	Servo launcherServo;
+	CRServo leftEye, rightEye;
 	boolean aWasPressed = false;
 
 	@Override
@@ -27,11 +29,13 @@ public class PRBot extends OpMode {
 		backRightMotor = hardwareMap.get( DcMotor.class, "backRight" );
 		launcherLeft = hardwareMap.get( DcMotor.class, "launchLeft" );
 		launcherRight = hardwareMap.get( DcMotor.class, "launchRight" );
+		leftEye = hardwareMap.get(CRServo.class, "leftEye");
+		rightEye = hardwareMap.get(CRServo.class, "rightEye");
 
 		launcherServo = hardwareMap.servo.get( "launcher" );
 		launcherServo.setPosition( 0.5 );
-		frontLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
-		backLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
+		frontRightMotor.setDirection( DcMotorSimple.Direction.REVERSE );
+		backRightMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 		launcherLeft.setDirection( DcMotorSimple.Direction.REVERSE );
 
 		telemetry.addData( "Mode", "waiting for start" );
@@ -41,24 +45,28 @@ public class PRBot extends OpMode {
 	@Override
 	public void loop( ) {
 
-		move( gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x );
+		move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-		if( aWasPressed && !gamepad1.a ) {
+		if( aWasPressed && !gamepad1.a )
 			ring( );
-		}
+
 		double power = gamepad1.left_trigger + gamepad1.right_trigger;
-		if( power > 1 ) {
+		if( power > 1 )
 			power = 1;
-		}
+
 		if( gamepad1.start ) {
 			launcherLeft.setPower( 1 );
 			launcherRight.setPower( 1 );
+			spinEyes( 1 );
 			ring( );
 			waitRobot( 200 );
 		}
 
 		launcherLeft.setPower( power );
 		launcherRight.setPower( power );
+
+		spinEyes( gamepad1.left_bumper ? 1 : (gamepad1.left_bumper ? -1 : power ) );
+
 		aWasPressed = gamepad1.a;
 
 		telemetry.update( );
@@ -103,9 +111,12 @@ public class PRBot extends OpMode {
 
 	public void waitRobot( int mills ) {
 		long startTime = System.currentTimeMillis( );
-		while( (startTime + mills) > System.currentTimeMillis( ) ) {
+		while( (startTime + mills) > System.currentTimeMillis( ) )
 			telemetry.update( );
-		}
+	}
 
+	public void spinEyes(double power) {
+		leftEye.setPower( power );
+		rightEye.setPower( power );
 	}
 }
