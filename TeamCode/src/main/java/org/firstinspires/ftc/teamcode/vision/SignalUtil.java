@@ -55,7 +55,7 @@ public class SignalUtil {
 		} );
 	}
 
-	public SignalDetector.SignalPosition getBarcodePosition( ) {
+	public SignalDetector.SignalPosition getSignalPosition( ) {
 		return pipeline.getSignalPosition( );
 	}
 

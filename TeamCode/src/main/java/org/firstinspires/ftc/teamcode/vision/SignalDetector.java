@@ -12,10 +12,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class SignalDetector extends OpenCvPipeline {
 
 	Telemetry telemetry;
-	Mat mat = new Mat( );
-	Mat greenMat = new Mat( );
-//	Mat yellowMat = new Mat( );
-//	Mat brownMat = new Mat( );
+	Mat greenMat = new Mat(  );
+	Mat yellowMat = new Mat( );
+	Mat pinkMat = new Mat( );
 
 	public enum SignalPosition {
 		LEFT,
@@ -26,15 +25,9 @@ public class SignalDetector extends OpenCvPipeline {
 
 	private SignalPosition signalPosition;
 
-	static final Rect GREEN_ROI = new Rect(
-			new Point( 426, 0 ),
-			new Point( 852, 720 ) );
-	static final Rect YELLOW_ROI = new Rect(
-			new Point( 426, 0 ),
-			new Point( 852, 720 ) );
-	static final Rect BROWN_ROI = new Rect(
-			new Point( 426, 0 ),
-			new Point( 852, 720 ) );
+	static final Rect ROI = new Rect(
+			new Point( 0, 0 ),
+			new Point( 1280, 720 ) );
 
 	static double PERCENT_COLOR_THRESHOLD = 0.02;
 
@@ -44,63 +37,84 @@ public class SignalDetector extends OpenCvPipeline {
 
 	public Mat processFrame( Mat input) {
 
-		Imgproc.cvtColor( input, mat, Imgproc.COLOR_RGB2HSV );
+		//setting up green mat
+		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar greenLowHSV = new Scalar( 40, 20, 255 );
+		Scalar greenLowHSV = new Scalar( 45, 25, 25 );
 		Scalar greenHighHSV = new Scalar( 65, 255, 255 );
 
-//		Scalar yellowLowHSV = new Scalar( 40, 50, 70 );
-//		Scalar yellowHighHSV = new Scalar( 65, 255, 255 );
-//
-//		Scalar brownLowHSV = new Scalar( 40, 50, 70 );
-//		Scalar brownHighHSV = new Scalar( 65, 255, 255 );
+		Core.inRange( greenMat, greenLowHSV, greenHighHSV, greenMat );
 
-		Core.inRange( mat, greenLowHSV, greenHighHSV, greenMat );
-//		Core.inRange( mat, yellowLowHSV, yellowHighHSV, yellowMat );
-//		Core.inRange( mat, brownLowHSV, brownHighHSV, brownMat );
+		//setting up yellow mat
+		Imgproc.cvtColor( input, yellowMat, Imgproc.COLOR_RGB2HSV );
 
-		greenMat = mat.submat( GREEN_ROI );
-//		yellowMat = mat.submat( YELLOW_ROI );
-//		brownMat = mat.submat( BROWN_ROI );
+		Scalar yellowLowHSV = new Scalar( 30, 75, 75 );
+		Scalar yellowHighHSV = new Scalar( 40, 255, 255 );
 
-		double greenValue = Core.sumElems( greenMat ).val[0] / GREEN_ROI.area( ) / 255;
-//		double yellowValue = Core.sumElems( yellowMat ).val[0] / YELLOW_ROI.area( ) / 255;
-//		double brownValue = Core.sumElems( brownMat ).val[0] / BROWN_ROI.area( ) / 255;
+		Core.inRange( yellowMat, yellowLowHSV, yellowHighHSV, yellowMat );
 
-		greenMat.release( );
+		//setting up brown mat
+		Imgproc.cvtColor( input, pinkMat, Imgproc.COLOR_RGB2HSV );
+
+		Scalar pinkLowHSV  = new Scalar( 150, 125, 125 );
+		Scalar pinkHighHSV = new Scalar( 165, 255, 255 );
+
+		Core.inRange( pinkMat, pinkLowHSV, pinkHighHSV, pinkMat );
+
+
+
+		double greenValue = Core.sumElems( greenMat ).val[0] / ROI.area( ) / 255;
+		double yellowValue = Core.sumElems( yellowMat ).val[0] / ROI.area( ) / 255;
+		double pinkValue = Core.sumElems( pinkMat ).val[0] / ROI.area( ) / 255;
+
+//		greenMat.release( );
 //		yellowMat.release( );
 //		brownMat.release( );
 
 		boolean greenBool = greenValue > PERCENT_COLOR_THRESHOLD;
-//		boolean yellowBool = yellowValue > PERCENT_COLOR_THRESHOLD;
-//		boolean brownBool = brownValue > PERCENT_COLOR_THRESHOLD;
+		boolean yellowBool = yellowValue > PERCENT_COLOR_THRESHOLD;
+		boolean pinkBool = pinkValue > PERCENT_COLOR_THRESHOLD;
 
-//		if( brownBool ) {
-//			signalPosition = SignalPosition.RIGHT;
-//			telemetry.addData( "Location", " right" );
-//		} else if( greenBool ) {
-//			signalPosition = SignalPosition.LEFT;
-//			telemetry.addData( "Location", " left" );
-//		} else if( yellowBool ) {
-//			signalPosition = SignalPosition.MIDDLE;
-//			telemetry.addData( "Location", " middle" );
-//		} else {
-//			signalPosition = SignalPosition.NOT_FOUND;
-//			telemetry.addData( "Location", " not found" );
-//		}
+		if( pinkBool ) {
+			signalPosition = SignalPosition.RIGHT;
+			telemetry.addLine( "Pink Seen");
+		} else
+			telemetry.addLine( "Pink Not Seen" );
 
-		if (greenBool) {
+		if( greenBool ) {
 			signalPosition = SignalPosition.LEFT;
-			telemetry.addData( "Location", " left" );
-		} else {
+			telemetry.addLine( "Green Seen");
+		}  else
+			telemetry.addLine( "Green Not Seen" );
+
+		if( yellowBool ) {
+			signalPosition = SignalPosition.MIDDLE;
+			telemetry.addLine( "Yellow Seen" );
+		} else
+			telemetry.addLine( "Yellow Not Seen" );
+
+		if( !greenBool && !pinkBool && !yellowBool){
 			signalPosition = SignalPosition.NOT_FOUND;
-			telemetry.addData( "Location", " not found" );
+			telemetry.addLine( "Nothing There" );
 		}
 
-//		Imgproc.cvtColor( mat, mat, Imgproc.COLOR_GRAY2RGB );
+
+//		Imgproc.cvtColor( greenMat, greenMat, Imgproc.COLOR_GRAY2RGB );
 	
 		telemetry.update();
-		return greenMat;
+
+		Mat filters[] = {greenMat, pinkMat, yellowMat};
+
+		int whichMat = (int)((System.currentTimeMillis() / 1000) % 3);
+
+		if (whichMat == 0)
+			telemetry.addLine("Showing Green");
+		else if (whichMat == 1)
+			telemetry.addLine("Showing Pink");
+		else if (whichMat == 2)
+			telemetry.addLine("Showing Yellow");
+
+		return filters[whichMat];
 	}
 
 	public SignalPosition getSignalPosition( ) {

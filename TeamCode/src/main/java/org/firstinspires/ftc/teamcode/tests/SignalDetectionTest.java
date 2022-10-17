@@ -1,20 +1,16 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.vision.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
-@TeleOp(name = "CameraTest", group = "Autonomous")
-public class CameraTest extends LinearOpMode {
-
-	SignalUtil detector;
+@TeleOp(name = "SignalDetectionTest", group = "Autonomous")
+public class SignalDetectionTest extends LinearOpMode {
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
-		detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
+		SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
 		detector.init();
 
 		telemetry.addLine("camera is ready");
@@ -22,8 +18,9 @@ public class CameraTest extends LinearOpMode {
 
 		waitForStart();
 
-		telemetry.addLine( "Position: " + detector.getBarcodePosition( ) );
+		telemetry.addLine( "Position: " + detector.getSignalPosition( ) );
 
-		while(true);
+		while(!isStopRequested());
 	}
+
 }
