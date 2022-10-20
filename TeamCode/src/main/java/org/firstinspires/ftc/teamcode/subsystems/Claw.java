@@ -18,8 +18,8 @@ public class Claw {
 	}
 
 	public void closeClaw(  ) {
-		leftServo.setPosition( .85 );
-		rightServo.setPosition( .15 );
+		leftServo.setPosition( .95 );
+		rightServo.setPosition( .05 );
 	}
 
 	public void openClaw(  ) {
