@@ -2,11 +2,6 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 
 @TeleOp(name = "MecanumTeleOp", group = "TeleOp")
@@ -18,7 +13,7 @@ public class MecanumTeleOp extends OpMode {
     @Override
     public void init( ) {
         drive = new MecanumDrive(hardwareMap);
-    }
+     }
 
     @Override
     public void loop( ) {
