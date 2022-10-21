@@ -33,25 +33,6 @@ public class FourWheelDrive implements Drive {
 	}
 
 	/**
-	 * @param distanceToTravel the distance to move in inches
-	 * @param circumference    the circumference of the wheel that has the encoder
-	 * @return totalTicks - the amount of ticks to move forward
-	 */
-	public int convertDistTicks( double distanceToTravel, double circumference ) {
-		double revolutions = distanceToTravel / circumference;
-		int totalTicks = (int) Math.round( (revolutions * PULSES_PER_REVOLUTION) / GEAR_RATIO );
-
-		return totalTicks;
-	}
-
-	public int convertTicksDist( double ticksToTravel, double circumference ) {
-		double calculations = ticksToTravel * circumference * GEAR_RATIO;
-		int totalDistance = (int) Math.round( calculations / PULSES_PER_REVOLUTION );
-
-		return totalDistance;
-	}
-
-	/**
 	 * Sets up motors from the hardware map
 	 *
 	 * @param hardwareMap    robot's hardware map

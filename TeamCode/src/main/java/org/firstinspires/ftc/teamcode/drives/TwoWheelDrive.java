@@ -35,7 +35,7 @@ public class TwoWheelDrive implements Drive {
 	 * @return totalTicks - the amount of ticks to move forward
 	 */
 	public int convertDistTicks( double distanceToTravel, double circumference ) {
-		return (int) Math.round( ((distanceToTravel / circumference) * PULSES_PER_REVOLUTION) / GEAR_RATIO );
+		return Drive.convertDistTicks( distanceToTravel, circumference, PULSES_PER_REVOLUTION, GEAR_RATIO );
 	}
 
 	/**
@@ -45,8 +45,8 @@ public class TwoWheelDrive implements Drive {
 	 * @param circumference the circumference of the wheel (2*pi*r or pi*d)
 	 * @return the distance (in inches) in that number of ticks
 	 */
-	public int convertTicksDist( double ticksToTravel, double circumference ) {
-		return (int) Math.round( (ticksToTravel * circumference * GEAR_RATIO) / PULSES_PER_REVOLUTION );
+	public double convertTicksDist( int ticksToTravel, double circumference ) {
+		return Drive.convertTicksDist( ticksToTravel, circumference, PULSES_PER_REVOLUTION, GEAR_RATIO );
 	}
 
 	/**
