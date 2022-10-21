@@ -2,88 +2,41 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.robots.LifterBot;
 
 @TeleOp(name = "LifterTeleOp2", group = "TeleOp")
 //@Disabled
 public class LifterTeleOp extends OpMode {
 
-    DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, liftMotor;
-    Servo clawServo;
-    boolean aWasPressed = false;
-    double closedPosition = 0.5;
-    double openPosition = 0.9;
+	LifterBot robot;
+	boolean aWasPressed = false;
+	double closedPosition = 0.5;
+	double openPosition = 0.9;
 
-    @Override
-    public void init( ) {
+	@Override
+	public void init( ) {
 
-        telemetry.addData( "Mode", "Initiating robot..." );
-        telemetry.update( );
+		telemetry.addData( "Mode", "Initiating robot..." );
+		telemetry.update( );
 
-        frontLeftMotor = hardwareMap.get( DcMotorEx.class, "frontLeft" );
-        backLeftMotor = hardwareMap.get( DcMotorEx.class, "backLeft" );
-        frontRightMotor = hardwareMap.get( DcMotorEx.class, "frontRight" );
-        backRightMotor = hardwareMap.get( DcMotorEx.class, "backRight" );
-        liftMotor = hardwareMap.get( DcMotorEx.class, "lift" );
+		robot = new LifterBot( this );
 
-        clawServo = hardwareMap.servo.get( "claw" );
+		telemetry.addData( "Mode", "waiting for start??" );
+		telemetry.update( );
+	}
 
-        frontLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
-        backLeftMotor.setDirection( DcMotorSimple.Direction.REVERSE );
+	@Override
+	public void loop( ) {
 
-        telemetry.addData( "Mode", "waiting for start??" );
-        telemetry.update( );
-    }
+		robot.mecanumDrive.drive( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-    @Override
-    public void loop( ) {
+		//rotate le
+		displayTelemetry( );
 
-        move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-        displayTelemetry();
+	}
 
-        double power = gamepad1.right_trigger - gamepad1.left_trigger;
-
-        liftMotor.setPower( power );
-
-        if(gamepad1.a)
-            clawServo.setPosition(openPosition);
-        else if(gamepad1.b)
-            clawServo.setPosition(closedPosition);
-    }
-
-    /**
-     * set directional power
-     *
-     * @param drive  power
-     * @param strafe strafe power
-     * @param rotate power
-     */
-    public void move( double drive, double strafe, double rotate ) {
-        double frontLeftPower = drive + strafe + rotate;
-        double backLeftPower = drive - strafe + rotate;
-        double frontRightPower = drive - strafe - rotate;
-        double backRightPower = drive + strafe - rotate;
-
-        setMotorPower( frontLeftPower, backLeftPower, frontRightPower, backRightPower );
-    }
-
-    /**
-     * set individual power
-     *
-     * @param frontLeftPower  power
-     * @param backLeftPower   power
-     * @param frontRightPower power
-     * @param backRightPower  power
-     */
-    public void setMotorPower( double frontLeftPower, double backLeftPower, double frontRightPower, double backRightPower ) {
-        frontLeftMotor.setPower( frontLeftPower );
-        backLeftMotor.setPower( backLeftPower );
-        frontRightMotor.setPower( frontRightPower );
-        backRightMotor.setPower( backRightPower );
-    }
 
 //    public void claw( ) {
 //        if( clawServo.getPosition( ) == 0 ) {
@@ -93,23 +46,20 @@ public class LifterTeleOp extends OpMode {
 //        }
 //    }
 
-    public void waitRobot( int mills ) {
-        long startTime = System.currentTimeMillis( );
-        while( (startTime + mills) > System.currentTimeMillis( ) ) {
-            telemetry.update( );
-        }
-    }
+	public void waitRobot( int mills ) {
+		long startTime = System.currentTimeMillis( );
+		while( (startTime + mills) > System.currentTimeMillis( ) ) {
+			telemetry.update( );
+		}
+	}
 
-    public void displayTelemetry() {
-        telemetry.addData( "ly: ", -gamepad1.left_stick_y );
-        telemetry.addData( "lx: ", gamepad1.left_stick_x );
-        telemetry.addData( "rx: ", gamepad1.right_stick_x );
-        telemetry.addLine("");
-        telemetry.addData("flp: ", frontLeftMotor.getPower());
-        telemetry.addData("blp: ", backLeftMotor.getPower());
-        telemetry.addData("frp: ", frontRightMotor.getPower());
-        telemetry.addData("brp: ", backRightMotor.getPower());
+	public void displayTelemetry( ) {
+		telemetry.addData( "ly: ", -gamepad1.left_stick_y );
+		telemetry.addData( "lx: ", gamepad1.left_stick_x );
+		telemetry.addData( "rx: ", gamepad1.right_stick_x );
+		telemetry.addLine( "" );
 
-        telemetry.update( );
-    }
+
+		telemetry.update( );
+	}
 }

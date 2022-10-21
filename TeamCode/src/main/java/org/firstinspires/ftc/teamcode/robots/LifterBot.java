@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
 public class LifterBot extends Robot {
@@ -12,6 +13,8 @@ public class LifterBot extends Robot {
 	public HardwareMap hardwareMap;
 
 	public MecanumDrive mecanumDrive;
+	public MecanumDriveLifter drive;
+
 
 	public Lift lift;
 
@@ -31,7 +34,7 @@ public class LifterBot extends Robot {
 		super.driveTrain = new MecanumDrive( hardwareMap );
 		mecanumDrive = (MecanumDrive) driveTrain;
 
-
+		drive = new MecanumDriveLifter( hardwareMap );
 
 
 	}
