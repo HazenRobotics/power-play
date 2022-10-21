@@ -30,13 +30,13 @@ public class Turret {
 		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
 	}
 
-	public void setPositionVelocity( double velocity, int position ) {
-		motor.setTargetPosition( (int) Drive.convertTicksDist( position, 2 * Math.PI, PPR, ratio ) );
+	public void setPositionVelocity( double velocity, double position ) {
+		motor.setTargetPosition( Drive.convertDistTicks( position, 2 * Math.PI, PPR, ratio ) );
 		motor.setVelocity( velocity, unit );
 	}
 
-	public void setPositionPower( double power, int position ) {
-		motor.setTargetPosition( (int) Drive.convertTicksDist( position, 2 * Math.PI, PPR, ratio ) );
+	public void setPositionPower( double power, double position ) {
+		motor.setTargetPosition( Drive.convertDistTicks( position, 2 * Math.PI, PPR, ratio ) );
 		motor.setPower( power );
 	}
 }
