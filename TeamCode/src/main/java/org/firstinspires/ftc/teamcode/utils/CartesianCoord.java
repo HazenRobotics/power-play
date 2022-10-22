@@ -9,7 +9,7 @@ public class CartesianCoord extends Coordinate {
 	}
 
 	@Override
-	public Coordinate toCartesian( ) {
+	public CartesianCoord toCartesian( ) {
 		return this;
 	}
 
@@ -18,15 +18,14 @@ public class CartesianCoord extends Coordinate {
 		double r = Math.sqrt( Math.pow( this.getC1(),2 )+Math.pow( this.getC2(),2 )+Math.pow( this.getC3(),2 ) );
 		double theta = Math.atan( this.getC2()/this.getC1() );
 		double phi =  Math.atan(Math.sqrt( Math.pow( this.getC1(),2 )+Math.pow( this.getC2(),2 ))/Math.pow( this.getC3(),2 ));
-
-;		return new SphericalCoord(r,theta,phi);
+		return new SphericalCoord(r,theta,phi);
 	}
 
 	@Override
-	public Coordinate toCylindrical( ) {
+	public CylindricalCoord toCylindrical( ) {
 		double r = Math.sqrt( Math.pow( this.getC1(),2 )+Math.pow( this.getC2(),2 ));
 		double theta = Math.atan( this.getC2()/this.getC1() );
-		double h = this.getC3()
-		return new CartesianCoord( r,theta,h);
+		double h = this.getC3();
+		return new CylindricalCoord( r,theta,h);
 	}
 }

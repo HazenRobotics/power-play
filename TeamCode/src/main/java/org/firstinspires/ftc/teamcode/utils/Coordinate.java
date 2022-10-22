@@ -20,16 +20,16 @@ abstract class Coordinate {
 	}
 	public double distance( Coordinate other ) {
 		other=other.toCartesian();
-		CartesianCoord cartesian= (CartesianCoord) this.toCartesian();
+		CartesianCoord cartesian= this.toCartesian();
 		double disX = Math.pow(cartesian.getC1()-other.getC1(),2);
 		double disY = Math.pow(cartesian.getC2()-other.getC2(),2);
 		double disZ = Math.pow(cartesian.getC3()-other.getC3(),2);
 
 		return Math.sqrt( disX+disY+disZ );
 	}
-	public abstract Coordinate toCartesian();
+	public abstract CartesianCoord toCartesian();
 	public abstract SphericalCoord toSpherical();
-	public abstract Coordinate toCylindrical();
+	public abstract CylindricalCoord toCylindrical();
 
 	public double getC1() {
 		return coordinates[0];
