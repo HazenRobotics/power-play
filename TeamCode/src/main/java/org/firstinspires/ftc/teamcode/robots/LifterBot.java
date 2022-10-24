@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
@@ -23,21 +23,29 @@ public class LifterBot extends Robot {
 	public Lift verticalLift;
 	public Lift horizontalLift;
 	public Turret turret;
+	public Claw claw;
 
 	public enum JunctionHeight {
 
-		LOW( 13.5 ),
-		MEDIUM( 23.5 ),
-		HIGH( 33.5 );
+		GROUND( 13.5, 3 ),
+		LOW( 13.5, 0.5 ),
+		MEDIUM( 23.5, 0.5 ),
+		HIGH( 33.5, 0.5 );
 
 		private final double height;
+		private final double radius;
 
-		JunctionHeight( double height ) {
+		JunctionHeight( double height, double radius ) {
 			this.height = height;
+			this.radius = radius;
 		}
 
 		private double height( ) {
 			return height;
+		}
+
+		private double radius( ) {
+			return radius;
 		}
 	}
 
@@ -58,11 +66,12 @@ public class LifterBot extends Robot {
 		mecanumDrive = (MecanumDrive) driveTrain;
 
 		drive = new MecanumDriveLifter( hardwareMap );
-		verticalLift = new Lift( hardwareMap, "vLift", false, 0, 0.5, 0, AngleUnit.DEGREES );
-		horizontalLift = new Lift( hardwareMap, "hLift", false, 0, 0.5, 0, AngleUnit.DEGREES );
+
+		verticalLift = new Lift( hardwareMap, "vLift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
+//		horizontalLift = new Lift( hardwareMap, "hLift", false, 0, 0.5, 0, AngleUnit.DEGREES );
 		turret = new Turret( hardwareMap );
 
-		setClawPos( new Vector2d( 5, 5 ), 2*3.14, AngleUnit.RADIANS, 1, 2, 4 );
+		claw = new Claw( hardwareMap, "lClaw", "rClaw" );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {

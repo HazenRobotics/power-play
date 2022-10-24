@@ -1,16 +1,19 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robots.LifterBot;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
-@TeleOp(name = "LifterTeleOp", group = "TeleOp")
+@TeleOp(name = "ClawLiftTest", group = "Test")
 //@Disabled
-public class LifterTeleOp extends OpMode {
+public class ClawLiftTest extends OpMode {
 
-	LifterBot robot;
+	Claw claw;
+	Lift lift;
 	GamepadEvents controller1;
 	boolean opened = true;
 
@@ -22,7 +25,8 @@ public class LifterTeleOp extends OpMode {
 		telemetry.addData( "Mode", "Initiating robot..." );
 		telemetry.update( );
 
-		robot = new LifterBot( this );
+		claw = new Claw( hardwareMap, "lCLaw", "rClaw" );
+		lift = new Lift( hardwareMap, "vLift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -31,16 +35,14 @@ public class LifterTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-		robot.mecanumDrive.drive( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
-
-		robot.verticalLift.setPower( gamepad1.right_trigger - gamepad1.left_trigger );
+		lift.setPower( gamepad1.right_trigger - gamepad1.left_trigger );
 
 		if( controller1.a.onPress( ) ) {
 			telemetry.addLine( "on a press" );
 			if( opened )
-				robot.claw.close( );
+				claw.close( );
 			else
-				robot.claw.open( );
+				claw.open( );
 			opened = !opened;
 		}
 
