@@ -10,19 +10,20 @@ import org.firstinspires.ftc.teamcode.drives.Drive;
 
 public class Turret {
 
+	final double PULSES_PER_REVOLUTION = 1; //TODO: get PPR of turret motor
+	final double GEAR_RATIO = 1; //TODO: get gear ratio of turret
+
 	DcMotorEx motor;
 	AngleUnit unit;
-	double ratio;
-	double PPR;
+
+	double turretHeading;
 
 	public Turret( HardwareMap hw ) {
-		this( hw, "turret", false, AngleUnit.RADIANS, 1, 1 );
+		this( hw, "turret", false, AngleUnit.RADIANS);
 	}
 
-	public Turret( HardwareMap hw, String motorName, boolean reverseMotor, AngleUnit angleUnit, double gearRatio, double motorPPR ) {
+	public Turret( HardwareMap hw, String motorName, boolean reverseMotor, AngleUnit angleUnit ) {
 		unit = angleUnit;
-		ratio = gearRatio;
-		PPR = motorPPR;
 
 		motor = hw.get( DcMotorEx.class, motorName );
 
@@ -31,12 +32,19 @@ public class Turret {
 	}
 
 	public void setPositionVelocity( double velocity, int position ) {
-		motor.setTargetPosition( (int) Drive.convertTicksDist( position, 2 * Math.PI, PPR, ratio ) );
+		motor.setTargetPosition( (int) Drive.convertTicksDist( position, 2 * Math.PI, PULSES_PER_REVOLUTION, GEAR_RATIO ) );
 		motor.setVelocity( velocity, unit );
 	}
 
 	public void setPositionPower( double power, int position ) {
-		motor.setTargetPosition( (int) Drive.convertTicksDist( position, 2 * Math.PI, PPR, ratio ) );
+		motor.setTargetPosition( (int) Drive.convertTicksDist( position, 2 * Math.PI, PULSES_PER_REVOLUTION, GEAR_RATIO ) );
 		motor.setPower( power );
 	}
+
+	public void resetTurret( ) {
+		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+		turretHeading = 0;
+	}
+
+
 }

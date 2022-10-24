@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 public class LifterBot extends Robot {
 
@@ -15,8 +16,8 @@ public class LifterBot extends Robot {
 	public MecanumDrive mecanumDrive;
 	public MecanumDriveLifter drive;
 
-
 	public Lift lift;
+	public Turret turret;
 
 	/**
 	 * Creates a Robot
@@ -35,7 +36,8 @@ public class LifterBot extends Robot {
 		mecanumDrive = (MecanumDrive) driveTrain;
 
 		drive = new MecanumDriveLifter( hardwareMap );
-
+		lift = new Lift( hardwareMap );
+		turret = new Turret( hardwareMap );
 
 	}
 
