@@ -21,7 +21,7 @@ public class Lift {
 	static int liftPosition = 0;
 
 	double spoolRadius;
-	double groundBucketHeight;
+	double posOffset; // groundBucketHeight
 
 	public static final double LIFT_SWITCH_LIMIT = 0.75;
 
@@ -33,40 +33,34 @@ public class Lift {
 	/**
 	 * Creates the default Lift with:
 	 * -a motorName of "lift",
-	 * -a groundBucketHeight of 3.25,
-	 * -a spoolRadius of 0.63",
-	 * -a liftAngle of 55°, and
+	 * -a posOffset of 0,
+	 * -a spoolRadius of 0.5",
+	 * -a liftAngle of 45°, and
 	 * -an AngleUnit of DEGREES
 	 *
 	 * @param hardwareMap the hardwareMap of the current running OpMode
 	 */
-	public Lift( HardwareMap hardwareMap ) { // the defaults for the 18" robot
-		setup( hardwareMap, "lift", true, 2.375,
-				(38.2 / 25.4) / 2, 55, AngleUnit.DEGREES ); // diameter of 45mm
+	public Lift( HardwareMap hardwareMap ) {
+		this( hardwareMap, "lift", true, 0,
+				0.5, 0, AngleUnit.DEGREES ); // diameter of 45mm
 	}
 
 	/**
-	 * @param hardwareMap        the hardwareMap of the current running OpMode
-	 * @param motorName          the name of the lift motor in the hardware map
-	 * @param groundBucketHeight the height of the bottom of the lift to the ground
-   	 * @param spoolRadius        the radius of the spool attached om 'angleUnit's
-	0 * @param liftAngle          the angle of the lift from the ground in
-	 * @param angleUnit          the angle unit to make calculations and input variables
+	 * @param hardwareMap the hardwareMap of the current running OpMode
+	 * @param motorName   the name of the lift motor in the hardware map
+	 * @param posOffset   the height of the bottom of the lift to the ground
+	 * @param spoolRadius the radius of the spool attached om 'angleUnit's
+	 * @param liftAngle   the angle of the lift from the ground in
+	 * @param angleUnit   the angle unit to make calculations and input variables
 	 */
-	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double groundBucketHeight,
+	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double posOffset,
 				 double spoolRadius, double liftAngle, AngleUnit angleUnit ) {
-		setup( hardwareMap, motorName, reverseMotor, groundBucketHeight, spoolRadius, liftAngle, angleUnit );
-	}
-
-	public void setup( HardwareMap hardwareMap, String motorName, boolean reverseMotor,
-					   double groundBucketHeight, double spoolRadius, double liftAngle, AngleUnit angleUnit ) {
-
 		motor = hardwareMap.get( DcMotorEx.class, motorName );
 
 		if( reverseMotor )
 			motor.setDirection( DcMotorSimple.Direction.REVERSE );
 
-		setGroundBucketHeight( groundBucketHeight );
+		setPosOffset( posOffset );
 		setSpoolRadius( spoolRadius );
 		setLiftAngle( liftAngle );
 		setAngleUnit( angleUnit );
@@ -174,7 +168,7 @@ public class Lift {
 	// simple lift setters
 
 	public void setDefaultHeightPow( double power ) {
-		setHeightPower( power, groundBucketHeight );
+		setHeightPower( power, posOffset );
 		new Thread( ( ) -> {
 			waitForMoveFinish( );
 			disableMotorIfUnused( );
@@ -182,11 +176,12 @@ public class Lift {
 	}
 
 	public void setDefaultHeightVel( double velocity ) {
-		setDefaultHeightVel( velocity, ( ) -> { } );
+		setDefaultHeightVel( velocity, ( ) -> {
+		} );
 	}
 
 	public void setDefaultHeightVel( double velocity, Runnable runnable ) {
-		setHeightVelocity( velocity, groundBucketHeight );
+		setHeightVelocity( velocity, posOffset );
 		new Thread( ( ) -> {
 			waitForMoveFinish( );
 			disableMotorIfUnused( );
@@ -199,8 +194,8 @@ public class Lift {
 	 * @param height the height from the ground to the bottom of the bucket (in the intake position) to move the lift to in inches
 	 */
 	public void setHeightPower( double power, double height ) {
-		if( height - groundBucketHeight < 0 )
-			height = groundBucketHeight;
+		if( height - posOffset < 0 )
+			height = posOffset;
 		double distanceToMove = calcLiftDistanceFromHeight( height ) - convertTicksDist( liftPosition, 2 * spoolRadius * Math.PI );
 		moveDistancePower( power, distanceToMove, true );
 	}
@@ -210,11 +205,11 @@ public class Lift {
 	 * @param height   the height from the ground to the new pos, bottom of the bucket (in the intake position), to move the lift to, in inches
 	 */
 	public void setHeightVelocity( double velocity, double height ) {
-		if( height < groundBucketHeight )
-			height = groundBucketHeight;
+		if( height < posOffset )
+			height = posOffset;
 
 		stopAndReset( );
-		double distanceToMove = calcLiftDistanceFromHeight( height - groundBucketHeight ) - convertTicksDist( liftPosition, 2 * spoolRadius * Math.PI );
+		double distanceToMove = calcLiftDistanceFromHeight( height - posOffset ) - convertTicksDist( liftPosition, 2 * spoolRadius * Math.PI );
 		moveDistanceVelocity( velocity, distanceToMove, true );
 	}
 
@@ -304,7 +299,7 @@ public class Lift {
 		θ = B
 
 		c = (h-g)/(sin(B)
-		liftPosition = (height - groundBucketHeight/( sin(liftAngle) )
+		liftPosition = (height - posOffset/( sin(liftAngle) )
 
 	 */
 
@@ -412,13 +407,13 @@ public class Lift {
 		spoolRadius = newRadius;
 	}
 
-	// setters and getters for groundBucketHeight
-	public void setGroundBucketHeight( double height ) {
-		groundBucketHeight = height;
+	// setters and getters for posOffset
+	public void setPosOffset( double height ) {
+		posOffset = height;
 	}
 
-	public double getGroundBucketHeight( ) {
-		return groundBucketHeight;
+	public double getPosOffset( ) {
+		return posOffset;
 	}
 
 	// setters and getters for liftAngle
