@@ -56,6 +56,7 @@ public class Lift {
 	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double posOffset,
 				 double spoolRadius, double liftAngle, AngleUnit angleUnit ) {
 		motor = hardwareMap.get( DcMotorEx.class, motorName );
+		motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE );
 
 		if( reverseMotor )
 			motor.setDirection( DcMotorSimple.Direction.REVERSE );
