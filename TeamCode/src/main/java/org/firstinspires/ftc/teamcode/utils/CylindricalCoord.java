@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.utils;
 
 public class CylindricalCoord extends Coordinate {
 
-	public CylindricalCoord( double p, double theata, double z ) {
-		super( p, theata, z );
+	public CylindricalCoord( double r, double theta, double h ) {
+		super( r, theta, h );
 		super.dimensionLabel = new String[] {
-				"P","Theta","Z"
+				"R","Theta","H"
 		};
 	}
 

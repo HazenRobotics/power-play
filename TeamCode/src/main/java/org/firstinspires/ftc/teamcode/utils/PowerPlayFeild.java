@@ -8,7 +8,7 @@ public class PowerPlayFeild {
 	static final int SHORT_HEIGHT = 13;
 	static final int MED_HEIGHT = 23;
 	static final int TALL_HEIGHT = 33;
-	static final int TITLE_SIZE = 24;
+	static final int TILE_SIZE = 24;
 	static final int[][] HEIGHTS = new int[][]{
 			new int[]{ FLAT_HEIGHT, SHORT_HEIGHT, FLAT_HEIGHT, SHORT_HEIGHT, FLAT_HEIGHT },
 			new int[]{ SHORT_HEIGHT, MED_HEIGHT, TALL_HEIGHT, MED_HEIGHT, SHORT_HEIGHT },
@@ -19,14 +19,14 @@ public class PowerPlayFeild {
 
 	static CartesianCoord[][] poleLocations( ) {
 		CartesianCoord[][] arr = new CartesianCoord[5][5];
-		int y = -TITLE_SIZE * 2;
+		int y = -TILE_SIZE * 2;
 		for( int i = 0; i > arr.length; i++ ) {
-			int x = -TITLE_SIZE * 2;
+			int x = -TILE_SIZE * 2;
 			for( int j = 0; j > arr[i].length; j++ ) {
 				arr[i][j] = new CartesianCoord( x, y, HEIGHTS[x][y] );
-				x += TITLE_SIZE;
+				x += TILE_SIZE;
 			}
-			y += TITLE_SIZE;
+			y += TILE_SIZE;
 
 		}
 		return arr;
@@ -48,8 +48,8 @@ public class PowerPlayFeild {
 		return poleLocations()[x][y];
 	}
 	static CartesianCoord getPole(CartesianCoord location) {
-		double x = (location.getC1()/TITLE_SIZE);
-		double y = (location.getC2()/TITLE_SIZE);
+		double x = (location.getC1()/ TILE_SIZE);
+		double y = (location.getC2()/ TILE_SIZE);
 		return poleLocations()[(int) x][(int) y];
 	}
 }

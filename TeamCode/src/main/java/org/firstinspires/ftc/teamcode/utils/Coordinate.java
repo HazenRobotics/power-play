@@ -41,6 +41,8 @@ abstract class Coordinate {
 		return coordinates[2];
 	}
 	public String toString() {
-		return "("+dimensionLabel[0]+": "+getC1()+dimensionLabel[1]+": "+getC2()+dimensionLabel[2]+": "+getC3()+")";
+		return "(" + dimensionLabel[0] + ": "+getC1()
+				+ ", " + dimensionLabel[1] + ": " + getC2()
+				+ ", " + dimensionLabel[2] + ": " + getC3 () + ")";
 	}
 }
