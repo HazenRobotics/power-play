@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.vision.BarcodeUtil;
 
 @Autonomous(name = "New Barcode Test", group = "Test")
-//@Disabled
+@Disabled
 public class BarcodeInitTest extends LinearOpMode {
 
 	@Override

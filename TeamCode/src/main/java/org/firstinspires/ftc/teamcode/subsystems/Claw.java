@@ -8,23 +8,26 @@ public class Claw {
 	Servo leftServo;
 	Servo rightServo;
 
-	public Claw ( HardwareMap hw ) {
-		this(hw, "left", "right");
+	public Claw( HardwareMap hw ) {
+		this( hw, "left", "right" );
 	}
 
-	public Claw ( HardwareMap hw, String left, String right ) {
+	public Claw( HardwareMap hw, String left, String right ) {
 		leftServo = hw.servo.get( left );
 		rightServo = hw.servo.get( right );
 	}
 
-	public void closeClaw(  ) {
-		leftServo.setPosition( .95 );
-		rightServo.setPosition( .05 );
+	public void setPositions( double leftPos, double rightPos ) {
+		leftServo.setPosition( leftPos );
+		rightServo.setPosition( rightPos );
 	}
 
-	public void openClaw(  ) {
-		leftServo.setPosition( .7 );
-		rightServo.setPosition( .3 );
+	public void close( ) {
+		setPositions( 0.95,0.05 );
+	}
+
+	public void open( ) {
+		setPositions( 0.7, 0.3 );
 	}
 
 }
