@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.utils;
 
 import java.util.ArrayList;
 
-public class PowerPlayFeild {
+public class PowerPlayField {
 
 	static final int FLAT_HEIGHT = 0;
 	static final int SHORT_HEIGHT = 13;
