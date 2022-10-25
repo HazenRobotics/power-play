@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.util.Log;
 
+import androidx.core.view.accessibility.AccessibilityViewCommand;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -30,6 +32,17 @@ public class Lift {
 	double liftAngle; // the angle of the lift from the ground in 'angleUnit's
 	AngleUnit angleUnit; // the angle unit for the lift angle i.e. degrees or radians
 
+	EncoderState encoderState;
+	MovementState movementState;
+
+	public enum EncoderState {
+		WITH_ENCODER, WITHOUT_ENCODER;
+	}
+
+	public enum MovementState {
+		REST, HOLDING, MOVING;
+	}
+
 	/**
 	 * Creates the default Lift with:
 	 * -a motorName of "lift",
@@ -42,7 +55,7 @@ public class Lift {
 	 */
 	public Lift( HardwareMap hardwareMap ) {
 		this( hardwareMap, "lift", true, 0,
-				0.5, 0, AngleUnit.DEGREES ); // diameter of 45mm
+				0.5, 0, AngleUnit.DEGREES, true ); // diameter of 45mm
 	}
 
 	/**
@@ -54,7 +67,7 @@ public class Lift {
 	 * @param angleUnit   the angle unit to make calculations and input variables
 	 */
 	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double posOffset,
-				 double spoolRadius, double liftAngle, AngleUnit angleUnit ) {
+				 double spoolRadius, double liftAngle, AngleUnit angleUnit, boolean auto ) {
 		motor = hardwareMap.get( DcMotorEx.class, motorName );
 		motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE );
 
@@ -66,10 +79,13 @@ public class Lift {
 		setLiftAngle( liftAngle );
 		setAngleUnit( angleUnit );
 
-		resetLift( );
-		motor.setTargetPosition( 10 );
-		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
-
+		if( auto ) {
+			resetLift( );
+			motor.setTargetPosition( 10 );
+			motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+		} else {
+			setEncoder( EncoderState.WITHOUT_ENCODER );
+		}
 	}
 
 	/**
@@ -85,8 +101,20 @@ public class Lift {
 	 * stops and resets the physical motor and its encoder and sets liftPosition to 0
 	 */
 	public void resetLift( ) {
+		setEncoder( EncoderState.WITH_ENCODER );
 		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+		movementState = MovementState.REST;
 		liftPosition = 0;
+	}
+
+
+	/**
+	 *
+	 */
+	public void setEncoder( EncoderState state ) {
+
+		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_WITHOUT_ENCODER : DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+		encoderState = state;
 	}
 
 	// basic lift setters
@@ -332,18 +360,13 @@ public class Lift {
 	}
 
 	public void setPower( double power ) {
+		updateMovementState( power );
 		motor.setPower( power );
 	}
 
-	/**
-	 * set Tele-O-Power
-	 * sets the lift to a power and sets the lift mode to run without encoders (still tracks position)
-	 *
-	 * @param power the power to set the motors to
-	 */
-	public void setTeleOPower( double power ) {
-		motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-		setPower( power );
+	private void setPower( double power, MovementState state ) {
+		movementState = state;
+		motor.setPower( power );
 	}
 
 	public double getVelocity( ) {
@@ -351,8 +374,14 @@ public class Lift {
 	}
 
 	public void setVelocity( double velocity ) {
+		updateMovementState( velocity );
 		motor.setVelocity( velocity, angleUnit );
 	}
+
+	private void updateMovementState( double speed ) {
+		movementState = speed == 0 ? (liftPosition < 5 ? MovementState.REST : MovementState.HOLDING) : MovementState.MOVING;
+	}
+
 
 	// getters for the lift position
 
