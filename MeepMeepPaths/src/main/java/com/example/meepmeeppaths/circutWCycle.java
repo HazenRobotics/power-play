@@ -11,7 +11,7 @@ public class circutWCycle implements MeepMeepPath {
 
 	float x = (float) (2 * tileSize - LifterBot.ROBOT_WIDTH / 2 + 3 * tileConnector / 2);
 	float y = PPField.HALF_FIELD - LifterBot.ROBOT_LENGTH / 2;
-	Pose2d conePose = new Pose2d( -tileSize / 2, -tileSize * 3, Math.toRadians( 180 ) );
+	Pose2d conePose = new Pose2d( -tileSize *3, -tileSize/2, Math.toRadians( 0 ) );
 
 
 	@Override
@@ -20,19 +20,18 @@ public class circutWCycle implements MeepMeepPath {
 				.lineToConstantHeading( new Vector2d( x-(tileSize/2), y ) )
 				//drop cone
 				.lineToConstantHeading( new Vector2d( x-tileSize,y ) )
-				.lineToLinearHeading( new Pose2d(conePose.getX(),conePose.getY(),Math.toRadians( 0 )) )
+				.lineToLinearHeading( conePose )
 				//grab cone
 				.lineToConstantHeading(new Vector2d( -tileSize,conePose.getY() ) )
 				//drop cone
-				.lineToLinearHeading( new Pose2d(conePose.getX(),conePose.getY(),Math.toRadians( 0 )) )
+				.lineToLinearHeading( conePose )
 				//grab cone
 				.lineToConstantHeading(new Vector2d( -tileSize,conePose.getY() ) )
 				//drop cone
-				.lineToLinearHeading( new Pose2d(conePose.getX(),conePose.getY(),Math.toRadians( 0 )) )
+				.lineToLinearHeading( conePose )
 				//grab cone
 				.lineToConstantHeading(new Vector2d( -tileSize,conePose.getY() ) )
 				//drop cone
-
 				.build( );
 	}
 
