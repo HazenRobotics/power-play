@@ -1,16 +1,17 @@
-package com.example.meepmeeppaths;
+package com.example.meepmeeppaths.oldPaths;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.example.meepmeeppaths.MeepMeepPath;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 
 import java.util.Arrays;
 
-public class BlueInAutoFreight2 implements MeepMeepPath{
+public class BlueInAutoFreight2 implements MeepMeepPath {
 
 	double wallPos = 64.624;
 
