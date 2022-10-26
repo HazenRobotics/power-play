@@ -25,28 +25,12 @@ public class LifterBot extends Robot {
 	public Turret turret;
 	public Claw claw;
 
-	public enum JunctionHeight {
+	public static final float ROBOT_LENGTH = 13.375f;
+	public static final float ROBOT_WIDTH = 12.75f;
+	public static final float ROBOT_MAX_WIDTH = 14.5f;
 
-		GROUND( 13.5, 3 ),
-		LOW( 13.5, 0.5 ),
-		MEDIUM( 23.5, 0.5 ),
-		HIGH( 33.5, 0.5 );
-
-		private final double height;
-		private final double radius;
-
-		JunctionHeight( double height, double radius ) {
-			this.height = height;
-			this.radius = radius;
-		}
-
-		private double height( ) {
-			return height;
-		}
-
-		private double radius( ) {
-			return radius;
-		}
+	public enum LiftPosition {
+		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
 	}
 
 	/**

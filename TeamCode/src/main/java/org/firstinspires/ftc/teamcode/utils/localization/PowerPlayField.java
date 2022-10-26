@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.utils.localization;
+
+import org.firstinspires.ftc.teamcode.utils.coordinates.CartesianCoord;
 
 import java.util.ArrayList;
 
@@ -27,7 +29,6 @@ public class PowerPlayField {
 				x += TILE_SIZE;
 			}
 			y += TILE_SIZE;
-
 		}
 		return arr;
 	}

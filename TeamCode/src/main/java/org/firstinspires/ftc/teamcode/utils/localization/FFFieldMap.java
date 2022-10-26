@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.utils.localization;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Stores information about the field so that it can represent a digital "map" of the field.
  * All measurements are in mm so that it is easier to use with vuforia
  */
-public class FieldMap {
+public class FFFieldMap {
 
 	//All measurements are in mm
 	private static final float mmPerInch = (float) DistanceUnit.mmPerInch;
@@ -194,7 +194,7 @@ public class FieldMap {
 
 	public static VectorF toVectorF( OpenGLMatrix position ) {
 		float[] data = position.getData( );
-		return new VectorF( data[14], data[13], data[15] );//position.toVector();
+		return new VectorF( data[14], data[13], data[15] ); // position.toVector();
 	}
 
 	public static Orientation toOrientation( OpenGLMatrix position ) {

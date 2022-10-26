@@ -55,7 +55,7 @@ public class Lift {
 	 */
 	public Lift( HardwareMap hardwareMap ) {
 		this( hardwareMap, "lift", true, 0,
-				0.5, 0, AngleUnit.DEGREES, true ); // diameter of 45mm
+				0.5, 0, AngleUnit.DEGREES ); // diameter of 45mm
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class Lift {
 	 * @param angleUnit   the angle unit to make calculations and input variables
 	 */
 	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double posOffset,
-				 double spoolRadius, double liftAngle, AngleUnit angleUnit, boolean auto ) {
+				 double spoolRadius, double liftAngle, AngleUnit angleUnit ) {
 		motor = hardwareMap.get( DcMotorEx.class, motorName );
 		motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE );
 
@@ -79,13 +79,11 @@ public class Lift {
 		setLiftAngle( liftAngle );
 		setAngleUnit( angleUnit );
 
-		if( auto ) {
-			resetLift( );
-			motor.setTargetPosition( 10 );
-			motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
-		} else {
-			setEncoder( EncoderState.WITHOUT_ENCODER );
-		}
+
+		resetLift( );
+		motor.setTargetPosition( 10 );
+		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+
 	}
 
 	/**

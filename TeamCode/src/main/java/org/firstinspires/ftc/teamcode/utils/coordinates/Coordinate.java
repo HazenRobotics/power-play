@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.utils.coordinates;
 
 abstract class Coordinate {
 	double[] coordinates;

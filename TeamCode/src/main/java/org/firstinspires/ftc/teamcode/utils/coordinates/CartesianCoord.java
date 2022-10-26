@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utils;
+package org.firstinspires.ftc.teamcode.utils.coordinates;
 
 public class CartesianCoord extends Coordinate {
 	public CartesianCoord( double x, double y, double z ) {

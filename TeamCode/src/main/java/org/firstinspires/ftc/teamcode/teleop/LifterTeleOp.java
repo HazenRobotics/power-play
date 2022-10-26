@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robots.LifterBot;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp(name = "LifterTeleOp", group = "TeleOp")
@@ -23,6 +24,7 @@ public class LifterTeleOp extends OpMode {
 		telemetry.update( );
 
 		robot = new LifterBot( this );
+		robot.verticalLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
