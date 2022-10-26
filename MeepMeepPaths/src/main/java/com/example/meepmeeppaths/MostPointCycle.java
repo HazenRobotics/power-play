@@ -11,7 +11,8 @@ public class MostPointCycle implements MeepMeepPath {
 
 	float x = (float) (2 * tileSize - LifterBot.ROBOT_WIDTH / 2 + 3 * tileConnector / 2);
 	float y = PPField.HALF_FIELD - LifterBot.ROBOT_LENGTH / 2;
-	Pose2d conePose = new Pose2d( -tileSize *3, -tileSize/2, Math.toRadians( 0 ) );
+	Pose2d conePose = new Pose2d( -tileSize *2.5, -tileSize/2, Math.toRadians( 0 ) );
+	double cycledist = tileSize*1.5;
 
 
 	@Override
@@ -22,16 +23,24 @@ public class MostPointCycle implements MeepMeepPath {
 				//drop cone
 				.lineToLinearHeading( conePose )
 				//grab cone
-				.lineToConstantHeading(new Vector2d( -tileSize,conePose.getY() ) )
+
+				//cycle1
+				.forward( cycledist )
 				//drop cone
-				.lineToLinearHeading( conePose )
+				.back( cycledist )
 				//grab cone
-				.lineToConstantHeading(new Vector2d( -tileSize,conePose.getY() ) )
+
+				//cycle2
+				.forward( cycledist )
 				//drop cone
-				.lineToLinearHeading( conePose )
+				.back( cycledist )
 				//grab cone
-				.lineToConstantHeading(new Vector2d( -tileSize,conePose.getY() ) )
+
+				//cycle3
+				.forward( cycledist )
 				//drop cone
+				.back( cycledist )
+				//grab cone
 				.build( );
 	}
 
