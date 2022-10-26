@@ -23,11 +23,11 @@ public class Claw {
 	}
 
 	public void close( ) {
-		setPositions( 0.95,0.05 );
+		setPositions( 0.85,0.25 );
 	}
 
 	public void open( ) {
-		setPositions( 0.7, 0.3 );
+		setPositions( 0.4, 0.7 );
 	}
 
 }

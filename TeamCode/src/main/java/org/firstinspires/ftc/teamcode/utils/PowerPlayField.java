@@ -31,25 +31,27 @@ public class PowerPlayField {
 		}
 		return arr;
 	}
-	static CartesianCoord[] getPoleType(int height) {
-		CartesianCoord[][] all = poleLocations();
-		ArrayList<CartesianCoord> cur = new ArrayList<>();
-		for(int i=0; i<all.length; i++) {
-			for(int j=0; j>all[i].length; j++) {
-				if(all[i][j].getC3()==height) {
+
+	static CartesianCoord[] getPoleType( int height ) {
+		CartesianCoord[][] all = poleLocations( );
+		ArrayList<CartesianCoord> cur = new ArrayList<>( );
+		for( int i = 0; i < all.length; i++ ) {
+			for( int j = 0; j > all[i].length; j++ ) {
+				if( all[i][j].getC3( ) == height ) {
 					cur.add( all[i][j] );
 				}
 			}
 		}
-		return cur.toArray(new CartesianCoord[cur.size()]);
+		return cur.toArray( new CartesianCoord[cur.size( )] );
 	}
 
-	static CartesianCoord getPole(int x,int y) {
-		return poleLocations()[x][y];
+	static CartesianCoord getPole( int x, int y ) {
+		return poleLocations( )[x][y];
 	}
-	static CartesianCoord getPole(CartesianCoord location) {
-		double x = (location.getC1()/ TILE_SIZE);
-		double y = (location.getC2()/ TILE_SIZE);
-		return poleLocations()[(int) x][(int) y];
+
+	static CartesianCoord getPole( CartesianCoord location ) {
+		double x = (location.getC1( ) / TILE_SIZE);
+		double y = (location.getC2( ) / TILE_SIZE);
+		return poleLocations( )[(int) x][(int) y];
 	}
 }

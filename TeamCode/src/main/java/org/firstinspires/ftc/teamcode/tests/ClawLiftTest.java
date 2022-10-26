@@ -27,6 +27,7 @@ public class ClawLiftTest extends OpMode {
 
 		claw = new Claw( hardwareMap, "lCLaw", "rClaw" );
 		lift = new Lift( hardwareMap, "vLift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
+		lift.setTeleOPower( 0 );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -60,9 +61,9 @@ public class ClawLiftTest extends OpMode {
 
 	public void displayTelemetry( ) {
 
-		telemetry.addData( "ly: ", -gamepad1.left_stick_y );
-		telemetry.addData( "lx: ", gamepad1.left_stick_x );
-		telemetry.addData( "rx: ", gamepad1.right_stick_x );
+		telemetry.addData( "lt: ", gamepad1.left_trigger );
+		telemetry.addData( "rt: ", gamepad1.right_trigger );
+		telemetry.addData( "claw status: ", opened );
 		telemetry.addLine( "" );
 
 		telemetry.update( );
