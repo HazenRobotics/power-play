@@ -11,7 +11,7 @@ public class CircutDouble implements MeepMeepPath {
 
 	@Override
 	public TrajectorySequence getTrajectorySequence( DriveShim drive ) {
-
+		return getFlipedTrajectorySequence( drive, 1, 1 );
 	}
 
 	@Override

@@ -17,6 +17,24 @@ import java.util.List;
 public class Mirror {
 	public static TrajectorySequence Flip(TrajectorySequence t,boolean xFlip,boolean yFlip) {
 		ArrayList<Pose2d> start = new ArrayList<>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		ArrayList<Pose2d> end = new ArrayList<>();
 		for(int i=0; i<t.getSize(); i++) {
 			double startX = t.get( i ).getStartPose().getX();
