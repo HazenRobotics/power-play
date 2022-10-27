@@ -66,7 +66,6 @@ public class LifterBot extends Robot {
 	}
 
 	public void setClawPos( Vector2d clawPos, double rotation, AngleUnit angleUnit, double... powers ) {
-
 		if( powers.length == 0 )
 			return;
 		if( powers.length == 1 )

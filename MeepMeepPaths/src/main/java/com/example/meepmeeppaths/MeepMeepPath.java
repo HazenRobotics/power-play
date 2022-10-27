@@ -7,15 +7,15 @@ import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 
 public interface MeepMeepPath {
 
-	static double robotLength = 13.25;
-	static double robotWidth = 13.5; // with belts
+	double robotLength = 13.25;
+	double robotWidth = 13.5; // with belts
 
-	static final double tileSize = 23;
-	static final double tileConnector = 0.75;
+	double tileSize = 23;
+	double tileConnector = 0.75;
+	double totalTitle = tileConnector+tileSize;
+	double hubRadius = 9;
 
-	static final double hubRadius = 9;
-
-	static final double cameraRightIndent = 1.25;
+	double cameraRightIndent = 1.25;
 
 	TrajectorySequence getTrajectorySequence( DriveShim drive );
 
@@ -26,7 +26,7 @@ public interface MeepMeepPath {
 	 * @param blueSide    whether or not the robot is on the blue side
 	 * @return the position (Pose2D) of where to go
 	 */
-	public static Pose2d getHubPosition( double angle, double angleOffset, double indent, boolean blueSide ) {
+	static Pose2d getHubPosition( double angle, double angleOffset, double indent, boolean blueSide ) {
 		double negate = Math.toRadians( angle * (blueSide ? 1 : -1) );
 		double x = tileConnector / 2 + tileSize / 2 + Math.sin( negate ) * (hubRadius + indent + robotLength / 2);
 		double y = tileConnector + tileSize + Math.cos( negate ) * (hubRadius + indent + robotLength / 2);

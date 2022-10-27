@@ -110,7 +110,6 @@ public class Lift {
 	 *
 	 */
 	public void setEncoder( EncoderState state ) {
-
 		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_WITHOUT_ENCODER : DcMotor.RunMode.RUN_WITHOUT_ENCODER );
 		encoderState = state;
 	}

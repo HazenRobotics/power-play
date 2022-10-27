@@ -10,4 +10,5 @@ public class LifterBot {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
 	}
 
+
 }
