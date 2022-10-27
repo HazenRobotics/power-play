@@ -33,6 +33,7 @@ public interface MeepMeepPath {
 		return new Pose2d( -x, y * (blueSide ? 1 : -1), Math.toRadians( angleOffset + angle ) );
 		// new Pose2d( -23.631, 35.506, toRadians( 270 + 45 ) )
 	}
+	TrajectorySequence getFlipedTrajectorySequence( DriveShim drive,double xFlip,double yFlip);
 
 
 }
