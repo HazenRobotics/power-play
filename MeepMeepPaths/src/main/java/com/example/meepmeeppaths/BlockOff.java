@@ -25,7 +25,7 @@ public class BlockOff implements MeepMeepPath {
 		double  xFlipR = -((xFlip-1)/2);
 		double yFlipR = -((xFlip-1)/2);
 		Pose2d conePose = new Pose2d( (-totalTitle *2.5)*xFlip, (-totalTitle/2)*xFlip, Math.toRadians( 180+(180*xFlipR) ) );
-		return drive.trajectorySequenceBuilder( new Pose2d( x, y, Math.toRadians( 90 ) ) )
+		return drive.trajectorySequenceBuilder( new Pose2d( x, y, Math.toRadians( 90+(180*yFlipR) ) ) )
 				.lineToConstantHeading( new Vector2d( x-(totalTitle/2), y ) )
 				//drop cone
 				.lineToConstantHeading( new Vector2d( x-totalTitle,y ) )

@@ -28,13 +28,13 @@ public class CircutDouble implements MeepMeepPath {
 				.lineToConstantHeading( new Vector2d( x-totalTitle,y ) )
 				.lineToLinearHeading( conePose )
 				//grab cone
-				.turn( Math.toRadians( 0 ) )
+				.turn( ( Math.toRadians( 0+(180*xFlipR) ) ) )
 				.forward( totalTitle*3 )
-				.turn( Math.toRadians( 270 ) )
+				.turn( Math.toRadians( 270+(180*yFlipR) ) )
 				.forward( totalTitle*2 )
-				.turn( Math.toRadians( 0 ) )
+				.turn( Math.toRadians( 0+(180*xFlipR) ) )
 				.forward( totalTitle*1.5 )
-				.turn( Math.toRadians( 90 ) )
+				.turn( Math.toRadians( 90+(180*yFlipR) ) )
 				//drop cone
 				.build( );
 	}

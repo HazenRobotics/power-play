@@ -34,7 +34,6 @@ public class PRBot extends OpMode {
 
 		launcherServo = hardwareMap.servo.get( "launcher" );
 		launcherServo.setPosition( 0.5 );
-		frontRightMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 		backRightMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 		launcherLeft.setDirection( DcMotorSimple.Direction.REVERSE );
 
