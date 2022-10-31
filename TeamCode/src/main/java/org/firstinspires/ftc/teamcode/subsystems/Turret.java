@@ -34,7 +34,7 @@ public class Turret {
 	}
 
 	public void setRotationVelocity( double velocity, double position ) {
-		motor.setTargetPosition( (int) Drive.convertDistTicks( position, 2 * Math.PI, PULSES_PER_REVOLUTION, GEAR_RATIO ) );
+		motor.setTargetPosition(  Drive.convertDistTicks( position, 2 * Math.PI, PULSES_PER_REVOLUTION, GEAR_RATIO ) );
 		motor.setVelocity( velocity, unit );
 	}
 
@@ -53,6 +53,7 @@ public class Turret {
 		motor.setTargetPosition( (int) Drive.convertDistTicks( position % (2 * Math.PI), 2 * Math.PI, PULSES_PER_REVOLUTION, GEAR_RATIO ) );
 		motor.setPower( power );
 	}
+
 
 	public void resetTurret( ) {
 		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );

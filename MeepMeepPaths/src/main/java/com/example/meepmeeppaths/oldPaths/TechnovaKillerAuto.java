@@ -42,4 +42,9 @@ public class TechnovaKillerAuto implements MeepMeepPath {
 				.lineToConstantHeading( new Vector2d( 39, -64.125 ) )
 				.build();
 	}
+
+	@Override
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		return null;
+	}
 }

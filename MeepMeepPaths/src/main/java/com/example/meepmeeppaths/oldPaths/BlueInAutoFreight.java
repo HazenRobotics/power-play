@@ -47,4 +47,9 @@ public class BlueInAutoFreight implements MeepMeepPath {
 				.lineToConstantHeading( new Vector2d( 62, 44 ) )
 				.build();
 	}
+
+	@Override
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		return null;
+	}
 }

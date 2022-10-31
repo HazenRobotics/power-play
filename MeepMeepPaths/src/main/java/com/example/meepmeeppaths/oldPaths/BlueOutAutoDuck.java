@@ -66,4 +66,9 @@ public class BlueOutAutoDuck implements MeepMeepPath {
 
 				.build( );
 	}
+
+	@Override
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		return null;
+	}
 }

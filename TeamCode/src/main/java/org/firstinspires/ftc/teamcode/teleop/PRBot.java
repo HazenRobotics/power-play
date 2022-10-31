@@ -27,12 +27,14 @@ public class PRBot extends OpMode {
 		backLeftMotor = hardwareMap.get( DcMotor.class, "backLeft" );
 		frontRightMotor = hardwareMap.get( DcMotor.class, "frontRight" );
 		backRightMotor = hardwareMap.get( DcMotor.class, "backRight" );
+
 		launcherLeft = hardwareMap.get( DcMotor.class, "launchLeft" );
 		launcherRight = hardwareMap.get( DcMotor.class, "launchRight" );
+
 		leftEye = hardwareMap.get(CRServo.class, "leftEye");
 		rightEye = hardwareMap.get(CRServo.class, "rightEye");
-
 		launcherServo = hardwareMap.servo.get( "launcher" );
+
 		launcherServo.setPosition( 0.5 );
 		backRightMotor.setDirection( DcMotorSimple.Direction.REVERSE );
 		launcherLeft.setDirection( DcMotorSimple.Direction.REVERSE );

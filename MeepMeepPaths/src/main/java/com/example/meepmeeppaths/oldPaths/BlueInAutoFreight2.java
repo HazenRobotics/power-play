@@ -119,6 +119,10 @@ public class BlueInAutoFreight2 implements MeepMeepPath {
 
 	}
 
+	@Override
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		return null;
+	}
 
 
 }

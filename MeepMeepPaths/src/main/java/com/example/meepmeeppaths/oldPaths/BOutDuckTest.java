@@ -77,4 +77,9 @@ public class BOutDuckTest implements MeepMeepPath {
 //		robot.drive.followTrajectorySequence( afterPickupDuck );
 	}
 
+	@Override
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		return null;
+	}
+
 }

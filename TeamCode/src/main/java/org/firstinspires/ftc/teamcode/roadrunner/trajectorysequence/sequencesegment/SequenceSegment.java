@@ -6,10 +6,10 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import java.util.List;
 
 public abstract class SequenceSegment {
-    private final double duration;
-    private final Pose2d startPose;
-    private final Pose2d endPose;
-    private final List<TrajectoryMarker> markers;
+    double duration;
+    Pose2d startPose;
+    Pose2d endPose;
+    List<TrajectoryMarker> markers;
 
     protected SequenceSegment(
             double duration,
@@ -29,10 +29,17 @@ public abstract class SequenceSegment {
     public Pose2d getStartPose() {
         return startPose;
     }
-
     public Pose2d getEndPose() {
         return endPose;
     }
+
+    public void setEndPose( Pose2d endPose ) {
+        this.endPose = endPose;
+    }
+    public void setStartPose( Pose2d startPose ) {
+        this.startPose = startPose;
+    }
+
 
     public List<TrajectoryMarker> getMarkers() {
         return markers;

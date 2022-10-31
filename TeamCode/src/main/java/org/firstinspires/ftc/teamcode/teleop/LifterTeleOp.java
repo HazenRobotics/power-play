@@ -48,7 +48,6 @@ public class LifterTeleOp extends OpMode {
 
 		displayTelemetry( );
 		controller1.update( );
-
 	}
 
 	public void waitRobot( int mills ) {
@@ -59,12 +58,10 @@ public class LifterTeleOp extends OpMode {
 	}
 
 	public void displayTelemetry( ) {
-
 		telemetry.addData( "ly: ", -gamepad1.left_stick_y );
 		telemetry.addData( "lx: ", gamepad1.left_stick_x );
 		telemetry.addData( "rx: ", gamepad1.right_stick_x );
 		telemetry.addLine( "" );
-
 		telemetry.update( );
 	}
 }

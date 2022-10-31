@@ -67,4 +67,9 @@ public class BlueInAutoDuck implements MeepMeepPath {
 				.lineToLinearHeading( new Pose2d( 55, 44, 0 ) )*/
 				.build( );
 	}
+
+	@Override
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		return null;
+	}
 }

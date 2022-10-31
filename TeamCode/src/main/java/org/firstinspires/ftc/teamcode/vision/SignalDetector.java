@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -119,5 +121,20 @@ public class SignalDetector extends OpenCvPipeline {
 
 	public SignalPosition getSignalPosition( ) {
 		return signalPosition;
+	}
+
+	public Pose2d getParkPosition(double xflip,double yflip) {
+		if(signalPosition==SignalPosition.LEFT) {
+
+		}
+		if(signalPosition==SignalPosition.RIGHT) {
+
+		}
+		if(signalPosition==SignalPosition.MIDDLE) {
+
+		}
+		if(signalPosition==SignalPosition.NOT_FOUND) {
+			return null;
+		}
 	}
 }
