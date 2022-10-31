@@ -51,7 +51,13 @@ public class PRBot extends OpMode {
 		if( aWasPressed && !gamepad1.a )
 			ring( );
 
-		double power = gamepad1.left_trigger + gamepad1.right_trigger;
+//		for normal controller
+//		double power = gamepad1.left_trigger + gamepad1.right_trigger;
+
+//		for conner's odd controller
+		double power = gamepad1.right_bumper ? 1 : 0;
+
+
 		if( power > 1 )
 			power = 1;
 

@@ -7,7 +7,7 @@ import com.example.meepmeeppaths.teamcodeRequirements.PPField;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 
-public class CircutSetup implements MeepMeepPath{
+public class CircutSetup implements MeepMeepPath {
 
 	@Override
 	public TrajectorySequence getTrajectorySequence( DriveShim drive ) {
@@ -15,25 +15,25 @@ public class CircutSetup implements MeepMeepPath{
 	}
 
 	@Override
-	public TrajectorySequence getFlipedTrajectorySequence(DriveShim drive, double xFlip, double yFlip) {
-		double cycledist = totalTitle*1.5;
-		float x = -(float) ((2 * totalTitle - LifterBot.ROBOT_WIDTH / 2 + 3 * tileConnector / 2)*xFlip);
-		float y = (float) (-(PPField.HALF_FIELD - LifterBot.ROBOT_LENGTH / 2)*xFlip);
-		double  xFlipR = -((xFlip-1)/2);
-		double yFlipR = -((xFlip-1)/2);
-		Pose2d conePose = new Pose2d( (-totalTitle *2.5)*xFlip, (-totalTitle/2)*xFlip, Math.toRadians( 180+(180*xFlipR) ) );
+	public TrajectorySequence getFlipedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
+		double cycleDist = totalTitle * 1.5;
+		float x = -(float) ((2 * totalTitle - LifterBot.ROBOT_WIDTH / 2 + 3 * tileConnector / 2) * xFlip);
+		float y = (float) (-(PPField.HALF_FIELD - LifterBot.ROBOT_LENGTH / 2) * xFlip);
+		double xFlipR = -((xFlip - 1) / 2);
+		double yFlipR = -((xFlip - 1) / 2);
+		Pose2d conePose = new Pose2d( (-totalTitle * 2.5) * xFlip, (-totalTitle / 2) * xFlip, Math.toRadians( 180 + (180 * xFlipR) ) );
 		return drive.trajectorySequenceBuilder( new Pose2d( x, y, Math.toRadians( 90 ) ) )
-				.lineToConstantHeading( new Vector2d( x-(totalTitle/2), y ) )
+				.lineToConstantHeading( new Vector2d( x - (totalTitle / 2), y ) )
 
-				.lineToConstantHeading( new Vector2d( x-totalTitle,y ) )
+				.lineToConstantHeading( new Vector2d( x - totalTitle, y ) )
 				.lineToLinearHeading( conePose )
 				//grab cone
-				.forward( cycledist )
+				.back( cycleDist )
 				//drop cone
-				.back( cycledist )
+				.forward( cycleDist )
 				//grab cone
-				.forward( totalTitle*2 )
+				.back( totalTitle * 2 )
 				//drop cone
-				.build();
+				.build( );
 	}
 }
