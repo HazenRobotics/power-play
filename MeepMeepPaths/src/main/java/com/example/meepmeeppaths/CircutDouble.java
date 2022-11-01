@@ -21,20 +21,22 @@ public class CircutDouble implements MeepMeepPath {
 		float y = (float) (-(PPField.HALF_FIELD - LifterBot.ROBOT_LENGTH / 2)*xFlip);
 		double  xFlipR = -((xFlip-1)/2);
 		double yFlipR = -((xFlip-1)/2);
-		Pose2d conePose = new Pose2d( (-totalTitle *2.5)*xFlip, (-totalTitle/2)*xFlip, Math.toRadians( 180+(180*xFlipR) ) );
+		//SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
+//		detector.init();
+//		cone = detector.getParkPosition(xflip,yflip);
+		Vector2d cone = new Vector2d( -36*xFlip,-11*yFlip );
+
+		Pose2d conePose = new Pose2d( -55*xFlip,-11*yFlip, Math.toRadians( 180+(180*xFlipR) ) );
 		return drive.trajectorySequenceBuilder( new Pose2d( x, y, Math.toRadians( 90 ) ) )
 				.lineToConstantHeading( new Vector2d( x-(totalTitle/2), y ) )
 				//drop cone
 				.lineToConstantHeading( new Vector2d( x-totalTitle,y ) )
 				.lineToLinearHeading( conePose )
 				//grab cone
-				.turn( ( Math.toRadians( 0+(180*xFlipR) ) ) )
-				.forward( totalTitle*3 )
-				.turn( Math.toRadians( 270+(180*yFlipR) ) )
-				.forward( totalTitle*2 )
-				.turn( Math.toRadians( 0+(180*xFlipR) ) )
-				.forward( totalTitle*1.5 )
-				.turn( Math.toRadians( 90+(180*yFlipR) ) )
+				.lineTo( new Vector2d( 55*xFlip,-11*yFlip ) )
+				.lineTo( new Vector2d( 55*xFlip,-47*yFlip ) )
+				.lineTo( new Vector2d( 55*xFlip,-11*yFlip ) )
+				.lineTo( cone )
 				//drop cone
 				.build( );
 	}

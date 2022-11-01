@@ -22,6 +22,10 @@ public class MostPointCycle implements MeepMeepPath {
 		double  xFlipR = -((xFlip-1)/2);
 		double yFlipR = -((xFlip-1)/2);
 		Pose2d conePose = new Pose2d( (-totalTitle *2.5)*xFlip, (-totalTitle/2)*xFlip, Math.toRadians( 180+(180*xFlipR) ) );
+		//SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
+//		detector.init();
+//		cone = detector.getParkPosition(xflip,yflip);
+		Vector2d cone = new Vector2d(-37*xFlip,-11*yFlip  );
 		return drive.trajectorySequenceBuilder( new Pose2d( x, y, Math.toRadians( 90+(180*yFlipR) ) ) )
 				.lineToConstantHeading( new Vector2d( x-((totalTitle/2)+xFlip), y ) )
 				.forward( totalTitle*2 )
@@ -30,22 +34,23 @@ public class MostPointCycle implements MeepMeepPath {
 				//grab cone
 
 				//cycle1
-				.forward( cycledist )
-				//drop cone
 				.back( cycledist )
+				//drop cone
+				.forward( cycledist )
 				//grab cone
 
 				//cycle2
-				.forward( cycledist )
-				//drop cone
 				.back( cycledist )
+				//drop cone
+				.forward( cycledist )
 				//grab cone
 
 				//cycle3
-				.forward( cycledist )
-				//drop cone
 				.back( cycledist )
+				//drop cone
+				.forward( cycledist )
 				//grab cone
+				.lineTo( cone )
 				.build( );
 	}
 

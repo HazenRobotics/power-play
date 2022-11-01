@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.vision;
 
 import android.util.Log;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -61,5 +63,17 @@ public class SignalUtil {
 
 	public void stopCamera( ) {
 		webcam.stopStreaming( );
+	}
+	public Pose2d getParkPosition( double xFlip, double yFlip ) {
+		double y = (PPField.TILE_SIZE/2)*yFlip;
+		if(  getSignalPosition( ) == SignalDetector.SignalPosition.LEFT ) {
+			return new Pose2d( (PPField.TILE_SIZE/2)*yFlip,y );
+		} else if( getSignalPosition( ) == SignalDetector.SignalPosition.RIGHT ) {
+			return new Pose2d( ((PPField.TILE_SIZE+PPField.TILE_CONNECTOR)*2+PPField.TILE_SIZE/2)*yFlip,y );
+		} else if( getSignalPosition( ) == SignalDetector.SignalPosition.MIDDLE ) {
+			return new Pose2d( (PPField.TILE_SIZE+PPField.TILE_CONNECTOR+PPField.TILE_SIZE/2)*yFlip,y );
+		} else {
+			return null;
+		}
 	}
 }

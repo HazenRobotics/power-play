@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.vision;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -14,7 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class SignalDetector extends OpenCvPipeline {
 
 	Telemetry telemetry;
-	Mat greenMat = new Mat(  );
+	Mat greenMat = new Mat( );
 	Mat yellowMat = new Mat( );
 	Mat pinkMat = new Mat( );
 
@@ -37,7 +38,7 @@ public class SignalDetector extends OpenCvPipeline {
 		telemetry = t;
 	}
 
-	public Mat processFrame( Mat input) {
+	public Mat processFrame( Mat input ) {
 
 		//setting up green mat
 		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
@@ -58,11 +59,10 @@ public class SignalDetector extends OpenCvPipeline {
 		//setting up brown mat
 		Imgproc.cvtColor( input, pinkMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar pinkLowHSV  = new Scalar( 150, 125, 125 );
+		Scalar pinkLowHSV = new Scalar( 150, 125, 125 );
 		Scalar pinkHighHSV = new Scalar( 165, 255, 255 );
 
 		Core.inRange( pinkMat, pinkLowHSV, pinkHighHSV, pinkMat );
-
 
 
 		double greenValue = Core.sumElems( greenMat ).val[0] / ROI.area( ) / 255;
@@ -79,14 +79,14 @@ public class SignalDetector extends OpenCvPipeline {
 
 		if( pinkBool ) {
 			signalPosition = SignalPosition.RIGHT;
-			telemetry.addLine( "Pink Seen");
+			telemetry.addLine( "Pink Seen" );
 		} else
 			telemetry.addLine( "Pink Not Seen" );
 
 		if( greenBool ) {
 			signalPosition = SignalPosition.LEFT;
-			telemetry.addLine( "Green Seen");
-		}  else
+			telemetry.addLine( "Green Seen" );
+		} else
 			telemetry.addLine( "Green Not Seen" );
 
 		if( yellowBool ) {
@@ -95,26 +95,26 @@ public class SignalDetector extends OpenCvPipeline {
 		} else
 			telemetry.addLine( "Yellow Not Seen" );
 
-		if( !greenBool && !pinkBool && !yellowBool){
+		if( !greenBool && !pinkBool && !yellowBool ) {
 			signalPosition = SignalPosition.NOT_FOUND;
 			telemetry.addLine( "Nothing There" );
 		}
 
 
 //		Imgproc.cvtColor( greenMat, greenMat, Imgproc.COLOR_GRAY2RGB );
-	
-		telemetry.update();
 
-		Mat filters[] = {greenMat, pinkMat, yellowMat};
+		telemetry.update( );
 
-		int whichMat = (int)((System.currentTimeMillis() / 1000) % 3);
+		Mat[] filters = { greenMat, pinkMat, yellowMat };
 
-		if (whichMat == 0)
-			telemetry.addLine("Showing Green");
-		else if (whichMat == 1)
-			telemetry.addLine("Showing Pink");
-		else if (whichMat == 2)
-			telemetry.addLine("Showing Yellow");
+		int whichMat = (int) ((System.currentTimeMillis( ) / 1000) % 3);
+
+		if( whichMat == 0 )
+			telemetry.addLine( "Showing Green" );
+		else if( whichMat == 1 )
+			telemetry.addLine( "Showing Pink" );
+		else if( whichMat == 2 )
+			telemetry.addLine( "Showing Yellow" );
 
 		return filters[whichMat];
 	}
@@ -123,18 +123,5 @@ public class SignalDetector extends OpenCvPipeline {
 		return signalPosition;
 	}
 
-	public Pose2d getParkPosition(double xflip,double yflip) {
-		if(signalPosition==SignalPosition.LEFT) {
 
-		}
-		if(signalPosition==SignalPosition.RIGHT) {
-
-		}
-		if(signalPosition==SignalPosition.MIDDLE) {
-
-		}
-		if(signalPosition==SignalPosition.NOT_FOUND) {
-			return null;
-		}
-	}
 }
