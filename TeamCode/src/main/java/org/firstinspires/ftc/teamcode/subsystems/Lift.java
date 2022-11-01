@@ -39,6 +39,7 @@ public class Lift {
 		WITH_ENCODER, WITHOUT_ENCODER;
 	}
 
+
 	public enum MovementState {
 		REST, HOLDING, MOVING;
 	}

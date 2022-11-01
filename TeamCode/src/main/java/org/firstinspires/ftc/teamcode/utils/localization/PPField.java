@@ -103,7 +103,7 @@ public class PPField {
 			this.radius = radius;
 		}
 
-		private float height( ) {
+		 public float height( ) {
 			return height;
 		}
 

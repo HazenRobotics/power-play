@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
+import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 public class LifterBot extends Robot {
 
@@ -78,6 +80,10 @@ public class LifterBot extends Robot {
 		verticalLift.setHeightPower( powers[0], clawPos.getX( ) );
 		horizontalLift.setHeightPower( powers[1], clawPos.getY( ) );
 		turret.setRotationPower( powers[2], rotation, angleUnit );
+	}
+	public void junctionToLiftPos( PPField.Junction junction ) {
+		this.verticalLift.moveDistancePower(1, junction.height()+3,true);
+
 	}
 
 }
