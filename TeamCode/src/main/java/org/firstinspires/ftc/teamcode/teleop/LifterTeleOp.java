@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -38,6 +39,7 @@ public class LifterTeleOp extends OpMode {
 		robot.mecanumDrive.drive( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 		robot.verticalLift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) );
 
+		// g1/g2 a: toggle claw
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) ) {
 			telemetry.addLine( "on a press" );
 			if( opened )
@@ -47,15 +49,21 @@ public class LifterTeleOp extends OpMode {
 			opened = !opened;
 		}
 
+		// dpad: auto lift positions
+		dpadToLiftPos( );
+
+		// gp2 right stick x/y
+		robot.turret.setLiveRotationPower( new Vector2d( gamepad2.right_stick_x, gamepad2.right_stick_y ) );
+
 		displayTelemetry( );
 		controller1.update( );
+		controller2.update( );
 	}
 
 	public void waitRobot( int mills ) {
 		long startTime = System.currentTimeMillis( );
-		while( (startTime + mills) > System.currentTimeMillis( ) ) {
+		while( (startTime + mills) > System.currentTimeMillis( ) )
 			telemetry.update( );
-		}
 	}
 
 	public void displayTelemetry( ) {
@@ -68,17 +76,14 @@ public class LifterTeleOp extends OpMode {
 	}
 
 	public void dpadToLiftPos( ) {
-		if( controller1.dpad_up.onPress( ) || controller2.dpad_up.onPress( ) ) {
+		if( controller1.dpad_up.onPress( ) || controller2.dpad_up.onPress( ) )
 			robot.junctionToLiftPos( PPField.Junction.HIGH );
-		}
-		if( controller1.dpad_down.onPress( ) || controller2.dpad_down.onPress( ) ) {
+		if( controller1.dpad_down.onPress( ) || controller2.dpad_down.onPress( ) )
 			robot.junctionToLiftPos( PPField.Junction.MEDIUM );
-		}
-		if( controller1.dpad_left.onPress( ) || controller2.dpad_left.onPress( ) ) {
+		if( controller1.dpad_left.onPress( ) || controller2.dpad_left.onPress( ) )
 			robot.junctionToLiftPos( PPField.Junction.LOW );
-		}
-		if( controller1.dpad_right.onPress( ) || controller2.dpad_right.onPress( ) ) {
+		if( controller1.dpad_right.onPress( ) || controller2.dpad_right.onPress( ) )
 			robot.junctionToLiftPos( PPField.Junction.GROUND );
-		}
 	}
+
 }

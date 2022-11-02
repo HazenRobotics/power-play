@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
+import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 public class LifterBot extends Robot {
@@ -35,6 +36,8 @@ public class LifterBot extends Robot {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
 	}
 
+//	Vector3D clawOffSet = new Vector3D( 15.5,1.075,2 );
+
 	/**
 	 * Creates a Robot
 	 *
@@ -53,11 +56,12 @@ public class LifterBot extends Robot {
 
 		drive = new MecanumDriveLifter( hardwareMap );
 
-		verticalLift = new Lift( hardwareMap, "vLift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
+		verticalLift = new Lift( hardwareMap, "lift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
 //		horizontalLift = new Lift( hardwareMap, "hLift", false, 0, 0.5, 0, AngleUnit.DEGREES );
-		turret = new Turret( hardwareMap );
+		turret = new Turret( hardwareMap, "turret", true, AngleUnit.DEGREES, MotorType.Gobilda192.TICKS_PER_ROTATION, 4.0 /* driven / driver */ );
+		turret.setLimit( -180, 180 );
 
-		claw = new Claw( hardwareMap, "lClaw", "rClaw" );
+		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.5, 0.75 }, new double[]{ 0.5, 0.75 } );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {
@@ -81,8 +85,9 @@ public class LifterBot extends Robot {
 		horizontalLift.setHeightPower( powers[1], clawPos.getY( ) );
 		turret.setRotationPower( powers[2], rotation, angleUnit );
 	}
+
 	public void junctionToLiftPos( PPField.Junction junction ) {
-		this.verticalLift.moveDistancePower(1, junction.height()+3,true);
+		this.verticalLift.moveDistancePower( 1, junction.height( ) + 3, true );
 
 	}
 
