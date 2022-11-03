@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robots;
 
 import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -46,22 +47,23 @@ public class LifterBot extends Robot {
 	public LifterBot( OpMode op ) {
 		super( op );
 
-		Robot.writeToDefaultFile( "", false, false );
+		Robot.writeToDefaultFile( "written", false, true );
 
 		opMode = op;
 		hardwareMap = op.hardwareMap;
 
 		super.driveTrain = new MecanumDrive( hardwareMap );
 		mecanumDrive = (MecanumDrive) driveTrain;
+		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
 
 		drive = new MecanumDriveLifter( hardwareMap );
 
-		verticalLift = new Lift( hardwareMap, "lift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
+		verticalLift = new Lift( hardwareMap, "lift", true, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
 //		horizontalLift = new Lift( hardwareMap, "hLift", false, 0, 0.5, 0, AngleUnit.DEGREES );
 		turret = new Turret( hardwareMap, "turret", true, AngleUnit.DEGREES, MotorType.Gobilda192.TICKS_PER_ROTATION, 4.0 /* driven / driver */ );
 		turret.setLimit( -180, 180 );
 
-		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.5, 0.75 }, new double[]{ 0.5, 0.75 } );
+		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.15, 0.5 }, new double[]{ 0.85, 0.5 } );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {

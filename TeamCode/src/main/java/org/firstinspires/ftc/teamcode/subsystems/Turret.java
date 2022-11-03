@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.arcrobotics.ftclib.geometry.Vector2d;
+import android.util.Log;
+
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.Drive;
+import org.firstinspires.ftc.teamcode.robots.Robot;
 
 public class Turret {
 
@@ -18,7 +21,13 @@ public class Turret {
 	double pulsesPerRevolution;
 	double gearRatio;
 
-	double turretHeading;
+	int turretPosition;
+
+	MovementState movementState = MovementState.REST;
+
+	public enum MovementState {
+		REST, MOVING;
+	}
 
 	double leftLimit = Double.NEGATIVE_INFINITY;
 	double rightLimit = Double.POSITIVE_INFINITY;
@@ -41,10 +50,14 @@ public class Turret {
 		resetTurret( );
 	}
 
+	public void setPower( double power) {
+		motor.setPower( power );
+	}
+
 	public void setLimit( double left, double right ) {
 		double multiplyer = 1;
 		if( unit.equals( AngleUnit.DEGREES ) )
-			multiplyer = 180 / Math.PI;
+			multiplyer = Math.PI / 180;
 		leftLimit = left * multiplyer;
 		rightLimit = right * multiplyer;
 	}
@@ -64,7 +77,8 @@ public class Turret {
 
 	public void setLiveRotationPower( Vector2d move ) {
 
-		double tolerance = 0.1;
+
+		double tolerance = 0.0;
 
 		double moveX = move.getX( );
 		double moveY = move.getY( );
@@ -72,7 +86,10 @@ public class Turret {
 		double target = move.angle( ); // target angle between
 		double power = Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) );
 
-		double currentHeading = Drive.convertTicksDist( motor.getCurrentPosition( ), 2 * Math.PI, pulsesPerRevolution, gearRatio );
+		double currentHeading = getTurretHeading( );
+
+		Robot.writeToDefaultFile( tolerance + ", " + move + ", " + target + ", " + currentHeading, true, false );
+
 
 		if( target < leftLimit || target > rightLimit )
 			power *= -1;
@@ -85,15 +102,38 @@ public class Turret {
 
 	public void setRotationPower( double power, double position, AngleUnit angleUnit ) {
 		if( angleUnit.equals( AngleUnit.DEGREES ) )
-			position *= 180 / Math.PI;
+			position *= Math.PI / 180;
 		motor.setTargetPosition( (int) Drive.convertDistTicks( position % (2 * Math.PI), 2 * Math.PI, pulsesPerRevolution, gearRatio ) );
 		motor.setPower( power );
 	}
 
+	public double getTurretHeading( ) {
+		return Drive.convertTicksDist( getPosition( ), 2 * Math.PI, pulsesPerRevolution, gearRatio );
+//		return getPosition( ) * 2 * Math.PI / pulsesPerRevolution;
+	}
 
+	public int getPosition( ) {
+		return turretPosition + motor.getCurrentPosition( );
+	}
+
+	/**
+	 * stops and resets the physical motor and its encoder and sets turretHeading to 0
+	 */
 	public void resetTurret( ) {
 		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
-		turretHeading = 0;
+		movementState = MovementState.REST;
+		turretPosition = 0;
+	}
+
+	/**
+	 * adds the current motor position to liftPosition then stops and resets the encoder
+	 */
+	public void stopAndReset( ) {
+
+		Log.d( "LOGGER", "motor position: " + motor.getCurrentPosition( ) );
+		turretPosition = getPosition( );
+		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+		// stop and reset encoder sets the encoder position to zero
 	}
 
 
