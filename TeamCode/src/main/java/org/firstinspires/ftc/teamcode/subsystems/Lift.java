@@ -33,11 +33,12 @@ public class Lift {
 	AngleUnit angleUnit; // the angle unit for the lift angle i.e. degrees or radians
 
 	EncoderState encoderState;
-	MovementState movementState;
+	MovementState movementState = MovementState.REST;
 
 	public enum EncoderState {
 		WITH_ENCODER, WITHOUT_ENCODER;
 	}
+
 
 	public enum MovementState {
 		REST, HOLDING, MOVING;

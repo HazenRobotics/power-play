@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robots;
 
 import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -11,6 +12,9 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
+import org.firstinspires.ftc.teamcode.utils.MotorType;
+import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 public class LifterBot extends Robot {
 
@@ -35,6 +39,8 @@ public class LifterBot extends Robot {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
 	}
 
+//	Vector3D clawOffSet = new Vector3D( 15.5,1.075,2 );
+
 	/**
 	 * Creates a Robot
 	 *
@@ -43,21 +49,23 @@ public class LifterBot extends Robot {
 	public LifterBot( OpMode op ) {
 		super( op );
 
-		Robot.writeToDefaultFile( "", false, false );
+		Robot.writeToDefaultFile( "written", false, true );
 
 		opMode = op;
 		hardwareMap = op.hardwareMap;
 
 		super.driveTrain = new MecanumDrive( hardwareMap );
 		mecanumDrive = (MecanumDrive) driveTrain;
+		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
 
 		drive = new MecanumDriveLifter( hardwareMap );
 
-		verticalLift = new Lift( hardwareMap, "vLift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
+		verticalLift = new Lift( hardwareMap, "lift", true, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
 //		horizontalLift = new Lift( hardwareMap, "hLift", false, 0, 0.5, 0, AngleUnit.DEGREES );
-		turret = new Turret( hardwareMap );
+		turret = new Turret( hardwareMap, "turret", true, AngleUnit.DEGREES, MotorType.Gobilda192.TICKS_PER_ROTATION, 4.0 /* driven / driver */ );
+		turret.setLimit( -180, 180 );
 
-		claw = new Claw( hardwareMap, "lClaw", "rClaw" );
+		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.15, 0.5 }, new double[]{ 0.85, 0.5 } );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {
@@ -80,6 +88,11 @@ public class LifterBot extends Robot {
 		verticalLift.setHeightPower( powers[0], clawPos.getX( ) );
 		horizontalLift.setHeightPower( powers[1], clawPos.getY( ) );
 		turret.setRotationPower( powers[2], rotation, angleUnit );
+	}
+
+	public void junctionToLiftPos( PPField.Junction junction ) {
+		this.verticalLift.moveDistancePower( 1, junction.height( ) + 3, true );
+
 	}
 
 }
