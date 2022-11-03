@@ -37,7 +37,7 @@ public class NeverFail extends LinearOpMode {
 			d.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 		}
 		for( DcMotorEx d: motors ) {
-			d.setTargetPosition( robot.mecanumDrive.convertDistTicks( 12 ) );
+			d.setTargetPosition( robot.mecanumDrive.convertDistTicks( 24 ) );
 		}
 		for( DcMotorEx d: motors ) {
 			d.setPower( 0.25 );
@@ -45,12 +45,28 @@ public class NeverFail extends LinearOpMode {
 		while( motors[0].isBusy() );
 
 		if(park!=SignalDetector.SignalPosition.MIDDLE) {
+			for( DcMotorEx d: motors ) {
+				d.setMode( DcMotor.RunMode.RESET_ENCODERS );
+			}
+			for( DcMotorEx d: motors ) {
+				d.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+			}
+			for( DcMotorEx d: motors ) {
+				d.setTargetPosition( robot.mecanumDrive.convertDistTicks( 24 ) );
+			}
 			if(park== SignalDetector.SignalPosition.LEFT) {
-
+				motors[0].setPower( -0.25 );
+				motors[1].setPower( 0.25 );
+				motors[2].setPower( -0.25 );
+				motors[3].setPower( 0.25 );
 			}
 			if(park== SignalDetector.SignalPosition.RIGHT) {
-
+				motors[0].setPower( 0.25 );
+				motors[1].setPower( -0.25 );
+				motors[2].setPower( 0.25 );
+				motors[3].setPower( -0.25 );
 			}
+			while( motors[0].isBusy() );
 		}
 	}
 
