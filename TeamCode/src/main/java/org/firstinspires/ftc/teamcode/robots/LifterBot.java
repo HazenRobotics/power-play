@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -32,6 +31,8 @@ public class LifterBot extends Robot {
 	public static final float ROBOT_LENGTH = 13.375f;
 	public static final float ROBOT_WIDTH = 12.75f;
 	public static final float ROBOT_MAX_WIDTH = 14.5f;
+	public static final double TICK_PER_REVO = 537.6;
+
 
 	public enum LiftPosition {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
