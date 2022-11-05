@@ -80,11 +80,9 @@ public class Lift {
 		setLiftAngle( liftAngle );
 		setAngleUnit( angleUnit );
 
-
 		resetLift( );
 		motor.setTargetPosition( 10 );
 		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
-
 	}
 
 	/**
@@ -111,7 +109,7 @@ public class Lift {
 	 *
 	 */
 	public void setEncoder( EncoderState state ) {
-		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_WITHOUT_ENCODER : DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_USING_ENCODER : DcMotor.RunMode.RUN_WITHOUT_ENCODER );
 		encoderState = state;
 	}
 

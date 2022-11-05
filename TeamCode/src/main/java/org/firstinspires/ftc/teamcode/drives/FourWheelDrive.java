@@ -19,8 +19,9 @@ public class FourWheelDrive implements Drive {
 	public DcMotorEx backLeft;
 	public DcMotorEx backRight;
 
-	final double PULSES_PER_REVOLUTION = 250;
-	final double GEAR_RATIO = 0.25;
+	double wheelDiameter = 1;
+	double pulsesPerRevolution = 537.6;
+	double gearRatio = 1;
 
 	private State currentState = State.STOPPED;
 
@@ -50,8 +51,30 @@ public class FourWheelDrive implements Drive {
 		setMotorDirections( FORWARD, FORWARD, REVERSE, REVERSE );
 		setZeroPowerBehavior( BRAKE, BRAKE, BRAKE, BRAKE );
 		//setRunMode(STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER );
+	}
 
+	public void setWheelDiameter( double wheelDiameter ) {
+		this.wheelDiameter = wheelDiameter;
+	}
 
+	public void setGearRatio( double gearRatio ) {
+		this.gearRatio = gearRatio;
+	}
+
+	public void setPulsesPerRevolution( double pulsesPerRevolution ) {
+		this.pulsesPerRevolution = pulsesPerRevolution;
+	}
+
+	public double getWheelDiameter( ) {
+		return wheelDiameter;
+	}
+
+	public double getGearRatio( ) {
+		return gearRatio;
+	}
+
+	public double getPulsesPerRevolution( ) {
+		return pulsesPerRevolution;
 	}
 
 	@Override
@@ -88,10 +111,8 @@ public class FourWheelDrive implements Drive {
 	}
 
 	private void updateState( ) {
-		if( frontLeft.getPower( ) != 0 || frontRight.getPower( ) != 0 || backLeft.getPower( ) != 0 || backRight.getPower( ) != 0 )
-			currentState = State.MOVING;
-		else
-			currentState = State.STOPPED;
+		currentState = (frontLeft.getPower( ) != 0 || frontRight.getPower( ) != 0 || backLeft.getPower( ) != 0 || backRight.getPower( ) != 0)
+				? State.MOVING : State.STOPPED;
 	}
 
 	/**

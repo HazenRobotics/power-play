@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robots.Robot;
 
 public class Turret {
 
-	DcMotorEx motor;
+	public DcMotorEx motor;
 
 	AngleUnit unit;
 
@@ -42,12 +42,13 @@ public class Turret {
 		motor = hw.get( DcMotorEx.class, motorName );
 
 		motor.setDirection( reverseMotor ? Direction.REVERSE : Direction.FORWARD );
-		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+		motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+//		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
 
 		pulsesPerRevolution = ppr;
 		this.gearRatio = gearRatio;
 
-		resetTurret( );
+//		resetTurret( );
 	}
 
 	public void setPower( double power) {

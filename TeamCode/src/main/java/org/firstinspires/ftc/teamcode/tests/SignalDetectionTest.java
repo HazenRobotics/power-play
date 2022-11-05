@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
 @TeleOp(name = "SignalDetectionTest", group = "Autonomous")
-@Disabled
+//@Disabled
 public class SignalDetectionTest extends LinearOpMode {
 
 	@Override
@@ -18,9 +18,9 @@ public class SignalDetectionTest extends LinearOpMode {
 		telemetry.addLine("camera is ready");
 		telemetry.update();
 
-		waitForStart();
-
 		telemetry.addLine( "Position: " + detector.getSignalPosition( ) );
+
+		waitForStart();
 
 		while(!isStopRequested());
 	}

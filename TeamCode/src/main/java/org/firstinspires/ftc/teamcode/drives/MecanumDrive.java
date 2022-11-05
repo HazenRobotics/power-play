@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 public class MecanumDrive extends FourWheelDrive {
 
-	final double WHEEL_DIAMETER = 38 / 25.4; // odometry wheel 38mm
-
 	/**
 	 * Creates a MecanumDrive with default names for the wheels
 	 *
@@ -32,11 +30,11 @@ public class MecanumDrive extends FourWheelDrive {
 	}
 
 	public int convertDistTicks( double distanceToTravel ) {
-		return Drive.convertDistTicks( distanceToTravel, 2 * Math.PI * WHEEL_DIAMETER, PULSES_PER_REVOLUTION, GEAR_RATIO );
+		return Drive.convertDistTicks( distanceToTravel,  Math.PI * wheelDiameter, pulsesPerRevolution, gearRatio );
 	}
 
 	public double convertTicksDist( int ticksToTravel ) {
-		return Drive.convertTicksDist( ticksToTravel, 2 * Math.PI * WHEEL_DIAMETER, PULSES_PER_REVOLUTION, GEAR_RATIO );
+		return Drive.convertTicksDist( ticksToTravel,  Math.PI * wheelDiameter, pulsesPerRevolution, gearRatio );
 	}
 
 	/**
