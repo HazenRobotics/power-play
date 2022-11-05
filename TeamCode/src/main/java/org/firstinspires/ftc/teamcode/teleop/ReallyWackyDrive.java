@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import android.graphics.Point;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp(name = "ReallyWackyDrive", group = "Test")
-//@Disabled
+@Disabled
 public class ReallyWackyDrive extends OpMode {
 
     DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;

@@ -13,11 +13,10 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
-import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
-public class LifterBot extends Robot {
+public class MiniBot extends Robot {
 
 	public OpMode opMode;
 	public HardwareMap hardwareMap;
@@ -45,7 +44,7 @@ public class LifterBot extends Robot {
 	 *
 	 * @param op robot's opMode
 	 */
-	public LifterBot( OpMode op ) {
+	public MiniBot( OpMode op ) {
 		super( op );
 
 		Robot.writeToDefaultFile( "written", false, true );
@@ -54,8 +53,8 @@ public class LifterBot extends Robot {
 		hardwareMap = op.hardwareMap;
 
 		super.driveTrain = new MecanumDrive( hardwareMap );
-		mecanumDrive = (MecanumDrive) driveTrain;
-		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
+		mecanumDrive = (MecanumDrive) driveTrain;//REVERSE
+		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
 		mecanumDrive.setWheelDiameter( 4 );
 		mecanumDrive.setPulsesPerRevolution( MotorType.Gobilda192.TICKS_PER_ROTATION );
 
@@ -66,7 +65,7 @@ public class LifterBot extends Robot {
 //		turret = new Turret( hardwareMap, "turret", true, AngleUnit.DEGREES, MotorType.Gobilda192.TICKS_PER_ROTATION, 4.0 /* driven / driver */ );
 //		turret.setLimit( -200, 200 );
 
-		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.5, 0.75 }, new double[]{ 0.5, 0.25 } );
+		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.6, 0.75 }, new double[]{ 0.4, 0.25 } );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {

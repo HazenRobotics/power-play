@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
 
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.kA;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.kStatic;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.kV;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,10 +17,11 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 
 import java.util.Objects;
 
@@ -40,13 +41,14 @@ import java.util.Objects;
  * Pressing B/O (Xbox/PS4) will cede control back to the tuning process.
  */
 @Config
-@Autonomous(group = "drive")
+//@Autonomous(group = "drive")
+@Disabled
 public class ManualFeedforwardTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    private SampleMecanumDrive drive;
+    private MecanumDriveLifter drive;
 
     enum Mode {
         DRIVER_MODE,
@@ -70,7 +72,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new MecanumDriveLifter(hardwareMap);
 
         mode = Mode.TUNING_MODE;
 

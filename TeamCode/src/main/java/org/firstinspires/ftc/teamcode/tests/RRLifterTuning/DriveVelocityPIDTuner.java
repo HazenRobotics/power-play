@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
 
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.kV;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -15,12 +15,13 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
 
 import java.util.List;
 
@@ -49,7 +50,8 @@ import java.util.List;
  * Pressing B/O (Xbox/PS4) will cede control back to the tuning process.
  */
 @Config
-@Autonomous(group = "drive")
+//@Autonomous(group = "drive")
+@Disabled
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
 

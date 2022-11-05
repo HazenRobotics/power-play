@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
 @TeleOp(name = "SignalDetectionTest", group = "Autonomous")
-//@Disabled
 public class SignalDetectionTest extends LinearOpMode {
 
 	@Override

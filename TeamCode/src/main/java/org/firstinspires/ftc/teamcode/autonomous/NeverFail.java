@@ -1,23 +1,24 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.robots.LifterBot;
+import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.vision.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
 @Autonomous(name = "NeverFail", group = "Autonomous")
+@Disabled
 public class NeverFail extends LinearOpMode {
-
-	LifterBot robot;
+	MiniBot robot;
 
 	@Override
 	public void runOpMode( ) {
 
-		robot = new LifterBot( this );
+		robot = new MiniBot( this );
 		SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
 		detector.init( );
 		SignalDetector.SignalPosition park = SignalDetector.SignalPosition.NOT_FOUND;

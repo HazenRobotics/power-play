@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.RGBLights;
 
 @Autonomous
+@Disabled
 public class LEDTest extends LinearOpMode {
 
 	@Override

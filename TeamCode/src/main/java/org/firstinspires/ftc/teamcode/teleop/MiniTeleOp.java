@@ -2,33 +2,28 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.roadrunner.util.AxisDirection;
-import org.firstinspires.ftc.teamcode.roadrunner.util.BNO055IMUUtil;
-import org.firstinspires.ftc.teamcode.robots.LifterBot;
+import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
-@TeleOp(name = "LifterTeleOp", group = "TeleOp")
-//@Disabled
-public class LifterTeleOp extends OpMode {
+@TeleOp(name = "MiniTeleOp", group = "TeleOp")
 
-	LifterBot robot;
+public class MiniTeleOp extends OpMode {
+
+	MiniBot robot;
 	GamepadEvents controller1;
 	GamepadEvents controller2;
 	boolean opened = true;
 
 	BNO055IMU imu;
-
-//	DcMotorEx teleOpTurretMotor;
 
 	@Override
 	public void init( ) {
@@ -45,9 +40,8 @@ public class LifterTeleOp extends OpMode {
 		imu.initialize( parameters );
 //		BNO055IMUUtil.remapZAxis( imu, AxisDirection.POS_Y );
 
-		robot = new LifterBot( this );
+		robot = new MiniBot( this );
 		robot.verticalLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
-//		teleOpTurretMotor = hardwareMap.get(DcMotorEx.class, "turret");
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -84,20 +78,6 @@ public class LifterTeleOp extends OpMode {
 		// dpad: auto lift positions
 		dpadToLiftPos( );
 
-		// gp2 right stick x/y
-//		robot.turret.setLiveRotationPower( new Vector2d( gamepad2.right_stick_x, -gamepad2.right_stick_y ) );
-//		robot.turret.setPower( gamepad2.left_stick_x );
-
-//		robot.turret.setPower( gamepad2.left_stick_x );
-
-//		if( gamepad1.y )
-//			robot.turret.motor.setPower( 0.3 );
-//		else if ( gamepad1.b )
-//			robot.turret.motor.setPower( -0.3 );
-//		else
-//			robot.turret.motor.setPower( 0 );
-
-		telemetry.addLine( "vector: " + new Vector2d( gamepad2.right_stick_x, -gamepad2.right_stick_y ) );
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );

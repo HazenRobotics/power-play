@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drives;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
@@ -50,7 +51,7 @@ public class FourWheelDrive implements Drive {
 
 		setMotorDirections( FORWARD, FORWARD, REVERSE, REVERSE );
 		setZeroPowerBehavior( BRAKE, BRAKE, BRAKE, BRAKE );
-		//setRunMode(STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER );
+//		setRunMode(STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER );
 	}
 
 	public void setWheelDiameter( double wheelDiameter ) {
