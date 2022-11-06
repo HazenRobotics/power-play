@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
+package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter;
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 
 /*
  * This routine determines the effective track width. The procedure works by executing a point turn
@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
  * accurate track width estimate is important or else the angular constraints will be thrown off.
  */
 @Config
-//@Autonomous(group = "drive")
-@Disabled
+@Autonomous(group = "drive")
+//@Disabled
 public class TrackWidthTuner extends LinearOpMode {
     public static double ANGLE = 180; // deg
     public static int NUM_TRIALS = 5;
@@ -35,7 +35,7 @@ public class TrackWidthTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        MecanumDriveLifter drive = new MecanumDriveLifter(hardwareMap);
+        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
         // TODO: if you haven't already, set the localizer to something that doesn't depend on
         // drive encoders for computing the heading
 
@@ -69,7 +69,7 @@ public class TrackWidthTuner extends LinearOpMode {
                 drive.update();
             }
 
-            double trackWidth = DriveConstantsLifter.TRACK_WIDTH * Math.toRadians(ANGLE) / headingAccumulator;
+            double trackWidth = DriveConstantsMini.TRACK_WIDTH * Math.toRadians(ANGLE) / headingAccumulator;
             trackWidthStats.add(trackWidth);
 
             sleep(DELAY);

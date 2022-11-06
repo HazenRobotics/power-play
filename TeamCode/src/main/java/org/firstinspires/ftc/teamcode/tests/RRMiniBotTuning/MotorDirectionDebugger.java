@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
+package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 
 /**
  * This is a simple teleop routine for debugging your motor configuration.
@@ -36,11 +36,11 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
  *                \.          .'              (A/X)        \   (B/O)
  *                  \________/
  *
- * Uncomment the @Disabled tag below to use this opmode.
+ * Uncomment the //@Disabled tag below to use this opmode.
  */
-@Disabled
+//@Disabled
 @Config
-//@TeleOp(group = "drive")
+@TeleOp(group = "drive")
 public class MotorDirectionDebugger extends LinearOpMode {
     public static double MOTOR_POWER = 0.7;
 
@@ -48,7 +48,7 @@ public class MotorDirectionDebugger extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        MecanumDriveLifter drive = new MecanumDriveLifter(hardwareMap);
+        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
 
         telemetry.addLine("Press play to begin the debugging opmode");
         telemetry.update();

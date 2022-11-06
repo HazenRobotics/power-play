@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
+package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
 /*
@@ -23,14 +23,14 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
  * These coefficients can be tuned live in dashboard.
  */
 @Config
-//@Autonomous(group = "drive")
-@Disabled
+@Autonomous(group = "drive")
+//@Disabled
 public class FollowerPIDTuner extends LinearOpMode {
     public static double DISTANCE = 48; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDriveLifter drive = new MecanumDriveLifter(hardwareMap);
+        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 

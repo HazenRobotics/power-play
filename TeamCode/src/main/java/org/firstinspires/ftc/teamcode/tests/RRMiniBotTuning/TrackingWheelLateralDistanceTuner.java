@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
+package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.StandardTrackingWheelLocalizer;
 
 /**
@@ -63,14 +63,14 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.StandardTrackingWheelLoca
  * precision. The heading should still line up.
  */
 @Config
-//@TeleOp(group = "drive")
-@Disabled
+@TeleOp(group = "drive")
+//@Disabled
 public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
     public static int NUM_TURNS = 10;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDriveLifter drive = new MecanumDriveLifter(hardwareMap);
+        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
 
         if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "

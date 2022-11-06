@@ -29,8 +29,8 @@ public class SignalDetector extends OpenCvPipeline {
 	private SignalPosition signalPosition;
 
 	static final Rect ROI = new Rect(
-			new Point( 0, 0 ),
-			new Point( 1280, 720 ) );
+			new Point( 320, 180 ),
+			new Point( 960, 540 ) );
 
 	static double PERCENT_COLOR_THRESHOLD = 0.02;
 

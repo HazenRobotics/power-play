@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.util.Log;
 
-import androidx.core.view.accessibility.AccessibilityViewCommand;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -18,7 +16,7 @@ public class Lift {
 	final double PULSES_PER_REVOLUTION = 537.7;
 	final double GEAR_RATIO = 1;
 
-	DcMotorEx motor;
+	public DcMotorEx motor;
 
 	static int liftPosition = 0;
 
@@ -39,7 +37,6 @@ public class Lift {
 		WITH_ENCODER, WITHOUT_ENCODER;
 	}
 
-
 	public enum MovementState {
 		REST, HOLDING, MOVING;
 	}
@@ -56,7 +53,7 @@ public class Lift {
 	 */
 	public Lift( HardwareMap hardwareMap ) {
 		this( hardwareMap, "lift", true, 0,
-				0.5, 0, AngleUnit.DEGREES ); // diameter of 45mm
+				0.5, 0, AngleUnit.DEGREES );
 	}
 
 	/**
@@ -81,7 +78,7 @@ public class Lift {
 		setAngleUnit( angleUnit );
 
 		resetLift( );
-		motor.setTargetPosition( 10 );
+//		motor.setTargetPosition( 10 );
 		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 	}
 
@@ -109,7 +106,7 @@ public class Lift {
 	 *
 	 */
 	public void setEncoder( EncoderState state ) {
-		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_USING_ENCODER : DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_WITHOUT_ENCODER : DcMotor.RunMode.RUN_USING_ENCODER );
 		encoderState = state;
 	}
 
@@ -164,7 +161,8 @@ public class Lift {
 
 		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 
-		if( distance < 0 ) velocity *= -1;
+		if( distance < 0 )
+			velocity *= -1;
 		setVelocity( velocity );
 
 		if( stopAsync ) {
@@ -221,7 +219,8 @@ public class Lift {
 	public void setHeightPower( double power, double height ) {
 		if( height - posOffset < 0 )
 			height = posOffset;
-		double distanceToMove = calcLiftDistanceFromHeight( height ) - convertTicksDist( liftPosition, 2 * spoolRadius * Math.PI );
+		double distanceToMove = calcLiftDistanceFromHeight( height ) - getPositionInch( );
+
 		moveDistancePower( power, distanceToMove, true );
 	}
 
@@ -330,6 +329,8 @@ public class Lift {
 
 	public double calcLiftDistanceFromHeight( double height ) {
 		Robot.writeToDefaultFile( "calcLiftDistanceFromHeight: " + (height / Math.sin( getLiftAngle( AngleUnit.RADIANS ) )), true, true );
+		if( liftAngle == 0 )
+			return height;
 		return height / Math.sin( getLiftAngle( AngleUnit.RADIANS ) );
 	}
 
@@ -350,6 +351,10 @@ public class Lift {
 	}
 
 	// getters and setters for power and velocity
+
+	public void setTeleOpPowerMode( ) {
+		setEncoder( EncoderState.WITH_ENCODER );
+	}
 
 	public double getPower( ) {
 		return motor.getPower( );
@@ -377,7 +382,6 @@ public class Lift {
 	private void updateMovementState( double speed ) {
 		movementState = speed == 0 ? (liftPosition < 5 ? MovementState.REST : MovementState.HOLDING) : MovementState.MOVING;
 	}
-
 
 	// getters for the lift position
 

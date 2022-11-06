@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.tests.RRLifterTuning;
+package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
 
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.MAX_RPM;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsLifter.rpmToVelocity;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.MAX_RPM;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.rpmToVelocity;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveLifter;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.RegressionUtil;
 
@@ -33,8 +33,8 @@ import java.util.List;
  *      regression.
  */
 @Config
-////@Autonomous(group = "drive")
-@Disabled
+@Autonomous(group = "drive")
+//@Disabled
 public class AutomaticFeedforwardTuner extends LinearOpMode {
     public static double MAX_POWER = 0.7;
     public static double DISTANCE = 100; // in
@@ -48,7 +48,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        MecanumDriveLifter drive = new MecanumDriveLifter(hardwareMap);
+        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
 
         NanoClock clock = NanoClock.system();
 

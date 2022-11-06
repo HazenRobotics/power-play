@@ -64,6 +64,7 @@ public class SignalUtil {
 	public void stopCamera( ) {
 		webcam.stopStreaming( );
 	}
+
 	public Pose2d getParkPosition( double xFlip, double yFlip ) {
 		double y = (PPField.TILE_SIZE/2)*yFlip;
 		if(  getSignalPosition( ) == SignalDetector.SignalPosition.LEFT ) {

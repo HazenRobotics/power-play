@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 
 @Config
-@Autonomous(group = "drive")
+//@Autonomous(group = "drive")
 @Disabled
 
 public class MaxAngularVeloTuner extends LinearOpMode {
