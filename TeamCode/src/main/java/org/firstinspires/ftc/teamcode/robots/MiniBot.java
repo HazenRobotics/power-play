@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.robots;
 
+import static org.firstinspires.ftc.teamcode.utils.localization.PPField.THREE_HALVES_TILE;
+import static org.firstinspires.ftc.teamcode.utils.localization.PPField.TILE_CONNECTOR;
+import static org.firstinspires.ftc.teamcode.utils.localization.PPField.TILE_SIZE;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -16,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
+import org.firstinspires.ftc.teamcode.vision.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
 public class MiniBot extends Robot {
@@ -35,7 +40,7 @@ public class MiniBot extends Robot {
 
 	public static final float ROBOT_LENGTH = 12.25f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
-//	public static final float ROBOT_WIDTH = 14.125f;
+	//	public static final float ROBOT_WIDTH = 14.125f;
 	public static final float ROBOT_MAX_WIDTH = 14.5f;
 
 
@@ -94,6 +99,56 @@ public class MiniBot extends Robot {
 		lift.setHeightPower( powers[0], clawPos.getX( ) );
 //		horizontalLift.setHeightPower( powers[1], clawPos.getY( ) );
 //		turret.setRotationPower( powers[2], rotation, angleUnit );
+	}
+
+	/**
+	 * @param red   true if on the red side, false for blue
+	 * @param right true if on the right side from the perspective of the driver
+	 * @return the starting position of the robot in these circumstances
+	 */
+	public Pose2d getStartPos( boolean red, boolean right ) {
+		double x, y, heading;
+		if( red ) { // red side
+			x = right ? (TILE_SIZE + ROBOT_MAX_WIDTH / 2) : -(2 * TILE_SIZE - ROBOT_MAX_WIDTH / 2);
+			y = -(3 * (TILE_CONNECTOR + TILE_SIZE) - MiniBot.ROBOT_LENGTH / 2);
+			heading = Math.toRadians( 90 );
+		} else { // blue side
+			x = right ? -(TILE_SIZE + ROBOT_MAX_WIDTH / 2) : (2 * TILE_SIZE - ROBOT_MAX_WIDTH / 2);
+			y = (3 * (TILE_CONNECTOR + TILE_SIZE) - MiniBot.ROBOT_LENGTH / 2);
+			heading = Math.toRadians( 270 );
+		}
+		return new Pose2d( x, y, heading );
+	}
+
+	/**
+	 * signal needs to be initted!!
+	 * robot.signalUtil.init( );
+	 *
+	 * @param red   true if on the red side
+	 * @param right
+	 * @return
+	 */
+	public Vector2d justParkInit( boolean red, boolean right ) {
+
+		double x, y;
+
+		SignalDetector.SignalPosition signalPosition = signalUtil.getSignalPosition( );
+
+		double tilePos = 0;
+		if( signalPosition == SignalDetector.SignalPosition.LEFT )
+			tilePos = -1;
+		else if( signalPosition == SignalDetector.SignalPosition.RIGHT )
+			tilePos = 1;
+
+		if( red ) {
+			x = right ? (THREE_HALVES_TILE + tilePos * TILE_SIZE) : -(THREE_HALVES_TILE + tilePos * TILE_SIZE);
+			y = -THREE_HALVES_TILE;
+		} else {
+			x = right ? -(THREE_HALVES_TILE + tilePos * TILE_SIZE) : (THREE_HALVES_TILE - tilePos * TILE_SIZE);
+			y = THREE_HALVES_TILE;
+		}
+
+		return new Vector2d( x, y );
 	}
 
 	public void junctionToLiftPos( PPField.Junction junction ) {

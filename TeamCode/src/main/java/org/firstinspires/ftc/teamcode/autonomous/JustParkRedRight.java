@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.SignalDetector;
 
 @Autonomous( group = "A" )
-public class JustPark extends LinearOpMode {
+public class JustParkRedRight extends LinearOpMode {
 
 	MiniBot robot;
 
@@ -35,14 +35,7 @@ public class JustPark extends LinearOpMode {
 
 		waitForStart( );
 
-		SignalDetector.SignalPosition signalPosition = robot.signalUtil.getSignalPosition( );
-
-		double tilePos = 1;
-		if( signalPosition == SignalDetector.SignalPosition.LEFT )
-			tilePos = 0;
-		else if( signalPosition == SignalDetector.SignalPosition.RIGHT )
-			tilePos = 2;
-		Vector2d parkPos = new Vector2d( PPField.TILE_SIZE * 0.5 + PPField.TILE_SIZE * tilePos, -3 * PPField.TILE_SIZE / 2 );
+		Vector2d parkPos = robot.justParkInit( true, true );
 
 		robot.signalUtil.stopCamera( );
 

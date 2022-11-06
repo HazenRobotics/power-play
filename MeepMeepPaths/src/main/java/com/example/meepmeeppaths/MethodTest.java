@@ -1,10 +1,10 @@
 package com.example.meepmeeppaths;
 
-import static com.example.meepmeeppaths.teamcodeRequirements.LifterBot.ROBOT_LENGTH;
+import static com.example.meepmeeppaths.teamcodeRequirements.MiniBot.ROBOT_LENGTH;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.example.meepmeeppaths.teamcodeRequirements.LifterBot;
+import com.example.meepmeeppaths.teamcodeRequirements.MiniBot;
 import com.example.meepmeeppaths.teamcodeRequirements.PPField;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
@@ -19,7 +19,7 @@ public class MethodTest implements MeepMeepPath {
 	@Override
 	public TrajectorySequence getFlippedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
 		double cycleDist = totalTitle * 1.5;
-		float x = -(float) ((2 * totalTitle - LifterBot.ROBOT_WIDTH / 2 + 3 * PPField.TILE_CONNECTOR / 2) * xFlip);
+		float x = -(float) ((2 * totalTitle - MiniBot.ROBOT_WIDTH / 2 + 3 * PPField.TILE_CONNECTOR / 2) * xFlip);
 		float y = (float) (-(PPField.HALF_FIELD - ROBOT_LENGTH / 2) * xFlip);
 		double xFlipR = -((xFlip - 1) / 2);
 		double yFlipR = -((xFlip - 1) / 2);

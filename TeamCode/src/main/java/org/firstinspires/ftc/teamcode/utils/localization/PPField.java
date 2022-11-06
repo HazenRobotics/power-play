@@ -18,6 +18,8 @@ public class PPField {
 	public static final float TILE_SIZE = 22.75f;
 	public static final float TILE_CONNECTOR = 0.75f;
 
+	public static final float THREE_HALVES_TILE = 3f / 2f * TILE_SIZE;
+
 	private static final float FIELD_SIZE = (TILE_SIZE * 6 + TILE_CONNECTOR * 5); // 140.25"
 	//	private static final float MM_TARGET_HEIGHT = (6) * mmPerInch;
 	private static final float HALF_FIELD = FIELD_SIZE / 2;
