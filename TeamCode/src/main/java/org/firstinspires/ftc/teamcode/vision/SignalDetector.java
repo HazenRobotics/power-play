@@ -44,7 +44,7 @@ public class SignalDetector extends OpenCvPipeline {
 		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
 
 		Scalar greenLowHSV = new Scalar( 45, 25, 25 );
-		Scalar greenHighHSV = new Scalar( 65, 255, 255 );
+		Scalar greenHighHSV = new Scalar( 75, 255, 255 );
 
 		Core.inRange( greenMat, greenLowHSV, greenHighHSV, greenMat );
 
@@ -59,10 +59,21 @@ public class SignalDetector extends OpenCvPipeline {
 		//setting up brown mat
 		Imgproc.cvtColor( input, pinkMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar pinkLowHSV = new Scalar( 150, 125, 125 );
-		Scalar pinkHighHSV = new Scalar( 165, 255, 255 );
+		Scalar pinkLowHSV = new Scalar( 140, 55, 0 );
+		Scalar pinkHighHSV = new Scalar( 175, 255, 255 );
 
 		Core.inRange( pinkMat, pinkLowHSV, pinkHighHSV, pinkMat );
+
+//		Solid Color HSVs
+
+//		Scalar( 55, 25, 25 );
+//		Scalar( 70, 255, 255 );
+//
+//		Scalar( 30, 30, 30 );
+//		Scalar( 40, 175, 175 );
+//
+//		Scalar( 150, 125, 125 );
+//		Scalar( 170, 255, 255 );
 
 
 		double greenValue = Core.sumElems( greenMat ).val[0] / ROI.area( ) / 255;
@@ -122,6 +133,5 @@ public class SignalDetector extends OpenCvPipeline {
 	public SignalPosition getSignalPosition( ) {
 		return signalPosition;
 	}
-
 
 }
