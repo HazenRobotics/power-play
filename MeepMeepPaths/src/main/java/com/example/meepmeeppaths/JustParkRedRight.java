@@ -25,18 +25,23 @@ public class JustParkRedRight implements MeepMeepPath {
 //		SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
 //		detector.init( );
 //		cone = detector.getParkPosition( xflip, yflip );
-		Vector2d cone = new Vector2d( -37 * xFlip, -11 * yFlip );
-		Pose2d conePose = new Pose2d( -60 * xFlip, -11 * yFlip, Math.toRadians( 180 + (180 * xFlipR) ) );
-		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( true, true ) )
-				.lineToConstantHeading( new Vector2d( -60 * xFlip, y ) )
-				//drop cone
-				.lineToLinearHeading( conePose )
-				//grab cone
-				.lineToConstantHeading( new Vector2d( 0, -11 * yFlip ) )
-				.lineToLinearHeading( conePose )
-				//grab cone
-				.lineToConstantHeading( new Vector2d( -totalTitle * 2 * xFlip, -11 * yFlip ) )
+//		Vector2d cone = new Vector2d( -37 * xFlip, -11 * yFlip );
+//		Pose2d conePose = new Pose2d( -60 * xFlip, -11 * yFlip, Math.toRadians( 180 + (180 * xFlipR) ) );
+
+		boolean red = false, right = false;
+		Vector2d cone = MiniBot.getSignalPos( red, right );
+		Vector2d park = MiniBot.justParkInit( red, right );
+		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
+//				.lineToConstantHeading( new Vector2d( -60 * xFlip, y ) )
+//				//drop cone
+//				.lineToLinearHeading( conePose )
+//				//grab cone
+//				.lineToConstantHeading( new Vector2d( 0, -11 * yFlip ) )
+//				.lineToLinearHeading( conePose )
+//				//grab cone
+//				.lineToConstantHeading( new Vector2d( -totalTitle * 2 * xFlip, -11 * yFlip ) )
 				.lineTo( cone )
+				.lineTo( park )
 				.build( );
 	}
 

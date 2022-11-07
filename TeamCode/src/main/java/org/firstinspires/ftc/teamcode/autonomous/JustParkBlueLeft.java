@@ -10,11 +10,11 @@ import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @Autonomous(group = "A")
-public class JustParkRedRight extends LinearOpMode {
+public class JustParkBlueLeft extends LinearOpMode {
 
 	MiniBot robot;
 
-	final boolean red = true, right = true;
+	final boolean red = false, right = false;
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {

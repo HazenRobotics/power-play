@@ -44,7 +44,7 @@ public class SignalDetector extends OpenCvPipeline {
 		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
 
 		Scalar greenLowHSV = new Scalar( 45, 25, 25 );
-		Scalar greenHighHSV = new Scalar( 75, 255, 255 );
+		Scalar greenHighHSV = new Scalar( 85, 255, 255 );
 
 		Core.inRange( greenMat, greenLowHSV, greenHighHSV, greenMat );
 
@@ -95,13 +95,13 @@ public class SignalDetector extends OpenCvPipeline {
 			telemetry.addLine( "Pink Not Seen" );
 
 		if( greenBool ) {
-			signalPosition = SignalPosition.LEFT;
+			signalPosition = SignalPosition.MIDDLE;
 			telemetry.addLine( "Green Seen" );
 		} else
 			telemetry.addLine( "Green Not Seen" );
 
 		if( yellowBool ) {
-			signalPosition = SignalPosition.MIDDLE;
+			signalPosition = SignalPosition.LEFT;
 			telemetry.addLine( "Yellow Seen" );
 		} else
 			telemetry.addLine( "Yellow Not Seen" );

@@ -79,6 +79,14 @@ public class MiniBot extends Robot {
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}
 
+	public void waitSeconds( double seconds ) {
+		double startTime = opMode.getRuntime( );
+		while( /*opModeIsActive( ) && */startTime + seconds > opMode.getRuntime( ) ) {
+//			telemetry.addLine(  startTime + seconds + " > " + opMode.getRuntime( ) );
+//			telemetry.update( );b
+		}
+	}
+
 	public void setClawPos( Vector3D clawPos, double... powers ) {
 
 		Vector2d xyPos = new Vector2d( clawPos.getX( ), clawPos.getY( ) );
@@ -134,20 +142,32 @@ public class MiniBot extends Robot {
 
 		SignalDetector.SignalPosition signalPosition = signalUtil.getSignalPosition( );
 
-		double tilePos = 0;
+		double tilePos = 0.05;
 		if( signalPosition == SignalDetector.SignalPosition.LEFT )
 			tilePos = -1;
 		else if( signalPosition == SignalDetector.SignalPosition.RIGHT )
 			tilePos = 1;
 
 		if( red ) {
-			x = right ? (THREE_HALVES_TILE + tilePos * TILE_SIZE) : -(THREE_HALVES_TILE + tilePos * TILE_SIZE);
+			x = right ? (THREE_HALVES_TILE + tilePos * (TILE_SIZE+3)) : -(THREE_HALVES_TILE - tilePos * (TILE_SIZE+3));
 			y = -THREE_HALVES_TILE;
 		} else {
-			x = right ? -(THREE_HALVES_TILE + tilePos * TILE_SIZE) : (THREE_HALVES_TILE - tilePos * TILE_SIZE);
+			x = right ? -(THREE_HALVES_TILE + tilePos * (TILE_SIZE+3)) : (THREE_HALVES_TILE - tilePos * (TILE_SIZE+3));
 			y = THREE_HALVES_TILE;
 		}
 
+		return new Vector2d( x, y );
+	}
+
+	public Vector2d getSignalPos( boolean red, boolean right ) {
+		double x, y;
+		if( red ) { // red side
+			x = right ? THREE_HALVES_TILE : -THREE_HALVES_TILE;
+			y = -THREE_HALVES_TILE;
+		} else { // blue side
+			x = right ? -THREE_HALVES_TILE : THREE_HALVES_TILE;
+			y = THREE_HALVES_TILE;
+		}
 		return new Vector2d( x, y );
 	}
 

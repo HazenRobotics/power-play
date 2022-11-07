@@ -78,7 +78,7 @@ public class Lift {
 		setAngleUnit( angleUnit );
 
 		resetLift( );
-//		motor.setTargetPosition( 10 );
+		motor.setTargetPosition( 10 );
 		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 	}
 

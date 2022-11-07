@@ -25,7 +25,7 @@ public class MiniTeleOp extends OpMode {
 
 		DRIVE( 0.8, 1.0 ),
 		STRAFE( 1.0, 1.0 ),
-		ROTATE( 0.7, 1.0 );
+		ROTATE( 0.6, 1.0 );
 
 		Speeds( double min, double max ) {
 			this.min = min;
@@ -149,10 +149,10 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addData( "heading y*", imu.getAngularVelocity( ).yRotationRate );
 //		telemetry.addData( "heading z", imu.getAngularVelocity( ).zRotationRate );
 //		telemetry.addLine( );
-//		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
-//		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
-//		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
-//		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
+		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
+		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
+		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
+		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
 //		telemetry.addLine( );
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
