@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
-import org.firstinspires.ftc.teamcode.vision.SignalDetector;
+import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
 public class MiniBot extends Robot {

@@ -1,9 +1,6 @@
-package org.firstinspires.ftc.teamcode.vision;
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
+package org.firstinspires.ftc.teamcode.vision.pipelines;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -29,8 +26,8 @@ public class SignalDetector extends OpenCvPipeline {
 	private SignalPosition signalPosition;
 
 	static final Rect ROI = new Rect(
-			new Point( 320, 180 ),
-			new Point( 960, 540 ) );
+			new Point( 500, 350 ),
+			new Point( 570, 450 ) );
 
 	static double PERCENT_COLOR_THRESHOLD = 0.02;
 
@@ -43,26 +40,33 @@ public class SignalDetector extends OpenCvPipeline {
 		//setting up green mat
 		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar greenLowHSV = new Scalar( 45, 25, 25 );
-		Scalar greenHighHSV = new Scalar( 85, 255, 255 );
+		Scalar greenLowHSV = new Scalar(67.0, 25.0, 0.0);
+		Scalar greenHighHSV = new Scalar(77.0, 255.0, 255.0);
 
 		Core.inRange( greenMat, greenLowHSV, greenHighHSV, greenMat );
+
+		Mat smallGreenMat = greenMat.submat( ROI );
 
 		//setting up yellow mat
 		Imgproc.cvtColor( input, yellowMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar yellowLowHSV = new Scalar( 30, 75, 75 );
-		Scalar yellowHighHSV = new Scalar( 40, 255, 255 );
+		Scalar yellowLowHSV = new Scalar(26.0, 25.0, 0.0);
+		Scalar yellowHighHSV = new Scalar(36.0, 255.0, 255.0);
 
 		Core.inRange( yellowMat, yellowLowHSV, yellowHighHSV, yellowMat );
+
+		Mat smallYellowMat = yellowMat.submat( ROI );
 
 		//setting up brown mat
 		Imgproc.cvtColor( input, pinkMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar pinkLowHSV = new Scalar( 140, 55, 0 );
-		Scalar pinkHighHSV = new Scalar( 175, 255, 255 );
+		Scalar pinkLowHSV = new Scalar(159.0, 25.0, 0.0);
+		Scalar pinkHighHSV = new Scalar(169.0, 255.0, 255.0);
 
 		Core.inRange( pinkMat, pinkLowHSV, pinkHighHSV, pinkMat );
+
+		Mat smallPinkMat = pinkMat.submat( ROI );
+
 
 //		Solid Color HSVs
 
@@ -76,9 +80,9 @@ public class SignalDetector extends OpenCvPipeline {
 //		Scalar( 170, 255, 255 );
 
 
-		double greenValue = Core.sumElems( greenMat ).val[0] / ROI.area( ) / 255;
-		double yellowValue = Core.sumElems( yellowMat ).val[0] / ROI.area( ) / 255;
-		double pinkValue = Core.sumElems( pinkMat ).val[0] / ROI.area( ) / 255;
+		double greenValue = Core.sumElems( smallGreenMat ).val[0] / ROI.area( ) / 255;
+		double yellowValue = Core.sumElems( smallYellowMat ).val[0] / ROI.area( ) / 255;
+		double pinkValue = Core.sumElems( smallPinkMat ).val[0] / ROI.area( ) / 255;
 
 //		greenMat.release( );
 //		yellowMat.release( );
@@ -126,6 +130,8 @@ public class SignalDetector extends OpenCvPipeline {
 			telemetry.addLine( "Showing Pink" );
 		else if( whichMat == 2 )
 			telemetry.addLine( "Showing Yellow" );
+
+		Imgproc.rectangle( filters[whichMat], ROI, new Scalar (255,0,0) );
 
 		return filters[whichMat];
 	}

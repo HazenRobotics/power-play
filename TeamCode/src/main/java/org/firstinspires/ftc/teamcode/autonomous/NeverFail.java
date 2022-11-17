@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
-import org.firstinspires.ftc.teamcode.vision.SignalDetector;
+import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 
 @Autonomous(name = "NeverFail", group = "Autonomous")
