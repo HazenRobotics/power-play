@@ -1,37 +1,50 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
+
+import java.util.ArrayList;
 
 @TeleOp(name = "MotorTest", group = "TeleOp")
 //@Disabled
 public class MotorTest extends OpMode {
 
-	DcMotor[] motor;
-	String[] motorNames = { "frontLeft", "backLeft", "frontRight", "backRight", "lift", "perp", "para" };
+
+	ArrayList<String> motorNames = new ArrayList<>( );
+	ArrayList<DcMotorEx> motor = new ArrayList<>( );
 
 	GamepadEvents controller;
 	int selected = 0;
-	int maxSelect = motorNames.length - 1;
+	int maxSelect;
 
 	@Override
 	public void init( ) {
 		controller = new GamepadEvents( gamepad1 );
-		for( int i = 0; i < motorNames.length; i++ )
-			motor[i] = hardwareMap.get( DcMotorEx.class, motorNames[i] );
+		String[] names = { "topLeft", "bottomLeft", "topRight", "bottomRight", "frontLeft", "backLeft", "frontRight", "backRight", "lift", "para", "perp" };
+
+		for( int i = 0; i < names.length; i++ ) {
+			try {
+				motor.add( hardwareMap.get( DcMotorEx.class, names[i] ) );
+				this.motorNames.add( names[i] );
+
+			} catch( IllegalArgumentException e ) {
+				telemetry.addLine( "couldn't find " + names[i] );
+			}
+		}
+
+		maxSelect = motor.size( ) - 1;
+		telemetry.addLine( "added " + (maxSelect) + "motor" + (maxSelect == 0 ? "" : "s") );
+		telemetry.update( );
+
 	}
 
 	@Override
 	public void loop( ) {
 
-		motor[selected].setPower( -controller.right_stick_y );
+		motor.get( selected ).setPower( -controller.right_stick_y );
 
 		if( controller.dpad_up.onPress( ) ) {
 			increment( 1, maxSelect );
@@ -39,9 +52,9 @@ public class MotorTest extends OpMode {
 			increment( -1, maxSelect );
 		}
 
-		telemetry.addLine( "selected: (" + selected + ") " + motorNames[selected] );
-		for( int i = 0; i < motorNames.length; i++ ) {
-			telemetry.addLine( motorNames[i] + " position: " + motor[i].getCurrentPosition( ) );
+		telemetry.addLine( "selected: (" + selected + ") " + motorNames.get( selected ) );
+		for( int i = 0; i < motor.size( ); i++ ) {
+			telemetry.addLine( motorNames.get( i ) + " position: " + motor.get( i ).getCurrentPosition( ) );
 		}
 		telemetry.update( );
 		controller.update( );
@@ -54,7 +67,7 @@ public class MotorTest extends OpMode {
 	public void increment( int increment, int min, int max ) {
 		selected += increment;
 		while( selected < min )
-			max -= selected;
+			max += selected;
 
 		if( selected > max )
 			selected %= max;

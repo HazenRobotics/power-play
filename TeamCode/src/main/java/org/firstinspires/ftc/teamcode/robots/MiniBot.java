@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.RotatingClaw;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
@@ -34,8 +35,8 @@ public class MiniBot extends Robot {
 	public Lift lift;
 	//	public Lift horizontalLift;
 //	public Turret turret;
-	public Claw claw;
-
+//	public Claw claw;
+//	public RotatingClaw claw;
 	public SignalUtil signalUtil;
 
 	public static final float ROBOT_LENGTH = 12.25f;
@@ -74,7 +75,9 @@ public class MiniBot extends Robot {
 
 		lift = new Lift( hardwareMap, "lift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES );
 
-		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
+//		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
+
+//		claw = new RotatingClaw( hardwareMap );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}
