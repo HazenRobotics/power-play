@@ -31,6 +31,8 @@ public class MotorTest extends OpMode {
 	@Override
 	public void loop( ) {
 
+		motor[selected].setPower( -controller.right_stick_y );
+
 		if( controller.dpad_up.onPress( ) ) {
 			increment( 1, maxSelect );
 		} else if( controller.dpad_down.onPress( ) ) {
