@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp(name = "SwerveTeleOp", group = "Test")
-//@Disabled
+@Disabled
 public class SwerveTeleOp extends OpMode {
 
 	DcMotor leftMotor, rightMotor;

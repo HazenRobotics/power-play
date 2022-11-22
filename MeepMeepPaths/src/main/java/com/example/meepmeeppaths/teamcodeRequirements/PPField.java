@@ -1,6 +1,7 @@
 package com.example.meepmeeppaths.teamcodeRequirements;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 /**
  * Stores information about the field so that it can represent a digital "map" of the field.
@@ -16,6 +17,8 @@ public class PPField {
 	public static final float TILE_SIZE = 22.75f;
 	public static final float TILE_CONNECTOR = 0.75f;
 
+	public static final float THREE_HALVES_TILE = 3f / 2f * TILE_SIZE;
+
 	public static final float FIELD_SIZE = (TILE_SIZE * 6 + TILE_CONNECTOR * 5);
 	//	private static final float MM_TARGET_HEIGHT = (6) * mmPerInch;
 	public static final float HALF_FIELD = FIELD_SIZE / 2;
@@ -30,13 +33,13 @@ public class PPField {
 		return n * MM_PER_INCH;
 	}
 
-	public static Pose2d toMM( Pose2d n ) {
+	public static Vector2d toMM( Vector2d n ) {
 		return n.times( MM_PER_INCH );
 	}
 
-	public static Pose2d[] toMM( Pose2d... n ) {
-		Pose2d[] temp = n.clone( );
-		for( Pose2d pose : temp )
+	public static Vector2d[] toMM( Vector2d... n ) {
+		Vector2d[] temp = n.clone( );
+		for( Vector2d pose : temp )
 			pose.times( MM_PER_INCH );
 		return temp;
 	}
@@ -77,8 +80,8 @@ public class PPField {
 	 * @param y value of the junction, in the range [-2,2], using field positioning
 	 * @return the field value in inches
 	 */
-	public static Pose2d getJunctionPose( int x, int y, boolean inMM ) {
-		Pose2d temp = new Pose2d( (TILE_SIZE + TILE_CONNECTOR) * x, (TILE_SIZE + TILE_CONNECTOR) * y );
+	public static Vector2d getJunctionPose( int x, int y, boolean inMM ) {
+		Vector2d temp = new Vector2d( (TILE_SIZE + TILE_CONNECTOR) * x, (TILE_SIZE + TILE_CONNECTOR) * y );
 		return inMM ? toMM( temp ) : temp;
 	}
 
@@ -105,8 +108,8 @@ public class PPField {
 			return radius;
 		}
 
-		private Pose2d[] poses( boolean inMM ) {
-			Pose2d[] poses = new Pose2d[this == Junction.GROUND ? 9 : (this == Junction.LOW ? 8 : 4)];
+		private Vector2d[] poses( boolean inMM ) {
+			Vector2d[] poses = new Vector2d[this == Junction.GROUND ? 9 : (this == Junction.LOW ? 8 : 4)];
 
 			int i = 0;
 			for( int x = 2; x >= -2; x-- )
