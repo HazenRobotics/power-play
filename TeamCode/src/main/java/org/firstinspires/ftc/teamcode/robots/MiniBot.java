@@ -36,7 +36,7 @@ public class MiniBot extends Robot {
 	//	public Lift horizontalLift;
 //	public Turret turret;
 //	public Claw claw;
-//	public RotatingClaw claw;
+	public RotatingClaw claw;
 	public SignalUtil signalUtil;
 
 	public static final float ROBOT_LENGTH = 12.25f;
@@ -77,7 +77,7 @@ public class MiniBot extends Robot {
 
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
-//		claw = new RotatingClaw( hardwareMap );
+		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0, 0.5 } );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}
@@ -152,10 +152,10 @@ public class MiniBot extends Robot {
 			tilePos = 1;
 
 		if( red ) {
-			x = right ? (THREE_HALVES_TILE + tilePos * (TILE_SIZE+3)) : -(THREE_HALVES_TILE - tilePos * (TILE_SIZE+3));
+			x = right ? (THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3)) : -(THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3));
 			y = -THREE_HALVES_TILE;
 		} else {
-			x = right ? -(THREE_HALVES_TILE + tilePos * (TILE_SIZE+3)) : (THREE_HALVES_TILE - tilePos * (TILE_SIZE+3));
+			x = right ? -(THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3)) : (THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3));
 			y = THREE_HALVES_TILE;
 		}
 

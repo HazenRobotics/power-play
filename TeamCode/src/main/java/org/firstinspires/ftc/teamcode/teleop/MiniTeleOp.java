@@ -95,20 +95,21 @@ public class MiniTeleOp extends OpMode {
 		}
 
 		// g1/g2 a: toggle claw
-//		if( controller1.a.onPress( ) || controller2.a.onPress( ) ) {
-//			telemetry.addLine( "on a press" );
-//			if( opened )
-//				robot.claw.close( );
-//			else
-//				robot.claw.open( );
-//			opened = !opened;
-//		}
+		if( controller1.a.onPress( ) || controller2.a.onPress( ) ) {
+			telemetry.addLine( "on a press" );
+			if( opened )
+				robot.claw.close( );
+			else
+				robot.claw.open( );
+			opened = !opened;
+		}
 
 		// g1/g2 bumpers: rotate claw
-//		if( controller1.left_bumper.onHeldFor( 100 ) || controller2.left_bumper.onHeldFor( 100 ) )
-//			robot.claw.rotate( robot.claw.getRotatePos() - 0.005 );
-//		else if( controller1.right_bumper.onHeldFor( 100 ) || controller2.right_bumper.onHeldFor( 100 ) )
-//			robot.claw.rotate( robot.claw.getRotatePos() + 0.005 );
+		int holdTime = 500;
+		if( controller1.left_bumper.onHeldFor( holdTime ) || controller2.left_bumper.onHeldFor( holdTime ) )
+			robot.claw.rotate( robot.claw.getRotatePos() - 0.005 );
+		else if( controller1.right_bumper.onHeldFor( holdTime ) || controller2.right_bumper.onHeldFor( holdTime ) )
+			robot.claw.rotate( robot.claw.getRotatePos() + 0.005 );
 
 		if( gamepad1.y )
 			robot.lift.moveDistancePower( 1, 10, true );
