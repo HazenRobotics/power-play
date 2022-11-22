@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.drives;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+import static java.lang.Math.sqrt;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.util.Angle;
@@ -13,14 +16,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.text.DecimalFormat;
+
 public class DifferentialSwerveDrive implements Drive {
 
-	public DcMotorEx leftTop;
-	public DcMotorEx leftBottom;
-	public DcMotorEx rightTop;
-	public DcMotorEx rightBottom;
+	public DcMotorEx topLeft;
+	public DcMotorEx bottomLeft;
+	public DcMotorEx topRight;
+	public DcMotorEx bottomRight;
 
-	final double PULSES_PER_REVOLUTION = 250; // 537.7
+	final double PULSES_PER_REVOLUTION = 560; // 537.7
 
 	private State currentState = State.STOPPED;
 
@@ -35,53 +40,63 @@ public class DifferentialSwerveDrive implements Drive {
 	public double storedMaxAngularVel;
 
 	public double wheelBase;
-
+	/**
+	 * sussy balls
+	 */
 	int ticksInRotation = 250;
+
+	double driveWeight = 1;
+	double rotateWeight = 1;
+
+	double headingWeight = 1;
 
 	final double TWO_PI = 2 * Math.PI;
 
 	double MAX_VELOCITY = 5 * TWO_PI; // Radians per seconds
 
 	public DifferentialSwerveDrive( HardwareMap hardwareMap ) {
-		this( hardwareMap, "leftTop", "leftBottom", "rightTop", "rightBottom" );
-	}
-
-	public DifferentialSwerveDrive( HardwareMap hardwareMap, String leftTopName, String rightTopName, String leftBottomName, String rightBottomName ) {
-		setUpMotors( hardwareMap, leftTopName, rightTopName, leftBottomName, rightBottomName );
+		this( hardwareMap, "topLeft", "bottomLeft", "topRight", "bottomRight" );
 	}
 
 	/**
 	 * Sets up motors from the hardware map
 	 *
 	 * @param hardwareMap     robot's hardware map
-	 * @param rightTopName    name of left top motor in the hardware map
-	 * @param leftTopName     name of left bottom motor in the hardware map
-	 * @param rightBottomName name of right top motor in the hardware map
-	 * @param leftBottomName  name of right bottom motor in the hardware map
+	 * @param topLeftName     name of left bottom motor in the hardware map
+	 * @param bottomLeftName  name of right bottom motor in the hardware map
+	 * @param topRightName    name of left top motor in the hardware map
+	 * @param bottomRightName name of right top motor in the hardware map
 	 */
-	private void setUpMotors( HardwareMap hardwareMap, String leftTopName, String rightTopName, String leftBottomName, String rightBottomName ) {
-		leftTop = hardwareMap.get( DcMotorEx.class, leftTopName );
-		rightTop = hardwareMap.get( DcMotorEx.class, rightTopName );
-		leftBottom = hardwareMap.get( DcMotorEx.class, leftBottomName );
-		rightBottom = hardwareMap.get( DcMotorEx.class, rightBottomName );
+	public DifferentialSwerveDrive( HardwareMap hardwareMap, String topLeftName, String bottomLeftName, String topRightName, String bottomRightName ) {
+		topLeft = hardwareMap.get( DcMotorEx.class, topLeftName );
+		bottomLeft = hardwareMap.get( DcMotorEx.class, bottomLeftName );
+		topRight = hardwareMap.get( DcMotorEx.class, topRightName );
+		bottomRight = hardwareMap.get( DcMotorEx.class, bottomRightName );
 
-		setMotorDirections( FORWARD, FORWARD, FORWARD, FORWARD );
+//		setMotorDirections( FORWARD, FORWARD, FORWARD, FORWARD );
+		setMotorDirections( REVERSE, REVERSE, REVERSE, REVERSE );
 		setZeroPowerBehavior( BRAKE, BRAKE, BRAKE, BRAKE );
-		//setRunMode(STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER );
+		setRunMode( STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER, STOP_AND_RESET_ENCODER );
+		setRunMode( RUN_USING_ENCODER, RUN_USING_ENCODER, RUN_USING_ENCODER, RUN_USING_ENCODER );
 	}
 
-	public void setUpWheelRatios( double wheelRadius, double wheelGearRatio, double rotateGearRadius, double wheelGearRadius ) {
+	public void setUpWheelRatios( double wheelRadius, double wheelGearRatio, double rotateGearRadius, double rotateGearRatio ) {
 
 		this.wheelRadius = wheelRadius;
 		this.wheelGearRatio = wheelGearRatio;
 
 		this.rotateGearRadius = rotateGearRadius;
-		this.rotateGearRatio = wheelGearRadius;
+		this.rotateGearRatio = rotateGearRatio;
 
-		ticksInRotation = Drive.convertDistTicks( TWO_PI, TWO_PI * rotateGearRadius, rotateGearRatio, PULSES_PER_REVOLUTION );
+		ticksInRotation = Drive.convertDistTicks( TWO_PI, TWO_PI * rotateGearRadius, this.rotateGearRatio, PULSES_PER_REVOLUTION );
 
 		storedMaxAngularPow = 2 / wheelBase;
 		storedMaxAngularVel = 2 * maxAngularVelocity / wheelBase;
+	}
+
+	public void setMovementWeights( double driveWeight, double rotateWeight ) {
+		this.driveWeight = driveWeight;
+		this.rotateWeight = rotateWeight;
 	}
 
 	/**
@@ -103,7 +118,7 @@ public class DifferentialSwerveDrive implements Drive {
 	 * @return the number of ticks the motor hub has rotated
 	 */
 	public int getWheelRotation( DcMotorEx topMotor, DcMotorEx bottomMotor ) {
-		return topMotor.getCurrentPosition( ) - bottomMotor.getCurrentPosition( ) / 2;
+		return (topMotor.getCurrentPosition( ) + bottomMotor.getCurrentPosition( )) / 2;
 	}
 
 	/**
@@ -113,7 +128,14 @@ public class DifferentialSwerveDrive implements Drive {
 	 * @return the number of angleUnit the motor hub has rotated
 	 */
 	public double getWheelRotation( DcMotorEx topMotor, DcMotorEx bottomMotor, AngleUnit angleUnit ) {
-		double radians = Drive.convertTicksDist( getWheelRotation( topMotor, bottomMotor ), TWO_PI * rotateGearRadius, rotateGearRatio, PULSES_PER_REVOLUTION );
+		int rotatedTicks = getWheelRotation( topMotor, bottomMotor );
+		double rotations = rotatedTicks / (PULSES_PER_REVOLUTION * 4/*rotateGearRatio*/);
+		double radians = rotations * TWO_PI;
+//		System.out.println( "average position: " + rotatedTicks );
+//		System.out.println( "rotations: " + rotations );
+//		System.out.println( "degrees rotated: " + Math.toDegrees( radians ) );
+
+//		double radians = Drive.convertTicksDist( rotatedTicks, TWO_PI * rotateGearRadius, rotateGearRatio, PULSES_PER_REVOLUTION );
 		return (angleUnit == AngleUnit.RADIANS) ? radians : Math.toDegrees( radians );
 	}
 
@@ -141,78 +163,126 @@ public class DifferentialSwerveDrive implements Drive {
 		return normalizeVectorAngle( vector.angle( ) );
 	}
 
-	// drive logic
-	/*
-	drive: similar power to everything
-		strafe: if wheel too far left, turn hub right more
-				if wheel too far right, turn hub left more
-	if rotate right:
-		move wheels toward 0 (straight of the robot) and set wheel powers opposite each other
-			if wheel too far left, turn hub right more
-			if wheel too far right, turn hub left more
-	 */
+	public double removeNegZero( double number ) {
+		return number != 0 ? number : 0.0;
+	}
 
 	public void move( double drive, double strafe, double rotate ) {
-		move( new Vector2d( strafe, drive ), rotate );
+
+//		Vector2d move = new Vector2d( drive, strafe );
+//
+//		double moveX = move.getX( );
+//		double moveY = move.getY( );
+//
+//		double power = sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) );
+
+		move( new Vector2d( drive, strafe ), removeNegZero( rotate ) ); // this one
+
+//		move( Angle.norm( Math.atan2( strafe, drive ) ), sqrt( drive * drive + strafe * strafe - (drive * drive * strafe * strafe) ), removeNegZero( rotate ), 1 );
 	}
 
-	public void move( Vector2d strafe, double rotate ) {
-
-		double leftRotation = getWheelRotation( leftTop, leftBottom, AngleUnit.RADIANS );
-		double rightRotation = getWheelRotation( rightTop, rightBottom, AngleUnit.RADIANS );
-
-		double targetHubAngle = normalizeVectorAngle( strafe );
-//		double targetRotateAngle = 0; // perpendicular to robot's point of rotation
-
-		double normPower = strafe.norm( ) * MAX_VELOCITY;
-		double angularPower = rotate * storedMaxAngularPow;
-
-		double leftDrivePow = normPower + angularPower;
-		double rightDrivePow = normPower - angularPower;
-
-		double leftStrafePow = normPower * normalizeAngle( targetHubAngle - leftRotation );
-		double rightStrafePow = normPower * normalizeAngle( targetHubAngle - rightRotation );
-
-		double leftRotatePow = angularPower * normalizeAngle( /*targetRotateAngle*/ -leftRotation );
-		double rightRotatePow = angularPower * normalizeAngle( /*targetRotateAngle*/ -rightRotation );
-
-		// if the target angle = the current angle (of the hubs) then it will just drive
-
-		leftTop.setPower( leftDrivePow + leftStrafePow + leftRotatePow );
-		leftBottom.setPower( leftDrivePow - leftStrafePow - leftRotatePow );
-
-		rightTop.setPower( rightDrivePow + rightStrafePow + rightRotatePow );
-		rightBottom.setPower( rightDrivePow - rightStrafePow - rightRotatePow );
+	public boolean valueBetweenAB( double input, double a, double b, boolean inclusive ) {
+		return (!inclusive && input > a && input < b) || (inclusive && input >= a && input <= b);
 	}
 
-	public void moveVelocity( Vector2d strafe, double rotate ) {
+	private void move( Vector2d move, double rotate ) {
+		DecimalFormat decimalFormat = new DecimalFormat( "0.000" );
+		rotate /= 2;
+//		rotate = 0;
 
-		double leftRotation = getWheelRotation( leftTop, leftBottom, AngleUnit.RADIANS );
-		double rightRotation = getWheelRotation( rightTop, rightBottom, AngleUnit.RADIANS );
+		double moveX = move.getX( );
+		double moveY = move.getY( );
 
-		double targetHubAngle = normalizeVectorAngle( strafe );
-//		double targetRotateAngle = 0; // perpendicular to robot's point of rotation
+		double heading = move.angle( );
 
-		double normVelocity = strafe.norm( ) * MAX_VELOCITY;
-		double angularVelocity = rotate * storedMaxAngularVel;
+		System.out.println( "heading: " + Math.toDegrees( heading ) );
 
-		double leftDriveVel = normVelocity + angularVelocity;
-		double rightDriveVel = normVelocity - angularVelocity;
+		// if target heading
+		double leftTargetHeading = heading ;//- heading * Math.abs( rotate );
+		double rightTargetHeading = heading;// + heading * Math.abs( rotate );
+//		System.out.println( "leftTargetHeading: " + Math.toDegrees( leftTargetHeading ) );
+//		System.out.println( "rightTargetHeading: " + Math.toDegrees( rightTargetHeading ) );
 
-		double leftStrafeVel = normVelocity * normalizeAngle( targetHubAngle - leftRotation );
-		double rightStrafeVel = normVelocity * normalizeAngle( targetHubAngle - rightRotation );
+		double targetHubAngle = heading - Math.abs( rotate ) * heading; // Angle.norm( Math.atan2( moveY, moveX ) ); // 0 is straight, pi/2 (90) is perp (to the right)
+		double power = sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) );
 
-		double leftRotateVel = angularVelocity * normalizeAngle( /* targetRotateAngle */ -leftRotation );
-		double rightRotateVel = angularVelocity * normalizeAngle( /* targetRotateAngle */ -rightRotation );
+		double leftRotation = getWheelRotation( topLeft, bottomLeft, AngleUnit.RADIANS );
+		double rightRotation = getWheelRotation( topRight, bottomRight, AngleUnit.RADIANS );
 
-		// if the target angle = the current angle (of the hubs) then it will just drive
+//		double angularPower = rotate * storedMaxAngularPow;
 
-		leftTop.setVelocity( leftDriveVel + leftStrafeVel + leftRotateVel, AngleUnit.RADIANS );
-		leftBottom.setVelocity( leftDriveVel - leftStrafeVel - leftRotateVel, AngleUnit.RADIANS );
+		double leftTurnAngle = leftTargetHeading % Math.PI - (leftRotation % Math.PI + TWO_PI) % Math.PI;
 
-		rightTop.setVelocity( rightDriveVel + rightStrafeVel + rightRotateVel, AngleUnit.RADIANS );
-		rightBottom.setVelocity( rightDriveVel - rightStrafeVel - rightRotateVel, AngleUnit.RADIANS );
+		if( Math.abs( leftTurnAngle ) > Math.PI / 2 )
+			leftTurnAngle -= Math.signum( leftTurnAngle ) * Math.PI;
+		double leftTurnPower = 2 * leftTurnAngle / Math.PI;
 
+		double rightTurnAngle = rightTargetHeading % Math.PI - (rightRotation % Math.PI + TWO_PI) % Math.PI;
+		if( Math.abs( rightTurnAngle ) > Math.PI / 2 )
+			rightTurnAngle -= Math.signum( rightTurnAngle ) * Math.PI;
+		double rightTurnPower = 2 * rightTurnAngle / Math.PI;
+
+		leftRotation = (leftRotation % TWO_PI + TWO_PI) % TWO_PI;
+		rightRotation = (rightRotation % TWO_PI + TWO_PI) % TWO_PI;
+
+		boolean leftForward = valueBetweenAB( leftRotation, leftTargetHeading - Math.toRadians( 90 ), leftTargetHeading + Math.toRadians( 90 ), false ) || valueBetweenAB( leftRotation, leftTargetHeading + Math.toRadians( 270 ), leftTargetHeading + Math.toRadians( 450 ), false );
+		boolean rightForward = valueBetweenAB( rightRotation, rightTargetHeading - Math.toRadians( 90 ), rightTargetHeading + Math.toRadians( 90 ), false ) || valueBetweenAB( rightRotation, rightTargetHeading + Math.toRadians( 270 ), rightTargetHeading + Math.toRadians( 450 ), false );
+
+		// sets direction of power
+		double leftDrivePow = power * (leftForward ? 1 : -1);
+		double rightDrivePow = power * (rightForward ? 1 : -1);
+
+//		System.out.println( "leftDrivePow: " + leftDrivePow );
+//		System.out.println( "rightDrivePow: " + rightDrivePow );
+//
+//		System.out.println( "leftForward: " + Math.toDegrees(leftTargetHeading - Math.toRadians( 90 )) + " < " + Math.toDegrees(leftRotation) + " < " + Math.toDegrees(leftTargetHeading + Math.toRadians( 90 )) + ": " + leftForward );
+//		System.out.println( "rightForward: " + Math.toDegrees(rightTargetHeading - Math.toRadians( 90 )) + " < " + Math.toDegrees(rightRotation) + " < " + Math.toDegrees(rightTargetHeading + Math.toRadians( 90 )) + ": " + rightForward );
+
+		// doesn't rotate the correct way sometimes
+		leftDrivePow -= rotate;// * (leftForward ? 1 : -1);
+		rightDrivePow += rotate ;//* (rightForward ? 1 : -1);
+
+		// just for rotating (aka turning the small wheel)
+//		double leftRotatePow = angularPower * normalizeAngle( /*targetRotateAngle*/ -leftRotation );
+//		double rightRotatePow = angularPower * normalizeAngle( /*targetRotateAngle*/ -rightRotation );
+
+//		System.out.println( "targetHubAngle: " + Math.toDegrees( targetHubAngle ) + "°" );
+//		System.out.println( "rotation (l, r): " + Math.toDegrees( leftRotation ) + ", " + Math.toDegrees( rightRotation ) );
+//		System.out.println( "turn heading (l, r): " + decimalFormat.format( Math.toDegrees( leftTurnAngle ) ) + ", " + decimalFormat.format( Math.toDegrees( rightTurnAngle ) ) );
+//		System.out.println( "turn power (l, r): " + leftTurnPower + ", " + rightTurnPower );
+////		System.out.println( "right turn power (real, test 1-3): " + rightTurnPower + ", " + testPower1 + ", " + testPower2 + ", " + testPower3 );
+//		System.out.println( "drive power (l, r): " + leftDrivePow + ", " + rightDrivePow );
+//		System.out.println( "normPower: " + normPower );
+//		System.out.println( "-----------------" );
+//		System.out.println( "lD: " + decimalFormat.format( leftDrivePow ) + ", rD: " + decimalFormat.format( rightDrivePow ) );//+ ", p: " + decimalFormat.format(normPower) );
+
+		double[] powers = new double[]{
+				-leftDrivePow * driveWeight + leftTurnPower * rotateWeight,
+				leftDrivePow * driveWeight + leftTurnPower * rotateWeight,
+				rightDrivePow * driveWeight + rightTurnPower * rotateWeight,
+				-rightDrivePow * driveWeight + rightTurnPower * rotateWeight
+		};
+
+		double max = 1;
+		for( int i = 0; i < powers.length; i++ )
+			if( Math.abs( powers[i] ) > max )
+				max = Math.abs( powers[i] );
+
+		topLeft.setPower( powers[0] / max );
+		bottomLeft.setPower( powers[1] / max );
+
+		topRight.setPower( powers[2] / max );
+		bottomRight.setPower( powers[3] / max );
+
+//		topLeft.setPower( (-leftDrivePow + leftTurnPower) / denom );
+//		bottomLeft.setPower( (leftDrivePow + leftTurnPower) / denom );
+//
+//		topRight.setPower( (rightDrivePow + rightTurnPower) / denom );
+//		bottomRight.setPower( (-rightDrivePow + rightTurnPower) / denom );
+	}
+
+	public static String format( double input, double decimals ) {
+		return String.format( "%" + Integer.toString( (int) input ).length( ) + "." + decimals + "f", input );
 	}
 
 	@Override
@@ -226,43 +296,40 @@ public class DifferentialSwerveDrive implements Drive {
 		double targetHubAngle = normalizeVectorAngle( strafe );
 		double power = strafe.norm( );
 
-		double leftStrafePow = normalizeAngle( targetHubAngle - getWheelRotation( leftTop, leftBottom, AngleUnit.RADIANS ) );
-		double rightStrafePow = normalizeAngle( targetHubAngle - getWheelRotation( rightTop, rightBottom, AngleUnit.RADIANS ) );
+		double leftStrafePow = normalizeAngle( targetHubAngle - getWheelRotation( topLeft, bottomLeft, AngleUnit.RADIANS ) );
+		double rightStrafePow = normalizeAngle( targetHubAngle - getWheelRotation( topRight, bottomRight, AngleUnit.RADIANS ) );
 
 		// if the target angle = the current angle (of the hubs) then it will just drive
 
-		leftTop.setPower( power * (1 + leftStrafePow) ); // norm + norm * strafe
-		leftBottom.setPower( power * (1 - leftStrafePow) ); // norm - norm * strafe
+		topLeft.setPower( power * (1 + leftStrafePow) ); // norm + norm * strafe
+		bottomLeft.setPower( power * (1 - leftStrafePow) ); // norm - norm * strafe
 
-		rightTop.setPower( power * (1 + rightStrafePow) ); // norm + norm * strafe
-		rightBottom.setPower( power * (1 - rightStrafePow) ); // norm - norm * strafe
+		topRight.setPower( power * (1 + rightStrafePow) ); // norm + norm * strafe
+		bottomRight.setPower( power * (1 - rightStrafePow) ); // norm - norm * strafe
 	}
 
 	@Override
 	public void move( double power ) {
 
-		rotateWheelToPos( power, 0, leftTop, leftBottom, true );
-		rotateWheelToPos( power, 0, rightTop, rightBottom, true );
-
-		leftTop.setPower( power );
-		leftBottom.setPower( power );
-		rightTop.setPower( power );
-		rightBottom.setPower( power );
+		topLeft.setPower( power );
+		bottomLeft.setPower( power );
+		topRight.setPower( power );
+		bottomRight.setPower( power );
 	}
 
 	@Override
 	public void turn( double power ) {
 
-		double leftRotation = getWheelRotation( leftTop, leftBottom, AngleUnit.RADIANS );
-		double rightRotation = getWheelRotation( rightTop, rightBottom, AngleUnit.RADIANS );
+		double leftRotation = getWheelRotation( topLeft, bottomLeft, AngleUnit.RADIANS );
+		double rightRotation = getWheelRotation( topRight, bottomRight, AngleUnit.RADIANS );
 
 		double targetRotateAngle = 0; // perpendicular to robot's point of rotation
 
-		leftTop.setPower( power );
-		leftBottom.setPower( power * normalizeAngle( targetRotateAngle - leftRotation ) );
+		topLeft.setPower( power );
+		bottomLeft.setPower( power * normalizeAngle( targetRotateAngle - leftRotation ) );
 
-		rightTop.setPower( power );
-		rightBottom.setPower( power * normalizeAngle( targetRotateAngle - rightRotation ) );
+		topRight.setPower( power );
+		bottomRight.setPower( power * normalizeAngle( targetRotateAngle - rightRotation ) );
 
 	}
 
@@ -274,64 +341,6 @@ public class DifferentialSwerveDrive implements Drive {
 		int target = Drive.convertDistTicks( distance, TWO_PI * wheelRadius, rotateGearRadius, PULSES_PER_REVOLUTION );
 		topMotor.setTargetPosition( target );
 		topMotor.setTargetPosition( target );
-
-		topMotor.setPower( power );
-		bottomMotor.setPower( -power );
-
-		new Thread( ( ) -> {
-			while( topMotor.isBusy( ) || bottomMotor.isBusy( ) ) ;
-			topMotor.setPower( 0 );
-			bottomMotor.setPower( 0 );
-		} ).start( );
-	}
-
-	public void driveWheel( double power, double radians, DcMotorEx topMotor, DcMotorEx bottomMotor ) {
-
-		topMotor.setMode( RunMode.RUN_TO_POSITION );
-		bottomMotor.setMode( RunMode.RUN_TO_POSITION );
-
-		int target = Drive.convertDistTicks( radians, TWO_PI * rotateGearRadius, wheelGearRatio, PULSES_PER_REVOLUTION );
-		topMotor.setTargetPosition( target );
-		topMotor.setTargetPosition( target );
-
-		topMotor.setPower( power );
-		bottomMotor.setPower( -power );
-
-		new Thread( ( ) -> {
-			while( topMotor.isBusy( ) || bottomMotor.isBusy( ) ) ;
-			topMotor.setPower( 0 );
-			bottomMotor.setPower( 0 );
-		} ).start( );
-	}
-
-	/**
-	 * @param power                the power to rotate the wheel with
-	 * @param targetAngle          the distance in radians to rotate
-	 * @param topMotor             the motor controlling the wheel hub's upper gear
-	 * @param bottomMotor          the motor controlling the wheel hub's lower gear
-	 * @param moveClosestDirection true: rotate closer towards the target angle (overrides ±power), false: rotates based on ± of power
-	 */
-	public void rotateWheelToPos( double power, double targetAngle, DcMotorEx topMotor, DcMotorEx bottomMotor, boolean moveClosestDirection ) {
-
-		// rotation = difference between motors / 2. Distance = Math.max( motors ) - difference
-
-		int distanceRotated = getWheelRotation( topMotor, bottomMotor );
-//		int distanceTravelled = Math.max( topMotor.getCurrentPosition( ), bottomMotor.getCurrentPosition( ) ) - distanceRotated;
-
-		if( moveClosestDirection )
-			power = Math.abs( power ) * (distanceRotated % ticksInRotation > ticksInRotation / 2 ? 1 : -1);
-
-		rotateWheel( power, targetAngle, topMotor, bottomMotor );
-	}
-
-	public void rotateWheel( double power, double radians, DcMotorEx topMotor, DcMotorEx bottomMotor ) {
-
-		topMotor.setMode( RunMode.RUN_TO_POSITION );
-		bottomMotor.setMode( RunMode.RUN_TO_POSITION );
-
-		int target = Drive.convertDistTicks( radians, TWO_PI * rotateGearRadius, rotateGearRadius, PULSES_PER_REVOLUTION );
-		topMotor.setTargetPosition( target );
-		topMotor.setTargetPosition( -target );
 
 		topMotor.setPower( power );
 		bottomMotor.setPower( -power );
@@ -355,69 +364,67 @@ public class DifferentialSwerveDrive implements Drive {
 	}
 
 	private void updateState( ) {
-		if( leftTop.getPower( ) != 0 || rightTop.getPower( ) != 0 || leftBottom.getPower( ) != 0 || rightBottom.getPower( ) != 0 )
-			currentState = State.MOVING;
-		else
-			currentState = State.STOPPED;
+		currentState = (topLeft.getPower( ) != 0 || topRight.getPower( ) != 0 || bottomLeft.getPower( ) != 0 || bottomRight.getPower( ) != 0)
+				? State.MOVING : State.STOPPED;
 	}
 
 	/**
 	 * Sets specified power to the motors
 	 *
-	 * @param leftTopPower     power at which to run the front left motor.
-	 * @param leftBottomPower  power at which to run the back left motor.
-	 * @param rightTopPower    power at which to run the front right motor.
-	 * @param rightBottomPower power at which to run the back right motor.
+	 * @param topLeftPower     power at which to run the front left motor.
+	 * @param bottomLeftPower  power at which to run the back left motor.
+	 * @param topRightPower    power at which to run the front right motor.
+	 * @param bottomRightPower power at which to run the back right motor.
 	 */
-	protected void setMotorPower( double leftTopPower, double leftBottomPower, double rightTopPower, double rightBottomPower ) {
-		leftTop.setPower( leftTopPower );
-		leftBottom.setPower( leftBottomPower );
-		rightTop.setPower( rightTopPower );
-		rightBottom.setPower( rightBottomPower );
+	protected void setMotorPower( double topLeftPower, double bottomLeftPower, double topRightPower, double bottomRightPower ) {
+		topLeft.setPower( topLeftPower );
+		bottomLeft.setPower( bottomLeftPower );
+		topRight.setPower( topRightPower );
+		bottomRight.setPower( bottomRightPower );
 	}
 
 	/**
 	 * Sets the direction of the motors
 	 *
-	 * @param leftTopDirection     direction of the front left motor
-	 * @param leftBottomDirection  direction of the back left motor
-	 * @param rightTopDirection    direction of the front right motor
-	 * @param rightBottomDirection direction of the back right motor
+	 * @param topLeftDirection     direction of the front left motor
+	 * @param bottomLeftDirection  direction of the back left motor
+	 * @param topRightDirection    direction of the front right motor
+	 * @param bottomRightDirection direction of the back right motor
 	 */
-	public void setMotorDirections( Direction leftTopDirection, Direction leftBottomDirection, Direction rightTopDirection, Direction rightBottomDirection ) {
-		leftTop.setDirection( leftTopDirection );
-		leftBottom.setDirection( leftBottomDirection );
-		rightTop.setDirection( rightTopDirection );
-		rightBottom.setDirection( rightBottomDirection );
+	public void setMotorDirections( Direction topLeftDirection, Direction bottomLeftDirection, Direction topRightDirection, Direction bottomRightDirection ) {
+		topLeft.setDirection( topLeftDirection );
+		bottomLeft.setDirection( bottomLeftDirection );
+		topRight.setDirection( topRightDirection );
+		bottomRight.setDirection( bottomRightDirection );
 	}
 
 	/**
 	 * Sets the zero power behavior of the motors
 	 *
-	 * @param leftTopBehavior     zero power behavior of the front left motor
-	 * @param leftBottomBehavior  zero power behavior of the back left motor
-	 * @param rightTopBehavior    zero power behavior of the front right motor
-	 * @param rightBottomBehavior zero power behavior of the back right motor
+	 * @param topLeftBehavior     zero power behavior of the front left motor
+	 * @param bottomLeftBehavior  zero power behavior of the back left motor
+	 * @param topRightBehavior    zero power behavior of the front right motor
+	 * @param bottomRightBehavior zero power behavior of the back right motor
 	 */
-	public void setZeroPowerBehavior( ZeroPowerBehavior leftTopBehavior, ZeroPowerBehavior leftBottomBehavior, ZeroPowerBehavior rightTopBehavior, ZeroPowerBehavior rightBottomBehavior ) {
-		leftTop.setZeroPowerBehavior( leftTopBehavior );
-		leftBottom.setZeroPowerBehavior( leftBottomBehavior );
-		rightTop.setZeroPowerBehavior( rightTopBehavior );
-		rightBottom.setZeroPowerBehavior( rightBottomBehavior );
+	public void setZeroPowerBehavior( ZeroPowerBehavior topLeftBehavior, ZeroPowerBehavior bottomLeftBehavior, ZeroPowerBehavior topRightBehavior, ZeroPowerBehavior bottomRightBehavior ) {
+		topLeft.setZeroPowerBehavior( topLeftBehavior );
+		bottomLeft.setZeroPowerBehavior( bottomLeftBehavior );
+		topRight.setZeroPowerBehavior( topRightBehavior );
+		bottomRight.setZeroPowerBehavior( bottomRightBehavior );
 	}
 
 	/**
 	 * Sets the run modes of the motors
 	 *
-	 * @param leftTopMode     run mode of the front left motor
-	 * @param leftBottomMode  run mode of the back left motor
-	 * @param rightTopMode    run mode of the front right motor
-	 * @param rightBottomMode run mode of the back right motor
+	 * @param topLeftMode     run mode of the front left motor
+	 * @param bottomLeftMode  run mode of the back left motor
+	 * @param topRightMode    run mode of the front right motor
+	 * @param bottomRightMode run mode of the back right motor
 	 */
-	public void setRunMode( RunMode leftTopMode, RunMode rightTopMode, RunMode leftBottomMode, RunMode rightBottomMode ) {
-		leftTop.setMode( leftTopMode );
-		leftBottom.setMode( leftBottomMode );
-		rightTop.setMode( rightTopMode );
-		rightBottom.setMode( rightBottomMode );
+	public void setRunMode( RunMode topLeftMode, RunMode bottomLeftMode, RunMode topRightMode, RunMode bottomRightMode ) {
+		topLeft.setMode( topLeftMode );
+		bottomLeft.setMode( bottomLeftMode );
+		topRight.setMode( topRightMode );
+		bottomRight.setMode( bottomRightMode );
 	}
 }

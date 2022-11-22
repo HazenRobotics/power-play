@@ -1,52 +1,74 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.DifferentialSwerveDrive;
 
 @TeleOp(name = "Swerve Test TeleOp", group = "TeleOp")
-@Disabled
 public class DiffSwerveTeleOp extends OpMode {
 
 	DifferentialSwerveDrive drive;
 
-	final int LARGE_GEAR_TEETH = 102; // 6.008 / 2
-	final int WHEEL_GEAR_TEETH = 25; // 1.637 / 2
-	final double BELT_LARGE_GEAR_RADIUS = 6.531 / 2; // inches
-	final double BELT_SMALL_GEAR_RADIUS = 1.0 / 4; // inches, small gear on the pulley
-	final int BEVEL_GEAR_RATIO = 32 / 16;
+	DcMotorEx motor;
+	DcMotorEx motor2;
+
+	final double rotateGearRatio = (18 / 15.0) * (32 / 13.0) * (107 / 32.0);
+	final double wheelGearRatio = rotateGearRatio * (18 / 63.0);
 
 	@Override
 	public void init( ) {
 
-		double rotateGearRatio = BEVEL_GEAR_RATIO * BELT_LARGE_GEAR_RADIUS / BELT_SMALL_GEAR_RADIUS;
-		double wheelGearRatio = rotateGearRatio * LARGE_GEAR_TEETH / WHEEL_GEAR_TEETH;
-
-		drive = new DifferentialSwerveDrive( hardwareMap );
-		drive.setUpWheelRatios( 3.9752, wheelGearRatio, rotateGearRatio, BELT_LARGE_GEAR_RADIUS );
-		drive.setMaxAngularVelocity( Math.PI / 2 );
+		drive = new DifferentialSwerveDrive( hardwareMap, "top_left_motor", "bottom_left_motor", "top_right_motor", "bottom_right_motor" );
 		drive.setWheelBase( 14 );
+		drive.setUpWheelRatios( 2.25 / 2, wheelGearRatio, 1.703, rotateGearRatio );
+		drive.setMovementWeights( 1, 8 );
+//		drive.setMaxAngularVelocity( Math.PI / 2 );
 
-		DcMotorEx motor = hardwareMap.get( DcMotorEx.class, "frontLeft" );
-		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
-		motor.setVelocity( 5 * (2 * Math.PI), AngleUnit.RADIANS );
+//		motor = hardwareMap.get( DcMotorEx.class, "top_left_motor" );
+//		motor2 = hardwareMap.get( DcMotorEx.class, "bottom_left_motor" );
+//
+//		// with both motors at full power your max 0.9 s per rotation
+//		// 1.11 rot/sec
+//
+//		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+//		motor2.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+//		motor.setPower( 1 );
+//		motor2.setPower( 1 );
+////		motor.setVelocity( 5 * (2 * Math.PI), AngleUnit.RADIANS );
+//		doForTime( 3, ( ) -> {
+//			telemetry.addLine( "Velocity: " + motor.getVelocity( AngleUnit.RADIANS ) );
+//			telemetry.update( );
+//		} );
+//		motor.setVelocity( 0 );
+//		motor2.setPower( 0 );
+
+
+		telemetry.addLine( "Init Finished" );
+		telemetry.update( );
+	}
+
+	public void doForTime( double seconds, Runnable run ) {
 		double startTime = getRuntime( );
-		while( startTime + 5 > getRuntime( ) ) {
-			telemetry.addLine( "Velocity: " + motor.getVelocity( AngleUnit.RADIANS ) );
-			telemetry.update( );
-		}
-		motor.setVelocity( 0 );
+		while( startTime + seconds > getRuntime( ) )
+			run.run( );
 	}
 
 	@Override
 	public void loop( ) {
+		telemetry.addLine( "LY: " + -gamepad1.left_stick_y );
+		telemetry.addLine( "LX: " + gamepad1.left_stick_x );
+		telemetry.addLine( "RX: " + gamepad1.right_stick_x );
+//		telemetry.addLine( "Ld: " + motor.getCurrentPosition( ) );
+//		telemetry.addLine( "Ld: " + motor.getCurrentPosition( ) );
+		telemetry.update( );
+//		motor.setPower( -gamepad1.left_stick_y );
+//		motor2.setPower( -gamepad1.right_stick_y );
 		drive.move( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 	}
-
 
 }
