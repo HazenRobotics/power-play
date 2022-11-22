@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
@@ -121,7 +122,7 @@ public class MecanumDriveMini extends MecanumDrive {
 		// For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
 		// BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-		BNO055IMUUtil.remapZAxis( imu, AxisDirection.NEG_Y );
+		BNO055IMUUtil.remapZAxis( imu, AxisDirection.POS_Y );
 
 		frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft" );
 		backLeft = hardwareMap.get( DcMotorEx.class, "backLeft" );
@@ -156,6 +157,8 @@ public class MecanumDriveMini extends MecanumDrive {
 		// TODO: if desired, use setLocalizer() to change the localization method
 		// note: this class is a mecanum drive localizer
 		// for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+
+		setLocalizer( new TwoWheelTrackingLocalizerMini( hardwareMap, this ) );
 
 		trajectorySequenceRunner = new TrajectorySequenceRunner( follower, HEADING_PID );
 	}
