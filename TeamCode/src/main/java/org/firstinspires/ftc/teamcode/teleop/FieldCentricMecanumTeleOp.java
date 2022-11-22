@@ -1,23 +1,20 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.drives.FieldCentricMecanum;
-import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drives.FieldCentricMecanumDrive;
 
 @TeleOp(name = "FieldCentricMecanumTeleOp", group = "TeleOp")
 // @Disabled
 public class FieldCentricMecanumTeleOp extends OpMode {
 
-	FieldCentricMecanum drive;
+	FieldCentricMecanumDrive drive;
 
 	@Override
 	public void init( ) {
-		drive = new FieldCentricMecanum( hardwareMap );
+		drive = new FieldCentricMecanumDrive( hardwareMap );
 		drive.setMotorDirections(DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE , DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD);
 //		drive.setRunMode( DcMotor.RunMode.RUN_USING_ENCODER, DcMotor.RunMode.RUN_USING_ENCODER, DcMotor.RunMode.RUN_USING_ENCODER, DcMotor.RunMode.RUN_USING_ENCODER );
 	}
