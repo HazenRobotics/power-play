@@ -87,7 +87,6 @@ public class MiniTeleOp extends OpMode {
 
 		if( !movingLift )
 			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) );
-
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -119,7 +118,7 @@ public class MiniTeleOp extends OpMode {
 		dpadToLiftPos( );
 
 		// reset the lift position to its current zero position
-		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > 7.9 )
+		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > 10 )
 			robot.lift.resetLift( );
 
 		// update controllers and telemetry
