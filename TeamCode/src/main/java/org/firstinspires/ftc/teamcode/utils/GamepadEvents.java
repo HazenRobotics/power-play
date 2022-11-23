@@ -353,8 +353,8 @@ public class GamepadEvents {
 				pressedTime = 0;
 			}
 
-			if (this.getClass().toString().contains( "Button" ))
-				Robot.writeToDefaultFile( /*"Class: " + this.getClass() +*/ "Value: " + this.value + " Held Time: " + heldTime + " Pressed Time" + pressedTime, true, true );
+//			if (this.getClass().toString().contains( "Button" ))
+//				Robot.writeToDefaultFile( /*"Class: " + this.getClass() +*/ "Value: " + this.value + " Held Time: " + heldTime + " Pressed Time" + pressedTime, true, true );
 		}
 
 		/**

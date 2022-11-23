@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
+import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
@@ -20,6 +20,7 @@ public class MiniTeleOp extends OpMode {
 	GamepadEvents controller2;
 	boolean opened = true;
 	boolean movingLift = false;
+	double max = 0;
 
 	public enum Speeds {
 
@@ -61,6 +62,7 @@ public class MiniTeleOp extends OpMode {
 
 		robot = new MiniBot( this );
 		robot.lift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
+		robot.claw.setRotatePos( 0.5 );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -86,7 +88,7 @@ public class MiniTeleOp extends OpMode {
 				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) + 0.3f );
+			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) /*+ 0.3f*/ );
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -96,19 +98,23 @@ public class MiniTeleOp extends OpMode {
 		// g1/g2 a: toggle claw
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) ) {
 			telemetry.addLine( "on a press" );
-			if( opened )
-				robot.claw.close( );
-			else
-				robot.claw.open( );
-			opened = !opened;
+			robot.claw.toggle( );
+//			if( opened )
+//				robot.claw.close( );
+//			else
+//				robot.claw.open( );
+//			opened = !opened;
 		}
 
 		// g1/g2 bumpers: rotate claw
 		if( gamepad1.left_bumper || gamepad2.left_bumper )
-			robot.claw.rotateLeft();
-		else if( gamepad1.right_bumper|| gamepad2.right_bumper )
-			robot.claw.rotateRight();
+			robot.claw.rotate( -0.005 );
+		else if( gamepad1.right_bumper || gamepad2.right_bumper )
+			robot.claw.rotate( 0.005 );
 
+//		robot.claw.rotate( (gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0) );
+
+		// test
 		if( gamepad1.y )
 			robot.lift.moveDistancePower( 1, 10, true );
 
@@ -117,10 +123,11 @@ public class MiniTeleOp extends OpMode {
 		dpadToLiftPos( );
 
 		// reset the lift position to its current zero position
-		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > 10 )
-			robot.lift.resetLift( );
-
-		// update controllers and telemetry
+		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > max ) {
+			max = robot.lift.getCurrent( CurrentUnit.AMPS );
+			Robot.writeToDefaultFile( "Current: " + max, true, false );
+//			}robot.lift.resetLift( );
+		}// update controllers and telemetry
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );
@@ -154,6 +161,7 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addData( "heading y*", imu.getAngularVelocity( ).yRotationRate );
 //		telemetry.addData( "heading z", imu.getAngularVelocity( ).zRotationRate );
 //		telemetry.addLine( );
+
 		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
 		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
 		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );

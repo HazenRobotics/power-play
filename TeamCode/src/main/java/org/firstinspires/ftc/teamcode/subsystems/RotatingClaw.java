@@ -5,6 +5,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class RotatingClaw {
 
+	public enum ClawState {
+		OPEN, CLOSED;
+	}
+
+	ClawState state = ClawState.CLOSED;
+
 	Servo clawServo;
 	Servo rotationServo;
 
@@ -25,28 +31,49 @@ public class RotatingClaw {
 		return new double[]{ clawServo.getPosition( ), rotationServo.getPosition( ) };
 	}
 
-	public void rotateRight() {
-		rotate( getRotatePos() - 0.05 );
+	public void rotateRight( double rotation ) {
+
 	}
 
-	public void rotateLeft() {
-		rotate( getRotatePos() + 0.05 );
+	public void rotateRight( ) {
+		rotate( 0.05 );
 	}
 
-	public void rotate( double pos) {
+	public void rotateLeft( ) {
+		rotate( 0.05 );
+	}
+
+	public void rotate( double rotation ) {
+		setRotatePos( getRotatePos( ) + rotation );
+	}
+
+	public void setRotatePos( double pos ) {
 		rotationServo.setPosition( pos );
 	}
 
-	public double getRotatePos() {
-		return rotationServo.getPosition();
+	public double getRotatePos( ) {
+		return rotationServo.getPosition( );
 	}
 
 	public void close( ) {
 		clawServo.setPosition( clawPositions[0] );
+		state = ClawState.CLOSED;
 	}
 
 	public void open( ) {
 		clawServo.setPosition( clawPositions[1] );
+		state = ClawState.OPEN;
+	}
+
+	public void toggle( ) {
+		if( state == ClawState.OPEN )
+			close( );
+		else
+			open( );
+	}
+
+	public ClawState getState( ) {
+		return state;
 	}
 
 
