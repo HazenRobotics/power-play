@@ -58,13 +58,15 @@ public class FieldCentricMecanumDrive extends MecanumDrive{
 		double botHeading = -imu.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
 
 
-		double rotX = strafe * Math.cos(botHeading) - drive * Math.sin(botHeading);
-		double rotY = strafe * Math.sin(botHeading) + drive * Math.cos(botHeading);
+		double rotX = (strafe * 1.1) * Math.cos(botHeading) - drive * Math.sin(botHeading);
+		double rotY = (strafe * 1.1) * Math.sin(botHeading) + drive * Math.cos(botHeading);
 
-		double frontLeftPower = (rotY + rotX + rotate);
-		double backLeftPower = (rotY - rotX + rotate);
-		double frontRightPower = (rotY - rotX - rotate);
-		double backRightPower = (rotY + rotX - rotate);
+		double denom = Math.max(Math.abs(drive) + Math.abs(strafe * 1.1) + Math.abs(rotate), 1);
+
+		double frontLeftPower = (rotY + rotX + rotate) / denom;
+		double backLeftPower = (rotY - rotX + rotate) / denom;
+		double frontRightPower = (rotY - rotX - rotate) / denom;
+		double backRightPower = (rotY + rotX - rotate) / denom;
 
 		setMotorPower( frontLeftPower, backLeftPower, frontRightPower, backRightPower );
 	}
