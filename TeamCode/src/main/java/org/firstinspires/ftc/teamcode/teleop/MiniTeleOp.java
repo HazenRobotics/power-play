@@ -104,10 +104,10 @@ public class MiniTeleOp extends OpMode {
 		}
 
 		// g1/g2 bumpers: rotate claw
-		if( controller1.left_bumper.getValue() || controller2.left_bumper.getValue() )
-			robot.claw.rotate( robot.claw.getRotatePos() - 0.05 );
-		else if( controller1.right_bumper.getValue() || controller2.right_bumper.getValue() )
-			robot.claw.rotate( robot.claw.getRotatePos() + 0.05 );
+		if( gamepad1.left_bumper || gamepad2.left_bumper )
+			robot.claw.rotateLeft();
+		else if( gamepad1.right_bumper|| gamepad2.right_bumper )
+			robot.claw.rotateRight();
 
 		if( gamepad1.y )
 			robot.lift.moveDistancePower( 1, 10, true );

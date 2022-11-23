@@ -25,6 +25,14 @@ public class RotatingClaw {
 		return new double[]{ clawServo.getPosition( ), rotationServo.getPosition( ) };
 	}
 
+	public void rotateRight() {
+		rotate( getRotatePos() - 0.05 );
+	}
+
+	public void rotateLeft() {
+		rotate( getRotatePos() + 0.05 );
+	}
+
 	public void rotate( double pos) {
 		rotationServo.setPosition( pos );
 	}
