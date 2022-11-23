@@ -77,7 +77,7 @@ public class MiniBot extends Robot {
 
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
-		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0, 0.5 } );
+		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}

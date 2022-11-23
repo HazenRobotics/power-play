@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.robots.Robot;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -292,7 +294,7 @@ public class GamepadEvents {
 		 * @return if the button has been pressed
 		 */
 		public boolean onPress( ) {
-			if( stateChanged( ) && value == true ) {
+			if( stateChanged( ) && value ) {
 				pressedTime = System.currentTimeMillis( );
 				return true;
 			}
@@ -305,7 +307,7 @@ public class GamepadEvents {
 		 * @return if the button has been released
 		 */
 		public boolean onRelease( ) {
-			return stateChanged( ) && value == false;
+			return stateChanged( ) && value;
 		}
 
 		/**
@@ -344,12 +346,15 @@ public class GamepadEvents {
 		void update( boolean value ) {
 			this.previous = this.value;
 			this.value = !isLocked && value;
-			if( this.value == true && pressedTime > 0 ) {
+			if( this.value && pressedTime > 0 ) {
 				heldTime = System.currentTimeMillis( ) - pressedTime;
 			} else {
 				heldTime = 0;
 				pressedTime = 0;
 			}
+
+			if (this.getClass().toString().contains( "Button" ))
+				Robot.writeToDefaultFile( /*"Class: " + this.getClass() +*/ "Value: " + this.value + " Held Time: " + heldTime + " Pressed Time" + pressedTime, true, true );
 		}
 
 		/**

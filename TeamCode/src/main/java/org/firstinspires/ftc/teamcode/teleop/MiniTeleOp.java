@@ -86,7 +86,7 @@ public class MiniTeleOp extends OpMode {
 				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) );
+			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) + 0.3f );
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -104,11 +104,10 @@ public class MiniTeleOp extends OpMode {
 		}
 
 		// g1/g2 bumpers: rotate claw
-		int holdTime = 500;
-		if( controller1.left_bumper.onHeldFor( holdTime ) || controller2.left_bumper.onHeldFor( holdTime ) )
-			robot.claw.rotate( robot.claw.getRotatePos() - 0.005 );
-		else if( controller1.right_bumper.onHeldFor( holdTime ) || controller2.right_bumper.onHeldFor( holdTime ) )
-			robot.claw.rotate( robot.claw.getRotatePos() + 0.005 );
+		if( controller1.left_bumper.getValue() || controller2.left_bumper.getValue() )
+			robot.claw.rotate( robot.claw.getRotatePos() - 0.05 );
+		else if( controller1.right_bumper.getValue() || controller2.right_bumper.getValue() )
+			robot.claw.rotate( robot.claw.getRotatePos() + 0.05 );
 
 		if( gamepad1.y )
 			robot.lift.moveDistancePower( 1, 10, true );

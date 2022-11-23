@@ -11,12 +11,12 @@ public class RotatingClaw {
 	double[] clawPositions;
 
 	public RotatingClaw( HardwareMap hw ) {
-		this( hw, "left", "right", new double[]{ 0, 0.5 } );
+		this( hw, "claw", "clawR", new double[]{ 0, 0.5 } );
 	}
 
-	public RotatingClaw( HardwareMap hw, String left, String right, double[] clawPositions ) {
-		clawServo = hw.servo.get( left );
-		rotationServo = hw.servo.get( right );
+	public RotatingClaw( HardwareMap hw, String claw, String rotation, double[] clawPositions ) {
+		clawServo = hw.servo.get( claw );
+		rotationServo = hw.servo.get( rotation );
 
 		this.clawPositions = clawPositions;
 	}
