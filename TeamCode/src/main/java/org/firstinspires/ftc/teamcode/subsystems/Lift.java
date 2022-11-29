@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.robots.Robot;
 
 public class Lift {
 
-	final double PULSES_PER_REVOLUTION = 537.7;
-	final double GEAR_RATIO = 1;
+	double PULSES_PER_REVOLUTION;
+	double GEAR_RATIO;
 
 	public DcMotorEx motor;
 
@@ -53,7 +53,7 @@ public class Lift {
 	 */
 	public Lift( HardwareMap hardwareMap ) {
 		this( hardwareMap, "lift", true, 0,
-				0.5, 0, AngleUnit.DEGREES );
+				0.5, 0, AngleUnit.DEGREES, 537.7, 1 );
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class Lift {
 	 * @param angleUnit   the angle unit to make calculations and input variables
 	 */
 	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double posOffset,
-				 double spoolRadius, double liftAngle, AngleUnit angleUnit ) {
+				 double spoolRadius, double liftAngle, AngleUnit angleUnit, double PPR, double gearRatio ) {
 		motor = hardwareMap.get( DcMotorEx.class, motorName );
 		motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE );
 
@@ -76,6 +76,10 @@ public class Lift {
 		setSpoolRadius( spoolRadius );
 		setLiftAngle( liftAngle );
 		setAngleUnit( angleUnit );
+
+		PULSES_PER_REVOLUTION = PPR;
+		GEAR_RATIO = gearRatio;
+
 
 		resetLift( );
 		motor.setTargetPosition( 10 );

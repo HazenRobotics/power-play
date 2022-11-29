@@ -27,7 +27,7 @@ public class ClawLiftTest extends OpMode {
 		telemetry.update( );
 
 		claw = new Claw( hardwareMap, "lCLaw", "rClaw", new double[]{ 0.5, 0.75 }, new double[]{ 05, 0.57 } );
-		lift = new Lift( hardwareMap, "vLift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES );
+		lift = new Lift( hardwareMap, "lift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES, 537.7, 1 );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );

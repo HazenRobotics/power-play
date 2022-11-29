@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "ServoTester", group = "TeleOp")
-@Disabled
+//@Disabled
 public class ServoTester extends OpMode {
 
     Servo servo;
@@ -25,6 +25,12 @@ public class ServoTester extends OpMode {
             position += 0.005;
         else if (gamepad1.b)
             position -= 0.005;
+        else if (gamepad1.x)
+            position = 0;
+        else if (gamepad1.y)
+            position = 1;
+        else if (gamepad1.dpad_up)
+            position = 0.5;
 
         telemetry.addData("position: ", position);
         telemetry.update();
