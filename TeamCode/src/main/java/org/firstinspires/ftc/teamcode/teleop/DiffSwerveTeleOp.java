@@ -23,7 +23,7 @@ public class DiffSwerveTeleOp extends OpMode {
 	@Override
 	public void init( ) {
 
-		drive = new DifferentialSwerveDrive( hardwareMap, "top_left_motor", "bottom_left_motor", "top_right_motor", "bottom_right_motor" );
+		drive = new DifferentialSwerveDrive( hardwareMap, "topLeft", "bottomLeft", "topRight", "bottomRight" );
 		drive.setWheelBase( 14 );
 		drive.setUpWheelRatios( 2.25 / 2, wheelGearRatio, 1.703, rotateGearRatio );
 		drive.setMovementWeights( 1, 8 );
