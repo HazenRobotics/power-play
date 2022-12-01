@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.RotatingClaw;
+import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
@@ -36,7 +37,8 @@ public class MiniBot extends Robot {
 	//	public Lift horizontalLift;
 //	public Turret turret;
 //	public Claw claw;
-	public RotatingClaw claw;
+//	public RotatingClaw claw;
+	public TwoAxesClaw claw;
 	public SignalUtil signalUtil;
 
 	public static final float ROBOT_LENGTH = 12.25f;
@@ -77,7 +79,10 @@ public class MiniBot extends Robot {
 
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
-		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
+//		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
+
+		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.73, 0.53, 0.3 } );
+
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}
@@ -88,6 +93,11 @@ public class MiniBot extends Robot {
 //			telemetry.addLine(  startTime + seconds + " > " + opMode.getRuntime( ) );
 //			telemetry.update( );b
 		}
+	}
+
+	public void initSubsystems() {
+		signalUtil.init( );
+		claw.setState( TwoAxesClaw.ClawState.CLOSED );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {

@@ -23,8 +23,7 @@ public class JustParkRedLeft extends LinearOpMode {
 
 		robot = new MiniBot( this );
 
-		robot.signalUtil.init( );
-		robot.claw.close( );
+		robot.initSubsystems( );
 
 		telemetry.addLine( "Ready!" );
 		telemetry.update( );

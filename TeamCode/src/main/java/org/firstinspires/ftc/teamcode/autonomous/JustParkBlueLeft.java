@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @Autonomous(group = "A")
@@ -23,8 +24,7 @@ public class JustParkBlueLeft extends LinearOpMode {
 
 		robot = new MiniBot( this );
 
-		robot.signalUtil.init( );
-		robot.claw.close( );
+		robot.initSubsystems( );
 
 		telemetry.addLine( "Ready!" );
 		telemetry.update( );

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,7 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.RotatingClaw;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp(group = "Test")
-//@Disabled
+@Disabled
 public class RotatingClawTest extends OpMode {
 
 	RotatingClaw claw;

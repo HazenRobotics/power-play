@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -62,7 +63,7 @@ public class MiniTeleOp extends OpMode {
 
 		robot = new MiniBot( this );
 		robot.lift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
-		robot.claw.setRotatePos( 0.5 );
+		robot.claw.init( );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -97,20 +98,14 @@ public class MiniTeleOp extends OpMode {
 
 		// g1/g2 a: toggle claw
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) ) {
-			telemetry.addLine( "on a press" );
 			robot.claw.toggle( );
-//			if( opened )
-//				robot.claw.close( );
-//			else
-//				robot.claw.open( );
-//			opened = !opened;
 		}
 
 		// g1/g2 bumpers: rotate claw
 		if( gamepad1.left_bumper || gamepad2.left_bumper )
-			robot.claw.rotate( -0.005 );
+			robot.claw.setState( TwoAxesClaw.HorizontalClawState.LEFT );
 		else if( gamepad1.right_bumper || gamepad2.right_bumper )
-			robot.claw.rotate( 0.005 );
+			robot.claw.setState( TwoAxesClaw.HorizontalClawState.RIGHT );
 
 //		robot.claw.rotate( (gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0) );
 

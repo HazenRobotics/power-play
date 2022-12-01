@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
  */
 @Config
 @Autonomous(group = "drive")
-//@Disabled
+@Disabled
 public class TrackWidthTuner extends LinearOpMode {
     public static double ANGLE = 180; // deg
     public static int NUM_TRIALS = 5;
