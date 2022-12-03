@@ -3,20 +3,24 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import android.util.Log;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 
-public class ServoEncoderTurret {
+public class ServoGyroTurret {
 
 	CRServo servo;
-	DcMotorEx encoder;
+
+	IntegratingGyroscope gyro;
+	ModernRoboticsI2cGyro modernRoboticsI2cGyro;
 
 	AngleUnit unit;
 
@@ -34,24 +38,34 @@ public class ServoEncoderTurret {
 	double leftLimit = Double.NEGATIVE_INFINITY;
 	double rightLimit = Double.POSITIVE_INFINITY;
 
-	public ServoEncoderTurret( HardwareMap hw ) {
+	public ServoGyroTurret( HardwareMap hw ) {
 		this( hw, "turret", "encoder", false, false, AngleUnit.RADIANS, 1, 1 );
 	}
 
-	public ServoEncoderTurret( HardwareMap hw, String servoName, String encoderName, boolean reverseServo, boolean reverseEncoder, AngleUnit angleUnit, double ppr, double gearRatio ) {
+	public ServoGyroTurret( HardwareMap hw, String servoName, String gyroName, boolean reverseServo, boolean reverseEncoder, AngleUnit angleUnit, double ppr, double gearRatio ) {
 		unit = angleUnit;
 
 		servo = hw.crservo.get( servoName );
-		encoder = hw.get( DcMotorEx.class, encoderName );
+
+		modernRoboticsI2cGyro = hw.get(ModernRoboticsI2cGyro.class, gyroName);
+		gyro = (IntegratingGyroscope)modernRoboticsI2cGyro;
 
 		servo.setDirection( reverseServo ? Direction.REVERSE : Direction.FORWARD );
-		encoder.setDirection( reverseEncoder ? Direction.REVERSE : Direction.FORWARD );
-		encoder.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
 
 		pulsesPerRevolution = ppr;
 		this.gearRatio = gearRatio;
 
+		calibrateGyro();
+
 //		resetTurret( );
+	}
+
+	public void calibrateGyro() {
+		Robot.writeToDefaultFile("Gyro Calibrating. Do Not Move!", true, false);
+		modernRoboticsI2cGyro.calibrate();
+		while(modernRoboticsI2cGyro.isCalibrating())
+			Robot.writeToDefaultFile("Gyro is still calibrating", true, false);
+		Robot.writeToDefaultFile("Gyro is calibrated", true, false);
 	}
 
 	public void setPower( double power ) {
@@ -131,8 +145,8 @@ public class ServoEncoderTurret {
 	}
 
 	private double getHeading( AngleUnit angleUnit ) {
-		double heading = Drive.convertTicksDist( getPosition( ), 2 * Math.PI, pulsesPerRevolution, gearRatio ); // in radians
-		return angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
+		double heading = modernRoboticsI2cGyro.getHeading();; // in degrees
+		return angleUnit == AngleUnit.RADIANS ? Math.toRadians( heading ) : heading;
 	}
 
 	public double getHeading( ) {
@@ -140,7 +154,7 @@ public class ServoEncoderTurret {
 	}
 
 	public int getPosition( ) {
-		return /*turretPosition +*/ encoder.getCurrentPosition( );
+		return /*turretPosition +*/  modernRoboticsI2cGyro.getHeading();
 	}
 
 	/**
@@ -148,7 +162,7 @@ public class ServoEncoderTurret {
 	 */
 	public void resetTurret( ) {
 		servo.setPower( 0 );
-		encoder.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+		modernRoboticsI2cGyro.resetZAxisIntegrator();
 		turretPosition = 0;
 	}
 
@@ -161,9 +175,9 @@ public class ServoEncoderTurret {
 	 */
 	public void stopAndReset( ) {
 
-		Log.d( "LOGGER", "lift position: " + encoder.getCurrentPosition( ) );
+		Log.d( "LOGGER", "lift position: " + modernRoboticsI2cGyro.getHeading() );
 		turretPosition = getPosition( );
-		encoder.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+		modernRoboticsI2cGyro.resetZAxisIntegrator();
 		// stop and reset encoder sets the encoder position to zero
 	}
 

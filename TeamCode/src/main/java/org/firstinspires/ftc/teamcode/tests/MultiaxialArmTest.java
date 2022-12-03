@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.MultiaxialArm;
 
-@TeleOp(name = "MultiaxialArmTest", group = "Tests" )
+@TeleOp(name = "MultiaxialArmTest", group = "Test" )
 @Disabled
 public class MultiaxialArmTest extends OpMode {
 

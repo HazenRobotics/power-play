@@ -19,6 +19,9 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.RotatingClaw;
+import org.firstinspires.ftc.teamcode.subsystems.ServoSwitchTurret;
+import org.firstinspires.ftc.teamcode.subsystems.ServoTurret;
+import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
@@ -35,7 +38,7 @@ public class MiniBot extends Robot {
 
 	public Lift lift;
 	//	public Lift horizontalLift;
-//	public Turret turret;
+	public ServoTurret turret;
 //	public Claw claw;
 //	public RotatingClaw claw;
 	public TwoAxesClaw claw;
@@ -81,8 +84,9 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.73, 0.53, 0.3 } );
+		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
+		turret = new ServoTurret( hardwareMap, "turret", false );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}

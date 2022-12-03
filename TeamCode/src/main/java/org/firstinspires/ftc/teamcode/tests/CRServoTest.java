@@ -2,19 +2,18 @@ package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 import java.util.ArrayList;
 
-@TeleOp(name = "ServoTest", group = "TeleOp")
+@TeleOp(name = "CRServoTest", group = "TeleOp")
 //@Disabled
-public class ServoTest extends OpMode {
-
+public class CRServoTest extends OpMode {
 
 	ArrayList<String> servoNames = new ArrayList<>( );
-	ArrayList<Servo> servo = new ArrayList<>( );
+	ArrayList<CRServo> servo = new ArrayList<>( );
 
 	GamepadEvents controller;
 	int selected = 0;
@@ -27,7 +26,7 @@ public class ServoTest extends OpMode {
 
 		for( int i = 0; i < names.length; i++ ) {
 			try {
-				servo.add( hardwareMap.servo.get( names[i] ) );
+				servo.add( hardwareMap.crservo.get( names[i] ) );
 				this.servoNames.add( names[i] );
 
 			} catch( IllegalArgumentException e ) {
@@ -43,7 +42,7 @@ public class ServoTest extends OpMode {
 	@Override
 	public void loop( ) {
 
-		servo.get( selected ).setPosition( -controller.right_stick_y );
+		servo.get( selected ).setPower( -controller.right_stick_y );
 
 		if( controller.dpad_up.onPress( ) ) {
 			increment( 1, maxSelect );
@@ -53,10 +52,10 @@ public class ServoTest extends OpMode {
 
 		telemetry.addLine( "selected: (" + selected + ") " + servoNames.get( selected ) );
 		for( int i = 0; i < servo.size( ); i++ ) {
-			telemetry.addLine( servoNames.get( i ) + " position: " + servo.get( i ).getPosition( ) );
+			telemetry.addLine( servoNames.get( i ) + " position: " + servo.get( i ).getPower( ) );
 		}
 		telemetry.addLine( "dpad_up/down: toggle through servos" );
-		telemetry.addLine( "right_stick_y: set servo position" );
+		telemetry.addLine( "right_stick_y: set servo power" );
 		telemetry.update( );
 		controller.update( );
 	}

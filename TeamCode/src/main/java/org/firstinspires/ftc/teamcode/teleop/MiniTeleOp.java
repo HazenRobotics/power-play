@@ -89,7 +89,7 @@ public class MiniTeleOp extends OpMode {
 				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) /*+ 0.3f*/ );
+			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) + 0.2f );
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -97,15 +97,24 @@ public class MiniTeleOp extends OpMode {
 		}
 
 		// g1/g2 a: toggle claw
-		if( controller1.a.onPress( ) || controller2.a.onPress( ) ) {
+		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
-		}
 
 		// g1/g2 bumpers: rotate claw
-		if( gamepad1.left_bumper || gamepad2.left_bumper )
+		if( (gamepad1.right_bumper && gamepad1.left_bumper) || (gamepad2.right_bumper && gamepad2.left_bumper) )
+			robot.claw.setState( TwoAxesClaw.HorizontalClawState.CENTER );
+		else if( gamepad1.left_bumper || gamepad2.left_bumper )
 			robot.claw.setState( TwoAxesClaw.HorizontalClawState.LEFT );
 		else if( gamepad1.right_bumper || gamepad2.right_bumper )
 			robot.claw.setState( TwoAxesClaw.HorizontalClawState.RIGHT );
+
+		// g2 dpad: tilt claw
+		if (controller2.dpad_up.onPress())
+			robot.claw.setState( TwoAxesClaw.VerticalClawState.STOWED );
+		else if (controller2.dpad_left.onPress())
+			robot.claw.setState( TwoAxesClaw.VerticalClawState.DEPLOYED );
+		else if (controller2.dpad_down.onPress())
+			robot.claw.setState( TwoAxesClaw.VerticalClawState.PICKUP );
 
 //		robot.claw.rotate( (gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0) );
 
@@ -113,6 +122,8 @@ public class MiniTeleOp extends OpMode {
 		if( gamepad1.y )
 			robot.lift.moveDistancePower( 1, 10, true );
 
+		// g2 right stick X: rotate turret
+		robot.turret.setPower( controller2.right_stick_x );
 
 		// dpad: auto lift positions
 		dpadToLiftPos( );
@@ -169,26 +180,28 @@ public class MiniTeleOp extends OpMode {
 	}
 
 	public void dpadToLiftPos( ) {
-		if( controller1.dpad_up.onPress( ) || controller2.dpad_up.onPress( ) ) {
+		if( controller1.dpad_up.onPress( ) /*|| controller2.dpad_up.onPress( )*/ ) {
 			movingLift = true;
 			robot.junctionToLiftPos( PPField.Junction.HIGH );
 //			telemetry.addLine( "high: " + PPField.Junction.HIGH.height( ) );
 		}
-		if( controller1.dpad_left.onPress( ) || controller2.dpad_left.onPress( ) ) {
+		if( controller1.dpad_left.onPress( ) /*|| controller2.dpad_left.onPress( )*/ ) {
 			movingLift = true;
 			robot.junctionToLiftPos( PPField.Junction.MEDIUM );
 //			telemetry.addLine( "medium: " + PPField.Junction.MEDIUM.height( ) );
 		}
-		if( controller1.dpad_down.onPress( ) || controller2.dpad_down.onPress( ) ) {
+		if( controller1.dpad_down.onPress( ) /*|| controller2.dpad_down.onPress( )*/ ) {
 			movingLift = true;
 			robot.junctionToLiftPos( PPField.Junction.LOW );
 //			telemetry.addLine( "low: " + PPField.Junction.LOW.height( ) );
 		}
-		if( controller1.dpad_right.onPress( ) || controller2.dpad_right.onPress( ) ) {
+		if( controller1.dpad_right.onPress( ) /*|| controller2.dpad_right.onPress( )*/ ) {
 			movingLift = true;
 			robot.junctionToLiftPos( PPField.Junction.GROUND );
 //			telemetry.addLine( "ground: " + PPField.Junction.GROUND.height( ) );
 		}
 	}
+
+
 
 }

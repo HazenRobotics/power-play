@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.DifferentialSwerveDrive;
 
-@TeleOp(name = "Swerve Test TeleOp", group = "TeleOp")
+@TeleOp(name = "Swerve Test", group = "TeleOp")
 public class DiffSwerveTeleOp extends OpMode {
 
 	DifferentialSwerveDrive drive;

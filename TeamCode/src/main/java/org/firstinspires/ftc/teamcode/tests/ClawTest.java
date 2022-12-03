@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
 
-@TeleOp(name = "ClawTest",group = "tests")
+@TeleOp(name = "ClawTest",group = "Test")
 @Disabled
 public class ClawTest extends OpMode {
 

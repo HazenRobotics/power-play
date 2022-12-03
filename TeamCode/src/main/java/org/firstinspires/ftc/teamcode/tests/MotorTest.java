@@ -24,7 +24,7 @@ public class MotorTest extends OpMode {
 	@Override
 	public void init( ) {
 		controller = new GamepadEvents( gamepad1 );
-		String[] names = { "topLeft", "bottomLeft", "topRight", "bottomRight", "frontLeft", "backLeft", "frontRight", "backRight", "lift", "para", "perp" };
+		String[] names = { "topLeft", "bottomLeft", "topRight", "bottomRight", "frontLeft", "backLeft", "frontRight", "backRight", "lift", "para", "perp", "enc", "encoder", "turret", "turr" };
 
 		for( int i = 0; i < names.length; i++ ) {
 			try {
@@ -39,7 +39,6 @@ public class MotorTest extends OpMode {
 		maxSelect = motor.size( ) - 1;
 		telemetry.addLine( "added " + (maxSelect) + "motor" + (maxSelect == 0 ? "" : "s") );
 		telemetry.update( );
-
 	}
 
 	@Override
