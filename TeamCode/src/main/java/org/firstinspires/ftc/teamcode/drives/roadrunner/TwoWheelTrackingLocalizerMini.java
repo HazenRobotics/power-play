@@ -37,14 +37,21 @@ import java.util.List;
  */
 public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 
-	public static double TICKS_PER_REV = 1000;
+	public static double TICKS_PER_REV = 4000;
 	public static double WHEEL_RADIUS = 0.728; // in
 	public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
 	// 210mm distance between deadwheels
 
-	public static double X_MULTIPLIER = 1; // Multiplier in the X direction
-	public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction
+//	1st x multi: 1.027789134213273097276815589505
+//  2nd x multi: 1.019055199955614484624155458003
+//  3rd x multi: 1.035457516903843963455252703407
+
+//	1st y multi: 1.0067812309131058306057019614336
+//  2nd y multi: 1.0180926373802892740547009861924
+//  3rd y multi: 1.0111746028892628986555871890919
+	public static double X_MULTIPLIER = 1.02743; // Multiplier in the X direction
+	public static double Y_MULTIPLIER = 1.01201; // Multiplier in the Y direction
 
 	public static double PARALLEL_X = 0.394; // X is the up and down direction
 	public static double PARALLEL_Y = -4.331; // Y is the strafe direction
@@ -93,7 +100,7 @@ public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 	public List<Double> getWheelPositions( ) {
 		return Arrays.asList(
 				encoderTicksToInches( parallelEncoder.getCurrentPosition( ) ) * X_MULTIPLIER,
-				encoderTicksToInches( perpendicularEncoder.getCurrentPosition( ) * Y_MULTIPLIER )
+				encoderTicksToInches( perpendicularEncoder.getCurrentPosition( ) ) * Y_MULTIPLIER
 		);
 	}
 
@@ -105,8 +112,8 @@ public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 		//  compensation method
 
 		return Arrays.asList(
-				encoderTicksToInches( parallelEncoder.getRawVelocity( ) ) * X_MULTIPLIER,
-				encoderTicksToInches( perpendicularEncoder.getRawVelocity( ) * Y_MULTIPLIER )
+				encoderTicksToInches( parallelEncoder.getRawVelocity() ) * X_MULTIPLIER,
+				encoderTicksToInches( perpendicularEncoder.getRawVelocity() ) * Y_MULTIPLIER
 		);
 	}
 }
