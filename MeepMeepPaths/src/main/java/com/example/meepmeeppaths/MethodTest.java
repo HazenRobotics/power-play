@@ -1,9 +1,9 @@
 package com.example.meepmeeppaths;
 
 import static com.example.meepmeeppaths.teamcodeRequirements.MiniBot.ROBOT_LENGTH;
+import static com.example.meepmeeppaths.teamcodeRequirements.MiniBot.ROBOT_MAX_LENGTH;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.example.meepmeeppaths.teamcodeRequirements.MiniBot;
 import com.example.meepmeeppaths.teamcodeRequirements.PPField;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
@@ -16,6 +16,9 @@ public class MethodTest implements MeepMeepPath {
 		return getFlippedTrajectorySequence( drive, 1, 1 );
 	}
 
+	public static boolean red = true, right = false;
+	public static int[] quadSign = MiniBot.getQuadrantSign( red, right );
+
 	@Override
 	public TrajectorySequence getFlippedTrajectorySequence( DriveShim drive, double xFlip, double yFlip ) {
 		double cycleDist = totalTitle * 1.5;
@@ -25,27 +28,14 @@ public class MethodTest implements MeepMeepPath {
 		double yFlipR = -((xFlip - 1) / 2);
 		Pose2d conePose = new Pose2d( (-totalTitle * 2.5) * xFlip, (-totalTitle / 2) * xFlip, Math.toRadians( 180 + (180 * xFlipR) ) );
 
-		System.out.println( PPField.getJunctionPose( 0, -1, false ) );
 
-		return drive.trajectorySequenceBuilder( getHubPosition( 0, 0, PPField.TILE_SIZE / 2, PPField.getJunctionPose( 0, -1, false ) ) )
+		return drive.trajectorySequenceBuilder( MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), ROBOT_MAX_LENGTH - ROBOT_LENGTH / 2, PPField.getJunctionPose( quadSign[0], quadSign[1], false ) )
+				)
 				// Duck spin
 				.forward( 0.1 )
 				.build( );
+
 	}
 
-	/**
-	 * @param angle            the heading to face the Junction (degrees)
-	 * @param angleOffset      the starting angle of the robots
-	 * @param junctionDistance the distance away from the shipping hub base to be
-	 * @param junctionPos      the position of the junction to go to
-	 * @return the position/heading (Pose2D) of where to go
-	 */
-	public Pose2d getHubPosition( double angle, double angleOffset, double junctionDistance, Vector2d junctionPos ) {
-		double dist = (junctionDistance + ROBOT_LENGTH / 2);
-		angle = Math.toRadians( angle );
-		double x = junctionPos.getX( ) - Math.cos( angle ) * dist;
-		double y = junctionPos.getY( ) - Math.sin( angle ) * dist;
-		return new Pose2d( x, y, Math.toRadians( angleOffset ) + angle );
-	}
 
 }

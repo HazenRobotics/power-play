@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,11 +11,12 @@ import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @Autonomous(group = "A")
-public class JustParkRedRight extends LinearOpMode {
+public class ConesRedRight extends LinearOpMode {
 
 	MiniBot robot;
 
 	final boolean red = true, right = true;
+	final int[] quadSign = MiniBot.getQuadrantSign( red, right );
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
@@ -23,7 +25,8 @@ public class JustParkRedRight extends LinearOpMode {
 
 		robot = new MiniBot( this );
 
-		robot.initSubsystems( );
+		robot.signalUtil.init( );
+		robot.claw.close( );
 
 		telemetry.addLine( "Ready!" );
 		telemetry.update( );
@@ -37,8 +40,9 @@ public class JustParkRedRight extends LinearOpMode {
 
 		robot.junctionToLiftPos( PPField.Junction.GROUND );
 
-		Vector2d conePos = robot.getSignalPos( red, right );
 		Vector2d parkPos = robot.parkPosInit( red, right );
+		Vector2d conePos = MiniBot.getSignalPos( red, right );
+		Pose2d medJunction = MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), quadSign[0], quadSign[1]);
 
 		robot.signalUtil.stopCamera( );
 
@@ -47,6 +51,7 @@ public class JustParkRedRight extends LinearOpMode {
 
 		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
 				.lineTo( conePos )
+				.lineToLinearHeading( medJunction )
 				.lineTo( parkPos )
 				.build( );
 
