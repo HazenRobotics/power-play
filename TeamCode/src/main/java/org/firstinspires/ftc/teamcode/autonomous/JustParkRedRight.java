@@ -39,7 +39,7 @@ public class JustParkRedRight extends LinearOpMode {
 		robot.junctionToLiftPos( PPField.Junction.GROUND );
 
 		Vector2d conePos = robot.getSignalPos( red, right );
-		Vector2d parkPos = robot.justParkInit( red, right );
+		Vector2d parkPos = robot.parkPosInit( red, right );
 
 		robot.signalUtil.stopCamera( );
 

@@ -136,7 +136,7 @@ public class MiniBot extends Robot {
 	 * @param right
 	 * @return
 	 */
-	public Vector2d justParkInit( boolean red, boolean right ) {
+	public Vector2d parkPosInit( boolean red, boolean right ) {
 
 		double x, y;
 
@@ -159,7 +159,7 @@ public class MiniBot extends Robot {
 		return new Vector2d( x, y );
 	}
 
-	public Vector2d getSignalPos( boolean red, boolean right ) {
+	public static Vector2d getSignalPos( boolean red, boolean right ) {
 		double x, y;
 		if( red ) { // red side
 			x = right ? THREE_HALVES_TILE : -THREE_HALVES_TILE;
@@ -177,17 +177,56 @@ public class MiniBot extends Robot {
 
 	/**
 	 * @param angle            the heading to face the Junction (degrees)
-	 * @param angleOffset      the starting angle of the robots
+	 * @return the position/heading (Pose2D) of where to go
+	 */
+	public static Pose2d getJunctionOffsetPos( double angle, int junctionX, int junctionY ) {
+		Vector2d junctionPos = PPField.getJunctionPose( junctionX, junctionY, false );
+		angle = Math.toRadians( angle );
+		double x = junctionPos.getX( ) - Math.cos( angle ) * ROBOT_MAX_LENGTH;
+		double y = junctionPos.getY( ) - Math.sin( angle ) * ROBOT_MAX_LENGTH;
+		return new Pose2d( x, y, angle );
+	}
+
+	/**
+	 * @param angle            the heading to face the Junction (degrees)
 	 * @param junctionDistance the distance away from the shipping hub base to be
 	 * @param junctionPos      the position of the junction to go to
 	 * @return the position/heading (Pose2D) of where to go
 	 */
-	public Pose2d stackJunctionPosition( double angle, double angleOffset, double junctionDistance, com.acmerobotics.roadrunner.geometry.Vector2d junctionPos ) {
+	public static Pose2d getJunctionOffsetPos( double angle, double junctionDistance, Vector2d junctionPos ) {
 		double dist = (junctionDistance + ROBOT_LENGTH / 2);
 		angle = Math.toRadians( angle );
 		double x = junctionPos.getX( ) - Math.cos( angle ) * dist;
 		double y = junctionPos.getY( ) - Math.sin( angle ) * dist;
-		return new Pose2d( x, y, Math.toRadians( angleOffset ) + angle );
+		return new Pose2d( x, y, angle );
+	}
+
+
+	public static double getAngleOnSide( boolean red, boolean right ) {
+
+		if( red ) {
+			if( right ) { // red right
+				return 135;
+			} else { // red left
+				return 45;
+			}
+		} else {
+			if( right ) { // blue right
+				return 315;
+			} else { // blue left
+				return 225;
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param red whether the bot is on the red side of the field
+	 * @param right whether the bot is on the right side of the field from that side's perspective
+	 * @return an int array of length 2 containing the sign (1 or -1) of the quadrant the robot must be in
+	 */
+	public static int[] getQuadrantSign( boolean red, boolean right ) {
+		return new int[]{ (red ? 1 : -1) * ( right ? 1 : -1), (red ? -1 : 1) };
 	}
 
 	public TrajectorySequenceBuilder getTrajectorySequenceBuilder( ) {
