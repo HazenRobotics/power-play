@@ -89,7 +89,7 @@ public class MiniTeleOp extends OpMode {
 				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) + 0.2f );
+			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) + 0.05f );
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -129,11 +129,12 @@ public class MiniTeleOp extends OpMode {
 		dpadToLiftPos( );
 
 		// reset the lift position to its current zero position
-		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > max ) {
+		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > max ){
 			max = robot.lift.getCurrent( CurrentUnit.AMPS );
 			Robot.writeToDefaultFile( "Current: " + max, true, false );
-//			}robot.lift.resetLift( );
-		}// update controllers and telemetry
+			robot.lift.resetLift( );
+		}
+		// update controllers and telemetry
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );
