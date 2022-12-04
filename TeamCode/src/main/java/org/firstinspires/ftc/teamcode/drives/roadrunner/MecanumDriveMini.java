@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
@@ -57,10 +58,10 @@ import java.util.List;
 @Config
 public class MecanumDriveMini extends MecanumDrive {
 
-	public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients( 0, 0, 0 );
-	public static PIDCoefficients HEADING_PID = new PIDCoefficients( 0, 0, 0 );
+	public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients( 8, 0, 0 );
+	public static PIDCoefficients HEADING_PID = new PIDCoefficients( 8, 0, 0 );
 
-	public static double LATERAL_MULTIPLIER = (55.968 / 50) * (53.937 / 55);
+	public static double LATERAL_MULTIPLIER = 1.2162;
 
 	public static double VX_WEIGHT = 1;
 	public static double VY_WEIGHT = 1;
@@ -93,6 +94,8 @@ public class MecanumDriveMini extends MecanumDrive {
 			module.setBulkCachingMode( LynxModule.BulkCachingMode.AUTO );
 		}
 
+
+
 		// TODO: adjust the names of the following hardware devices to match your configuration
 		imu = hardwareMap.get( BNO055IMU.class, "imu" );
 		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters( );
@@ -121,7 +124,7 @@ public class MecanumDriveMini extends MecanumDrive {
 		// For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
 		// BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-		BNO055IMUUtil.remapZAxis( imu, AxisDirection.NEG_Y );
+		BNO055IMUUtil.remapZAxis( imu, AxisDirection.POS_Y );
 
 		frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft" );
 		backLeft = hardwareMap.get( DcMotorEx.class, "backLeft" );
@@ -156,6 +159,8 @@ public class MecanumDriveMini extends MecanumDrive {
 		// TODO: if desired, use setLocalizer() to change the localization method
 		// note: this class is a mecanum drive localizer
 		// for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+
+		setLocalizer( new TwoWheelTrackingLocalizerMini( hardwareMap, this ) );
 
 		trajectorySequenceRunner = new TrajectorySequenceRunner( follower, HEADING_PID );
 	}
