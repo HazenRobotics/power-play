@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.RotatingClaw;
 import org.firstinspires.ftc.teamcode.subsystems.ServoSwitchTurret;
 import org.firstinspires.ftc.teamcode.subsystems.ServoTurret;
+import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
@@ -38,10 +39,12 @@ public class MiniBot extends Robot {
 
 	public Lift lift;
 	//	public Lift horizontalLift;
-	public ServoTurret turret;
+//	public ServoTurret turret;
+	public Turret turret;
 //	public Claw claw;
 //	public RotatingClaw claw;
-	public TwoAxesClaw claw;
+	public TiltingClaw claw;
+//	public TwoAxesClaw claw;
 	public SignalUtil signalUtil;
 
 	public static final float ROBOT_LENGTH = 12.25f;
@@ -84,9 +87,11 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
+		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		turret = new ServoTurret( hardwareMap, "turret", false );
+//		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
+
+		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0/30.0, 0, 360  );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 	}
@@ -101,7 +106,7 @@ public class MiniBot extends Robot {
 
 	public void initSubsystems() {
 		signalUtil.init( );
-		claw.setState( TwoAxesClaw.ClawState.CLOSED );
+		claw.setState( TiltingClaw.ClawState.CLOSED );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {

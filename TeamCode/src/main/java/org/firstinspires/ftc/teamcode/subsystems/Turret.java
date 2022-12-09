@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.opencv.core.Mat;
 
 public class Turret {
 
@@ -33,22 +35,27 @@ public class Turret {
 	double rightLimit = Double.POSITIVE_INFINITY;
 
 	public Turret( HardwareMap hw ) {
-		this( hw, "turret", false, AngleUnit.RADIANS, 1, 1 );
+		this( hw, "turret", false, AngleUnit.RADIANS, 1, 1, 0, 360 );
 	}
 
-	public Turret( HardwareMap hw, String motorName, boolean reverseMotor, AngleUnit angleUnit, double ppr, double gearRatio ) {
+	public Turret( HardwareMap hw, String motorName, boolean reverseMotor, AngleUnit angleUnit, double ppr, double gearRatio, double lLimit, double rLimit ) {
 		unit = angleUnit;
 
 		motor = hw.get( DcMotorEx.class, motorName );
 
 		motor.setDirection( reverseMotor ? Direction.REVERSE : Direction.FORWARD );
-		motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-//		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+//		motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+		motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE );
 
 		pulsesPerRevolution = ppr;
 		this.gearRatio = gearRatio;
 
-//		resetTurret( );
+		turretPosition = 0;
+
+		setLimit( lLimit, rLimit );
+
+		resetTurret( );
 	}
 
 	public void setPower( double power) {
@@ -64,7 +71,7 @@ public class Turret {
 	}
 
 	public void setRotationVelocity( double velocity, double position ) {
-		motor.setTargetPosition( Drive.convertDistTicks( position, 2 * Math.PI, pulsesPerRevolution, gearRatio ) );
+		motor.setTargetPosition( (int) convertTicksToHeading( position ) );
 		motor.setVelocity( velocity, unit );
 	}
 
@@ -102,19 +109,45 @@ public class Turret {
 	}
 
 	public void setRotationPower( double power, double position, AngleUnit angleUnit ) {
-		if( angleUnit.equals( AngleUnit.DEGREES ) )
-			position *= Math.PI / 180;
-		motor.setTargetPosition( (int) Drive.convertDistTicks( position % (2 * Math.PI), 2 * Math.PI, pulsesPerRevolution, gearRatio ) );
+		position = angleUnit == AngleUnit.DEGREES ? Math.toDegrees( position ) : position;
+
+		motor.setTargetPosition( convertHeadingToTicks( position ) );
 		motor.setPower( power );
 	}
 
+	public double convertTicksToHeading ( double ticks ) {
+		return convertTicksToHeading( ticks, unit );
+	}
+
+	public double convertTicksToHeading( double ticks, AngleUnit angleUnit ) {
+		double heading = (2 * Math.PI * ticks) / (gearRatio * pulsesPerRevolution);
+
+		return angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
+	}
+
+	public int convertHeadingToTicks ( double heading ) {
+		return convertHeadingToTicks( heading, unit );
+	}
+
+	public int convertHeadingToTicks( double heading, AngleUnit angleUnit ) {
+		heading = unit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
+		double ticks = (heading * gearRatio * pulsesPerRevolution) / (2 * Math.PI);
+
+		return (int) ticks;
+	}
+
 	public double getTurretHeading( ) {
-		return Drive.convertTicksDist( getPosition( ), 2 * Math.PI, pulsesPerRevolution, gearRatio );
-//		return getPosition( ) * 2 * Math.PI / pulsesPerRevolution;
+		return getTurretHeading( unit );
+	}
+
+	public double getTurretHeading( AngleUnit angleUnit ) {
+		double heading = (2 * Math.PI * getPosition()) / (gearRatio * pulsesPerRevolution);
+
+		return angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
 	}
 
 	public int getPosition( ) {
-		return turretPosition + motor.getCurrentPosition( );
+		return /*turretPosition +*/ motor.getCurrentPosition( );
 	}
 
 	/**
@@ -124,6 +157,7 @@ public class Turret {
 		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
 		movementState = MovementState.REST;
 		turretPosition = 0;
+		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
 	}
 
 	/**
@@ -137,5 +171,12 @@ public class Turret {
 		// stop and reset encoder sets the encoder position to zero
 	}
 
+	public double getCurrent( ) {
+		return getCurrent( CurrentUnit.AMPS );
+	}
+
+	public double getCurrent( CurrentUnit currentUnit ) {
+		return motor.getCurrent( currentUnit );
+	}
 
 }
