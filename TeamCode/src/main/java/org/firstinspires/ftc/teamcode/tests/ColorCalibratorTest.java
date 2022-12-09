@@ -26,12 +26,18 @@ public class ColorCalibratorTest extends LinearOpMode {
 
 		waitForStart( );
 
-		while (!detector.isFinished() ) {}
+		while (!detector.isFinished() ) {
+			telemetry.addLine( "not finished yet" );
+			telemetry.update( );
+		}
+
+
 
 		Scalar[] scalars = detector.getScalars( );
 
 		Logger.writeAFile( "ColorScalars.txt", scalars[0] + "\n" + scalars[1] + "\n" + scalars[2] + "\n" + scalars[3] + "\n" + scalars[4] + "\n" + scalars[5] + "\n", false, false  );
 
+		telemetry.addLine( "calibration done!" );
 		telemetry.addLine( "" + scalars[0] );
 		telemetry.addLine( "" + scalars[1] );
 		telemetry.addLine( "" + scalars[2] );

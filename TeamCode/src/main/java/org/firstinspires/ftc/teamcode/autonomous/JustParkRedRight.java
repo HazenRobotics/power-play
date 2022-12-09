@@ -7,9 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
+import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
-@Autonomous(group = "A")
+@Autonomous(group = "Park")
 public class JustParkRedRight extends LinearOpMode {
 
 	MiniBot robot;
@@ -35,10 +37,11 @@ public class JustParkRedRight extends LinearOpMode {
 
 		waitForStart( );
 
+		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
 		robot.junctionToLiftPos( PPField.Junction.GROUND );
 
-		Vector2d conePos = robot.getSignalPos( red, right );
 		Vector2d parkPos = robot.parkPosInit( red, right );
+		Vector2d conePos = MiniBot.getSignalPos( red, right );
 
 		robot.signalUtil.stopCamera( );
 

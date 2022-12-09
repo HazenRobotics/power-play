@@ -40,7 +40,7 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
  */
 @Config
 @TeleOp(group = "drive")
-@Disabled
+//@Disabled
 public class MotorDirectionDebugger extends LinearOpMode {
     public static double MOTOR_POWER = 0.7;
 

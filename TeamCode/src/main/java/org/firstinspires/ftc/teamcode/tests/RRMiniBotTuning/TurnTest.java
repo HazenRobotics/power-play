@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
  */
 @Config
 @Autonomous(group = "drive")
-@Disabled
+//@Disabled
 public class TurnTest extends LinearOpMode {
     public static double ANGLE = 90; // deg
 

@@ -9,12 +9,25 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import java.util.Scanner;
+
 public class SignalDetector extends OpenCvPipeline {
 
 	Telemetry telemetry;
 	Mat greenMat = new Mat( );
 	Mat yellowMat = new Mat( );
 	Mat pinkMat = new Mat( );
+
+	Scalar greenLowHSV;
+	Scalar greenHighHSV;
+
+	Scalar yellowLowHSV;
+	Scalar yellowHighHSV;
+
+	Scalar pinkLowHSV;
+	Scalar pinkHighHSV;
+
+	Scalar[] scalars = { yellowLowHSV, yellowHighHSV, greenLowHSV, greenHighHSV, pinkLowHSV, pinkHighHSV };
 
 	public enum SignalPosition {
 		LEFT,
@@ -26,46 +39,59 @@ public class SignalDetector extends OpenCvPipeline {
 	private SignalPosition signalPosition;
 
 	static final Rect ROI = new Rect(
-			new Point( 500, 350 ),
-			new Point( 570, 450 ) );
+			new Point( 450, 300 ),
+			new Point( 720, 600 ) );
 
-	static double PERCENT_COLOR_THRESHOLD = 0.02;
+	static double PERCENT_COLOR_THRESHOLD = 0.15;
 
 	public SignalDetector( Telemetry t ) {
 		telemetry = t;
+//		readInScalars( );
 	}
 
 	public Mat processFrame( Mat input ) {
 
-		//setting up green mat
-		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
-
-		Scalar greenLowHSV = new Scalar(67.0, 25.0, 0.0);
-		Scalar greenHighHSV = new Scalar(77.0, 255.0, 255.0);
-
-		Core.inRange( greenMat, greenLowHSV, greenHighHSV, greenMat );
-
-		Mat smallGreenMat = greenMat.submat( ROI );
-
 		//setting up yellow mat
 		Imgproc.cvtColor( input, yellowMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar yellowLowHSV = new Scalar(26.0, 25.0, 0.0);
-		Scalar yellowHighHSV = new Scalar(36.0, 255.0, 255.0);
+		Scalar yellowLowHSV = new Scalar( 16.0, 25.0, 0.0 );
+		Scalar yellowHighHSV = new Scalar( 35.0, 255.0, 255.0 );
 
 		Core.inRange( yellowMat, yellowLowHSV, yellowHighHSV, yellowMat );
 
 		Mat smallYellowMat = yellowMat.submat( ROI );
 
-		//setting up brown mat
+		//setting up green mat
+		Imgproc.cvtColor( input, greenMat, Imgproc.COLOR_RGB2HSV );
+
+		Scalar greenLowHSV = new Scalar( 50.0, 25.0, 0.0 );
+		Scalar greenHighHSV = new Scalar( 104.0, 255.0, 255.0 );
+
+		Core.inRange( greenMat, greenLowHSV, greenHighHSV, greenMat );
+
+		Mat smallGreenMat = greenMat.submat( ROI );
+
+		//setting up pink mat
 		Imgproc.cvtColor( input, pinkMat, Imgproc.COLOR_RGB2HSV );
 
-		Scalar pinkLowHSV = new Scalar(159.0, 25.0, 0.0);
-		Scalar pinkHighHSV = new Scalar(169.0, 255.0, 255.0);
+		Scalar pinkLowHSV = new Scalar( 120.0, 25.0, 0.0 );
+		Scalar pinkHighHSV = new Scalar( 155.0, 255.0, 255.0 );
+
 
 		Core.inRange( pinkMat, pinkLowHSV, pinkHighHSV, pinkMat );
 
 		Mat smallPinkMat = pinkMat.submat( ROI );
+
+//		Non-Color Calibration HSVs
+
+//		Scalar(67.0, 25.0, 0.0);
+//		Scalar(77.0, 255.0, 255.0);
+//
+//		Scalar(26.0, 25.0, 0.0);
+//		Scalar(36.0, 255.0, 255.0);
+//
+//		Scalar(159.0, 25.0, 0.0);
+//		Scalar(169.0, 255.0, 255.0);
 
 
 //		Solid Color HSVs
@@ -84,9 +110,10 @@ public class SignalDetector extends OpenCvPipeline {
 		double yellowValue = Core.sumElems( smallYellowMat ).val[0] / ROI.area( ) / 255;
 		double pinkValue = Core.sumElems( smallPinkMat ).val[0] / ROI.area( ) / 255;
 
-//		greenMat.release( );
-//		yellowMat.release( );
-//		brownMat.release( );
+		smallGreenMat.release( );
+		smallYellowMat.release( );
+		smallPinkMat.release( );
+
 
 		boolean greenBool = greenValue > PERCENT_COLOR_THRESHOLD;
 		boolean yellowBool = yellowValue > PERCENT_COLOR_THRESHOLD;
@@ -124,20 +151,40 @@ public class SignalDetector extends OpenCvPipeline {
 
 		int whichMat = (int) ((System.currentTimeMillis( ) / 1000) % 3);
 
-		if( whichMat == 0 )
+		if( whichMat == 0 ) {
 			telemetry.addLine( "Showing Green" );
-		else if( whichMat == 1 )
+			filters[1].release( );
+			filters[2].release( );
+		} else if( whichMat == 1 ) {
 			telemetry.addLine( "Showing Pink" );
-		else if( whichMat == 2 )
+			filters[0].release( );
+			filters[2].release( );
+		} else if( whichMat == 2 ) {
 			telemetry.addLine( "Showing Yellow" );
+			filters[0].release( );
+			filters[1].release( );
+		}
 
-		Imgproc.rectangle( filters[whichMat], ROI, new Scalar (255,0,0) );
+
+		Imgproc.rectangle( filters[whichMat], ROI, new Scalar( 70, 255, 255 ) );
 
 		return filters[whichMat];
 	}
 
 	public SignalPosition getSignalPosition( ) {
 		return signalPosition;
+	}
+
+	public void readInScalars( ) {
+		Scanner sc = new Scanner( "/sdcard/FIRST/logs/ColorScalars.txt" );
+
+		for( int i = 0; i < 6; i++ ) {
+			String line = sc.nextLine( );
+			String[] values = line.substring( 1, line.length( ) - 1 ).split( "," );
+
+//			scalars[i] = new Scalar( Double.parseDouble( values[0] ), Double.parseDouble( values[1] ), Double.parseDouble( values[2] ) );
+			telemetry.addLine( line );
+		}
 	}
 
 }

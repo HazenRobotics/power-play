@@ -21,15 +21,15 @@ public class ColorCalibrator extends OpenCvPipeline {
 	double[] colorPercentages = new double[] {0,0,0};
 	Scalar[] maxPercentScalars = new Scalar[6];
 
-	static final Rect YELLOW_RECT = new Rect(
-			new Point(350, 350 ),
-			new Point( 420, 450 ) );
+//	static final Rect YELLOW_RECT = new Rect(
+//			new Point(350, 350 ),
+//			new Point( 420, 450 ) );
 	static final Rect GREEN_RECT = new Rect(
 			new Point(590, 350 ),
 			new Point( 660, 450 ) );
-	static final Rect PINK_RECT = new Rect(
-			new Point(800, 350 ),
-			new Point( 870, 450 ) );
+//	static final Rect PINK_RECT = new Rect(
+//			new Point(800, 350 ),
+//			new Point( 870, 450 ) );
 
 	public ColorCalibrator( Telemetry t ) {
 		telemetry = t;
@@ -45,26 +45,26 @@ public class ColorCalibrator extends OpenCvPipeline {
 			Scalar highHSV = new Scalar( i + 15, 255, 255 );
 
 
-			double yellowPercentage = 0;
+//			double yellowPercentage = 0;
 			double greenPercentage = 0;
-			double pinkPercentage = 0;
+//			double pinkPercentage = 0;
 
 			Core.inRange( calibrationMat, lowHSV, highHSV, calibrationMat );
 
-			Mat yellowMat = calibrationMat.submat( YELLOW_RECT );
+//			Mat yellowMat = calibrationMat.submat( YELLOW_RECT );
 			Mat greenMat = calibrationMat.submat( GREEN_RECT );
-			Mat pinkMat = calibrationMat.submat( PINK_RECT );
+//			Mat pinkMat = calibrationMat.submat( PINK_RECT );
 
-			yellowPercentage = Core.sumElems( yellowMat ).val[0] / YELLOW_RECT.area( ) / 255;
+//			yellowPercentage = Core.sumElems( yellowMat ).val[0] / YELLOW_RECT.area( ) / 255;
 			greenPercentage = Core.sumElems( greenMat ).val[0] / GREEN_RECT.area( ) / 255;
-			pinkPercentage = Core.sumElems( pinkMat ).val[0] / PINK_RECT.area( ) / 255;
+//			pinkPercentage = Core.sumElems( pinkMat ).val[0] / PINK_RECT.area( ) / 255;
 
 
-			if( yellowPercentage > colorPercentages[0] ) {
-				colorPercentages[0] = yellowPercentage;
-				maxPercentScalars[0] = lowHSV;
-				maxPercentScalars[1] = highHSV;
-			}
+//			if( yellowPercentage > colorPercentages[0] ) {
+//				colorPercentages[0] = yellowPercentage;
+//				maxPercentScalars[0] = lowHSV;
+//				maxPercentScalars[1] = highHSV;
+//			}
 
 			if( greenPercentage > colorPercentages[1] ) {
 				colorPercentages[1] = greenPercentage;
@@ -72,22 +72,21 @@ public class ColorCalibrator extends OpenCvPipeline {
 				maxPercentScalars[3] = highHSV;
 			}
 
-			if( pinkPercentage > colorPercentages[2] ) {
-				colorPercentages[2] = pinkPercentage;
-				maxPercentScalars[4] = lowHSV;
-				maxPercentScalars[5] = highHSV;
-			}
+//			if( pinkPercentage > colorPercentages[2] ) {
+//				colorPercentages[2] = pinkPercentage;
+//				maxPercentScalars[4] = lowHSV;
+//				maxPercentScalars[5] = highHSV;
+//			}
 			i += 1;
 		} else {
-
 			int whichMat = (int) ((System.currentTimeMillis() / 1000) % 3);
 
-			Core.inRange( calibrationMat, maxPercentScalars[4], maxPercentScalars[5], calibrationMat );
+//			Core.inRange( calibrationMat, maxPercentScalars[4], maxPercentScalars[5], calibrationMat );
 		}
 
-		Imgproc.rectangle( calibrationMat, YELLOW_RECT, new Scalar (255,0,0) );
-		Imgproc.rectangle( calibrationMat, GREEN_RECT, new Scalar (255,0,0) );
-		Imgproc.rectangle( calibrationMat, PINK_RECT, new Scalar (255,0,0) );
+//		Imgproc.rectangle( calibrationMat, YELLOW_RECT, new Scalar (240,255,255) );
+		Imgproc.rectangle( calibrationMat, GREEN_RECT, new Scalar (240,255,255) );
+//		Imgproc.rectangle( calibrationMat, PINK_RECT, new Scalar (240,255,255) );
 
 
 		return calibrationMat;
@@ -103,7 +102,7 @@ public class ColorCalibrator extends OpenCvPipeline {
 	}
 
 	public boolean isFinished() {
-		return i <= 180;
+		return i >= 180;
 	}
 }
 

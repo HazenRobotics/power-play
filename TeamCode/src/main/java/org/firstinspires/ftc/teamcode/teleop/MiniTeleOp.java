@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
@@ -23,12 +22,14 @@ public class MiniTeleOp extends OpMode {
 	GamepadEvents controller2;
 	boolean opened = true;
 	boolean movingLift = false;
-	double max = 10;
+	double maxCurrent = 10;
+	float power = 0.1f;
 
 	public enum Speeds {
-		DRIVE( 0.8, 1.0 ),
+
+		DRIVE( 0.6, 0.8 ),
 		STRAFE( 1.0, 1.0 ),
-		ROTATE( 0.6, 1.0 );
+		ROTATE( 0.45, 0.9 );
 
 		Speeds( double min, double max ) {
 			this.min = min;
@@ -70,16 +71,6 @@ public class MiniTeleOp extends OpMode {
 		telemetry.update( );
 		controller1.update( );
 		controller2.update( );
-
-//		robot.mecanumDrive.setMotorPower( 0.35, 0, 0, 0 );
-//		waitRobot( 1000 );
-//		robot.mecanumDrive.setMotorPower( 0, 0.35, 0, 0 );
-//		waitRobot( 1000 );
-//		robot.mecanumDrive.setMotorPower( 0, 0, 0.35, 0 );
-//		waitRobot( 1000 );
-//		robot.mecanumDrive.setMotorPower( 0, 0, 0, 0.35 );
-//		waitRobot( 1000 );
-//		robot.mecanumDrive.setMotorPower( 0, 0, 0, 0 );
 	}
 
 	@Override
@@ -90,7 +81,7 @@ public class MiniTeleOp extends OpMode {
 				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger - gamepad1.left_trigger) + (gamepad2.right_trigger - gamepad2.left_trigger) + 0.05f );
+			robot.lift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger) + power );
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -101,41 +92,48 @@ public class MiniTeleOp extends OpMode {
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
 
-//		// g1/g2 bumpers: rotate claw
+		// g1/g2 bumpers: rotate claw
 //		if( (gamepad1.right_bumper && gamepad1.left_bumper) || (gamepad2.right_bumper && gamepad2.left_bumper) )
 //			robot.claw.setState( TwoAxesClaw.HorizontalClawState.CENTER );
-//		else if( gamepad1.left_bumper || gamepad2.left_bumper )
+//		else if( controller1.left_bumper.onPress( ) || controller2.left_bumper.onPress( ) )
 //			robot.claw.setState( TwoAxesClaw.HorizontalClawState.LEFT );
-//		else if( gamepad1.right_bumper || gamepad2.right_bumper )
-//			robot.claw.setState( TwoAxesClaw.HorizontalClawState.RIGHT );
+//		else if( controller1.right_bumper.onPress( ) || controller2.right_bumper.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.RIGHT );
 
 		// g2 dpad: tilt claw
-		if (controller2.dpad_up.onPress())
+		if( controller2.dpad_up.onPress( ) )
 			robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
-		else if (controller2.dpad_left.onPress())
+		else if( controller2.dpad_left.onPress( ) )
 			robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-		else if (controller2.dpad_down.onPress())
+		else if( controller2.dpad_down.onPress( ) )
 			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
 
 //		robot.claw.rotate( (gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0) );
 
 		// test
-//		if( gamepad1.y )
-//			robot.lift.moveDistancePower( 1, 10, true );
+		if( gamepad1.y )
+			robot.lift.moveDistancePower( 1, 10, true );
 
 		// g2 right stick X: rotate turret
-		robot.turret.setPower( controller2.right_stick_x * 0.5 );
+		robot.turret.setPower( controller2.right_stick_x );
 
 		// dpad: auto lift positions
 		dpadToLiftPos( );
 
+		if( controller1.b.onPress( ) ) {
+			power += 0.05f;
+		} else if( controller1.x.onPress( ) ) {
+			power -= 0.05f;
+		}
+
 		// reset the lift position to its current zero position
-		if( gamepad1.ps || robot.lift.getCurrent( CurrentUnit.AMPS ) > max ){
-			max = robot.lift.getCurrent( CurrentUnit.AMPS );
-			Robot.writeToDefaultFile( "Current: " + max, true, false );
+		if( gamepad1.ps || (robot.lift.getCurrent( CurrentUnit.AMPS ) > maxCurrent && !movingLift) ) {
+//			maxCurrent = robot.lift.getCurrent( CurrentUnit.AMPS );
+			Robot.writeToDefaultFile( "Current: " + maxCurrent, true, false );
 			robot.lift.resetLift( );
 		}
 		// update controllers and telemetry
+
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );
@@ -169,17 +167,14 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addData( "heading y*", imu.getAngularVelocity( ).yRotationRate );
 //		telemetry.addData( "heading z", imu.getAngularVelocity( ).zRotationRate );
 //		telemetry.addLine( );
-		telemetry.addLine("Lift Data");
+
+		telemetry.addData( "power shift", power );
 		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
+		telemetry.addData( "power", robot.lift.getPower( ) );
 		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
 		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
 		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
-		telemetry.addLine( );
-		telemetry.addLine("Turret Data");
-		telemetry.addData( "current", robot.turret.getCurrent( CurrentUnit.AMPS ) );
-		telemetry.addData( "pos (ticks)", robot.turret.getPosition( ) );
-		telemetry.addData( "heading", robot.turret.getTurretHeading( AngleUnit.DEGREES ) );
-		telemetry.addLine( );
+//		telemetry.addLine( );
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
 
@@ -208,7 +203,6 @@ public class MiniTeleOp extends OpMode {
 //			telemetry.addLine( "ground: " + PPField.Junction.GROUND.height( ) );
 		}
 	}
-
 
 
 }

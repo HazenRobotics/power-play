@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
-import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
+import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 
 @Autonomous(name = "NeverFail", group = "Autonomous")
-@Disabled
+//@Disabled
 public class NeverFail extends LinearOpMode {
+
 	MiniBot robot;
 
 	@Override
@@ -21,10 +21,7 @@ public class NeverFail extends LinearOpMode {
 		robot = new MiniBot( this );
 		SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
 		detector.init( );
-		SignalDetector.SignalPosition park = SignalDetector.SignalPosition.NOT_FOUND;
-		while( detector.getSignalPosition( ) == SignalDetector.SignalPosition.NOT_FOUND ) {
-			park = detector.getSignalPosition( );
-		}
+
 		DcMotorEx[] motors = {
 				robot.mecanumDrive.frontLeft,
 				robot.mecanumDrive.backLeft,
@@ -37,6 +34,13 @@ public class NeverFail extends LinearOpMode {
 		for( DcMotorEx d : motors ) {
 			d.setTargetPosition( robot.mecanumDrive.convertDistTicks( 24 ) );
 		}
+		SignalDetector.SignalPosition park;
+		while( !isStopRequested( ) && !isStarted( ) ) {
+			telemetry.addData( "Element position", robot.signalUtil.getSignalPosition( ) );
+			telemetry.update( );
+		}
+		waitForStart( );
+		park = robot.signalUtil.getSignalPosition( );
 		for( DcMotorEx d : motors ) {
 			d.setPower( 0.25 );
 		}
