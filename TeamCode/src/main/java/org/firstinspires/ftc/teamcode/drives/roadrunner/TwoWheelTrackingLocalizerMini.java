@@ -38,26 +38,25 @@ import java.util.List;
 public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 
 	public static double TICKS_PER_REV = 4000;
-	public static double WHEEL_RADIUS = 0.728; // in
+	public static double WHEEL_RADIUS = 0.75; // in
 	public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
 	// 210mm distance between deadwheels
 
-//	1st x multi: 1.027789134213273097276815589505
-//  2nd x multi: 1.019055199955614484624155458003
-//  3rd x multi: 1.035457516903843963455252703407
+//	0.98903375147251753550445135598407
+//	0.98739220883145156590682343984545
+//  0.98535061658064837698561555819895
+	public static double X_MULTIPLIER = 0.98725885896153915946563011800949; // 1.02743 Multiplier in the X direction
+//  0.9867006438220013926146611499961
+//  0.98952878916097665534438197194642
+//  0.9920634044666234639656413357742
+	public static double Y_MULTIPLIER = 0.98943094581653383730822815257224; // 1.01201 Multiplier in the Y direction
 
-//	1st y multi: 1.0067812309131058306057019614336
-//  2nd y multi: 1.0180926373802892740547009861924
-//  3rd y multi: 1.0111746028892628986555871890919
-	public static double X_MULTIPLIER = 1.02743; // Multiplier in the X direction
-	public static double Y_MULTIPLIER = 1.01201; // Multiplier in the Y direction
+	public static double PARALLEL_X = -0.55; // 0.394 X is the up and down direction
+	public static double PARALLEL_Y = -4.1; // 0.787 Y is the strafe direction
 
-	public static double PARALLEL_X = 0.394; // X is the up and down direction
-	public static double PARALLEL_Y = -4.331; // Y is the strafe direction
-
-	public static double PERPENDICULAR_X = 0.787;
-	public static double PERPENDICULAR_Y = 3.937;
+	public static double PERPENDICULAR_X = -0.625; //0.787
+	public static double PERPENDICULAR_Y = 4.5; // 3.937
 
 	// Parallel/Perpendicular to the forward axis
 	// Parallel wheel is parallel to the forward axis
