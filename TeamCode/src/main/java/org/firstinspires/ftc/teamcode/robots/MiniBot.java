@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.utils.localization.PPField.TILE_SIZ
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -16,18 +17,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
-import org.firstinspires.ftc.teamcode.subsystems.RotatingClaw;
-import org.firstinspires.ftc.teamcode.subsystems.ServoSwitchTurret;
-import org.firstinspires.ftc.teamcode.subsystems.ServoTurret;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
-import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
+import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 
 public class MiniBot extends Robot {
 
@@ -41,11 +37,12 @@ public class MiniBot extends Robot {
 	//	public Lift horizontalLift;
 //	public ServoTurret turret;
 	public Turret turret;
-//	public Claw claw;
+	//	public Claw claw;
 //	public RotatingClaw claw;
 	public TiltingClaw claw;
-//	public TwoAxesClaw claw;
+	//	public TwoAxesClaw claw;
 	public SignalUtil signalUtil;
+	public BNO055IMU gyro;
 
 	public static final float ROBOT_LENGTH = 12.25f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
@@ -87,13 +84,16 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 0.3, 0.53, 0.73 } );
+		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 0.73, 0.53, 0.3 } );
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0/30.0, 0, 360  );
+		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, 0, 360 );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
+
+		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
+		initGyro();
 	}
 
 	public void waitSeconds( double seconds ) {
@@ -104,9 +104,15 @@ public class MiniBot extends Robot {
 		}
 	}
 
-	public void initSubsystems() {
+	public void initSubsystems( ) {
 		signalUtil.init( );
 		claw.setState( TiltingClaw.ClawState.CLOSED );
+	}
+
+	public void initGyro( ) {
+		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters( );
+		parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+		gyro.initialize( parameters );
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {
@@ -198,7 +204,7 @@ public class MiniBot extends Robot {
 	}
 
 	/**
-	 * @param angle            the heading to face the Junction (degrees)
+	 * @param angle the heading to face the Junction (degrees)
 	 * @return the position/heading (Pose2D) of where to go
 	 */
 	public static Pose2d getJunctionOffsetPos( double angle, int junctionX, int junctionY ) {
@@ -242,13 +248,12 @@ public class MiniBot extends Robot {
 	}
 
 	/**
-	 *
-	 * @param red whether the bot is on the red side of the field
+	 * @param red   whether the bot is on the red side of the field
 	 * @param right whether the bot is on the right side of the field from that side's perspective
 	 * @return an int array of length 2 containing the sign (1 or -1) of the quadrant the robot must be in
 	 */
 	public static int[] getQuadrantSign( boolean red, boolean right ) {
-		return new int[]{ (red ? 1 : -1) * ( right ? 1 : -1), (red ? -1 : 1) };
+		return new int[]{ (red ? 1 : -1) * (right ? 1 : -1), (red ? -1 : 1) };
 	}
 
 	public TrajectorySequenceBuilder getTrajectorySequenceBuilder( ) {

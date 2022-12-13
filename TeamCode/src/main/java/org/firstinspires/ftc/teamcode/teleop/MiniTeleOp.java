@@ -4,12 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
-import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -24,6 +27,7 @@ public class MiniTeleOp extends OpMode {
 	boolean movingLift = false;
 	double maxCurrent = 10;
 	float power = 0.1f;
+	boolean powerOverridden = false;
 
 	public enum Speeds {
 
@@ -67,6 +71,8 @@ public class MiniTeleOp extends OpMode {
 		robot.lift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
 		robot.claw.init( );
 
+		startAntiTip( );
+
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
 		controller1.update( );
@@ -76,12 +82,13 @@ public class MiniTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-		robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
-				gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+		if( !powerOverridden )
+			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
+					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
+					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger) + power );
+			robot.lift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger)/* + power*/ );
 		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 
 			movingLift = false;
@@ -111,8 +118,8 @@ public class MiniTeleOp extends OpMode {
 //		robot.claw.rotate( (gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0) );
 
 		// test
-		if( gamepad1.y )
-			robot.lift.moveDistancePower( 1, 10, true );
+//		if( gamepad1.y )
+//			robot.lift.moveDistancePower( 1, 10, true );
 
 		// g2 right stick X: rotate turret
 		robot.turret.setPower( controller2.right_stick_x );
@@ -169,12 +176,17 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addLine( );
 
 		telemetry.addData( "power shift", power );
-		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
-		telemetry.addData( "power", robot.lift.getPower( ) );
+//		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
+//		telemetry.addData( "power", robot.lift.getPower( ) );
+		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
 		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
 		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
-		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
+//		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
 //		telemetry.addLine( );
+
+		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle );
+		telemetry.addData( "powerOveridden", powerOverridden );
+
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
 
@@ -202,6 +214,19 @@ public class MiniTeleOp extends OpMode {
 			robot.junctionToLiftPos( PPField.Junction.GROUND );
 //			telemetry.addLine( "ground: " + PPField.Junction.GROUND.height( ) );
 		}
+	}
+
+	public void startAntiTip( ) {
+		new Thread( ( ) -> {
+			double angle;
+			while( robot.opModeIsActive( ) ) {
+				angle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
+				powerOverridden = Math.abs( angle ) > 15;
+				if( powerOverridden )
+					robot.mecanumDrive.drive( Math.signum( angle ) * Drive.normalize( Math.abs( angle ), 0, 70, 0.2, 1 ), 0 );
+				waitRobot( 50 );
+			}
+		} ).start( );
 	}
 
 

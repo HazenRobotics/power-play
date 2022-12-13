@@ -122,7 +122,7 @@ public class Lift {
 	 * @param distance  the distance to move the lift in inches
 	 * @param stopAsync wait for the robot to finish asynchronously or not
 	 */
-	public void moveDistancePower( double power, double distance, boolean stopAsync ) {
+	public void moveDistancePower( double power, double distance, boolean stopAsync, boolean stopMotor ) {
 
 		// reset encoder count kept by the motor.
 		stopAndReset( );
@@ -138,12 +138,14 @@ public class Lift {
 			// create a new thread so that it doesn't interfere with other mechanisms
 			new Thread( ( ) -> {
 				waitForMoveFinish( );
-				setPower( 0 );
+				if( stopMotor )
+					setPower( 0 );
 				disableMotorIfUnused( );
 			} ).start( );
 		} else {
 			waitForMoveFinish( );
-			setPower( 0 );
+			if( stopMotor )
+				setPower( 0 );
 			disableMotorIfUnused( );
 		}
 	}
@@ -216,7 +218,7 @@ public class Lift {
 	}
 
 	/**
-	 * @param power  the power at which to move the lift
+	 * @param power  the power at which to move the lift asynchronously
 	 * @param height the height from the ground to the bottom of the bucket (in the intake position) to move the lift to in inches
 	 */
 	public void setHeightPower( double power, double height ) {
@@ -224,7 +226,20 @@ public class Lift {
 			height = posOffset;
 		double distanceToMove = calcLiftDistanceFromHeight( height ) - getPositionInch( );
 
-		moveDistancePower( power, distanceToMove, true );
+		moveDistancePower( power, distanceToMove, true, false );
+	}
+
+	/**
+	 * @param power  the power at which to move the lift
+	 * @param height the height from the ground to the bottom of the bucket (in the intake position) to move the lift to in inches
+	 * @param async  whether to stop the power asynchronously
+	 */
+	public void setHeightPower( double power, double height, boolean async, boolean stopMotor ) {
+		if( height - posOffset < 0 )
+			height = posOffset;
+		double distanceToMove = calcLiftDistanceFromHeight( height ) - getPositionInch( );
+
+		moveDistancePower( power, distanceToMove, async, stopMotor );
 	}
 
 	/**
