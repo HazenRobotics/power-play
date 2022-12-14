@@ -27,7 +27,8 @@ public class MiniTeleOp extends OpMode {
 	boolean movingLift = false;
 	double maxCurrent = 10;
 	float power = 0.1f;
-	boolean powerOverridden = false;
+//	boolean powerOverridden = false;
+	double robotAngle = 0;
 
 	public enum Speeds {
 
@@ -71,7 +72,7 @@ public class MiniTeleOp extends OpMode {
 		robot.lift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
 		robot.claw.init( );
 
-		startAntiTip( );
+//		startAntiTip( );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -82,7 +83,11 @@ public class MiniTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-		if( !powerOverridden )
+		robotAngle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
+
+		if( Math.abs( robotAngle ) > 10 )
+			robot.mecanumDrive.drive( Math.signum( robotAngle ) * Drive.normalize( Math.abs( robotAngle ), 0, 70, 0, 0.8 ), 0 );
+		else
 			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
 					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
 					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
@@ -177,15 +182,15 @@ public class MiniTeleOp extends OpMode {
 
 		telemetry.addData( "power shift", power );
 //		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
-//		telemetry.addData( "power", robot.lift.getPower( ) );
+		telemetry.addData( "power", robot.lift.getPower( ) );
 		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
 		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
 		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
-//		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
+		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
 //		telemetry.addLine( );
 
 		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle );
-		telemetry.addData( "powerOveridden", powerOverridden );
+//		telemetry.addData( "powerOveridden", powerOverridden );
 
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
@@ -216,18 +221,17 @@ public class MiniTeleOp extends OpMode {
 		}
 	}
 
-	public void startAntiTip( ) {
-		new Thread( ( ) -> {
-			double angle;
-			while( robot.opModeIsActive( ) ) {
-				angle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
-				powerOverridden = Math.abs( angle ) > 15;
-				if( powerOverridden )
-					robot.mecanumDrive.drive( Math.signum( angle ) * Drive.normalize( Math.abs( angle ), 0, 70, 0.2, 1 ), 0 );
-				waitRobot( 50 );
-			}
-		} ).start( );
-	}
+//	public void startAntiTip( ) {
+//		new Thread( ( ) -> {
+//			double angle;
+//			while( robot.opModeIsActive( ) ) {
+//				angle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
+//				powerOverridden = Math.abs( angle ) > 15;
+//				if( powerOverridden )
+//					robot.mecanumDrive.drive( Math.signum( angle ) * Drive.normalize( Math.abs( angle ), 0, 70, 0, 0.8 ), 0 );
+//			}
+//		} ).start( );
+//	}
 
 
 }

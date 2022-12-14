@@ -10,9 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.Robot;
-import org.opencv.core.Mat;
 
 public class Turret {
 
@@ -58,7 +56,7 @@ public class Turret {
 		resetTurret( );
 	}
 
-	public void setPower( double power) {
+	public void setPower( double power ) {
 		motor.setPower( power );
 	}
 
@@ -80,7 +78,7 @@ public class Turret {
 	 * @param position the rotation of the turret in the predetermined AngleUnit
 	 */
 	public void setRotationPower( double power, double position ) {
-		setRotationPower( power, position, unit );
+		setRotationPower( power, position, unit, true );
 	}
 
 	public void setLiveRotationPower( Vector2d move ) {
@@ -108,14 +106,62 @@ public class Turret {
 			motor.setPower( power );
 	}
 
-	public void setRotationPower( double power, double position, AngleUnit angleUnit ) {
-		position = angleUnit == AngleUnit.DEGREES ? Math.toDegrees( position ) : position;
+	public void setRotationPower( double power, double position, AngleUnit angleUnit, boolean async ) {
+		position = angleUnit == AngleUnit.DEGREES ? position : Math.toDegrees( position );
 
 		motor.setTargetPosition( convertHeadingToTicks( position ) );
+
+		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+
+		if (position < getTurretHeading())
+			power *= -1;
+
 		motor.setPower( power );
+
+		if( async ) {
+			// create a new thread so that it doesn't interfere with other mechanisms
+			new Thread( ( ) -> {
+				waitForMoveFinish( );
+				setPower( 0 );
+			} ).start( );
+		} else {
+			waitForMoveFinish( );
+			setPower( 0 );
+		}
+
 	}
 
-	public double convertTicksToHeading ( double ticks ) {
+	public void waitForMoveFinish( ) {
+		while( isBusy( ) ) {
+			try {
+				Thread.sleep( 50 );
+			} catch( InterruptedException ignored ) {
+			}
+		}
+	}
+
+	public boolean isBusy( ) {
+		return motor.isBusy( );
+	}
+
+	public void turnToPosPower( double power, double position, AngleUnit angleUnit ) {
+		position = angleUnit == AngleUnit.DEGREES ? position : Math.toDegrees( position );
+
+		if( position > getTurretHeading( ) ) {
+			motor.setPower( power );
+			while( position > getTurretHeading( ) ) {}
+		} else if( position < getTurretHeading( ) ) {
+			motor.setPower( -power );
+			while( position < getTurretHeading( ) );
+		}
+		setPower( 0 );
+	}
+
+	public void turnToPosPower( double power, double position  ) {
+		turnToPosPower( power, position, unit );
+	}
+
+	public double convertTicksToHeading( double ticks ) {
 		return convertTicksToHeading( ticks, unit );
 	}
 
@@ -125,23 +171,25 @@ public class Turret {
 		return angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
 	}
 
-	public int convertHeadingToTicks ( double heading ) {
+	public int convertHeadingToTicks( double heading ) {
 		return convertHeadingToTicks( heading, unit );
 	}
 
 	public int convertHeadingToTicks( double heading, AngleUnit angleUnit ) {
-		heading = unit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
+		heading = unit == AngleUnit.RADIANS ? heading : Math.toRadians( heading );
+
 		double ticks = (heading * gearRatio * pulsesPerRevolution) / (2 * Math.PI);
 
 		return (int) ticks;
 	}
+
 
 	public double getTurretHeading( ) {
 		return getTurretHeading( unit );
 	}
 
 	public double getTurretHeading( AngleUnit angleUnit ) {
-		double heading = (2 * Math.PI * getPosition()) / (gearRatio * pulsesPerRevolution);
+		double heading = (2 * Math.PI * getPosition( )) / (gearRatio * pulsesPerRevolution);
 
 		return angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
 	}

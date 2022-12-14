@@ -82,8 +82,8 @@ public class Lift {
 
 
 		resetLift( );
-		motor.setTargetPosition( 10 );
-		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+//		motor.setTargetPosition( 10 );
+//		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 	}
 
 	/**
