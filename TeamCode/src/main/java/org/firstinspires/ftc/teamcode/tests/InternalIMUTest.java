@@ -9,26 +9,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.InternalIMU;
 
-@TeleOp(name = "IMUTest", group = "Test")
+@TeleOp(group = "Test")
 //@Disabled
-public class IMUTest extends OpMode {
+public class InternalIMUTest extends OpMode {
 
 	MecanumDrive drive;
-	BNO055IMU imu;
+	InternalIMU gyro;
 
 	@Override
 	public void init( ) {
 		drive = new MecanumDrive( hardwareMap );
-		imu = hardwareMap.get(BNO055IMU.class, "imu");
-		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-		parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-		imu.initialize(parameters);
+		gyro = new InternalIMU( hardwareMap );
 	}
 
 	@Override
 	public void loop( ) {
 		drive.drive( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-		telemetry.addData("angles (ZYX):", imu.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES));
+		telemetry.addData("angles:", gyro.getOrientation());
 	}
 }

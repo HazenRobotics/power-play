@@ -23,7 +23,7 @@ public class MotorWithEncoderTurretTest extends OpMode {
 	public void loop( ) {
 		Vector2d joystick = new Vector2d( gamepad1.right_stick_x, -gamepad1.right_stick_y );
 
-		turret.setLiveRotationPower( joystick );
+		turret.setLiveRotationPower( joystick, 0 );
 
 		double moveX = joystick.getX();
 		double moveY = joystick.getY();

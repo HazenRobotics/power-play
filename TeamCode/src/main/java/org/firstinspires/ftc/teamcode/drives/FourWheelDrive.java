@@ -169,11 +169,20 @@ public class FourWheelDrive implements Drive {
 	 * @param frontRightMode run mode of the front right motor
 	 * @param backRightMode  run mode of the back right motor
 	 */
-	public void setRunMode( RunMode frontLeftMode, RunMode frontRightMode, RunMode backLeftMode, RunMode backRightMode ) {
+	public void setRunModes( RunMode frontLeftMode, RunMode frontRightMode, RunMode backLeftMode, RunMode backRightMode ) {
 		frontLeft.setMode( frontLeftMode );
 		backLeft.setMode( backLeftMode );
 		frontRight.setMode( frontRightMode );
 		backRight.setMode( backRightMode );
+	}
+
+	/**
+	 * Sets run modes of each motor to the same mode
+	 *
+	 * @param mode run mode of motors
+	 */
+	public void setRunMode( RunMode mode ) {
+		setRunModes(mode, mode, mode, mode);
 	}
 
 	public double getFrontLeftPower( ) {

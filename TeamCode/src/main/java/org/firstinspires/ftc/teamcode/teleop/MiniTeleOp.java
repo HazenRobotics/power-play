@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
@@ -29,7 +30,9 @@ public class MiniTeleOp extends OpMode {
 	double maxCurrent = 10;
 	float power = 0.1f;
 //	boolean powerOverridden = false;
+	Orientation gyroOrientation;
 	double robotTiltAngle = 0;
+	double robotHeading = 0;
 
 	public enum Speeds {
 
@@ -84,7 +87,10 @@ public class MiniTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-		robotTiltAngle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
+		gyroOrientation = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES );
+
+		robotTiltAngle = gyroOrientation.secondAngle;
+		robotHeading = gyroOrientation.firstAngle;
 
 		if( Math.abs( robotTiltAngle ) > 10 )
 			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
@@ -130,7 +136,7 @@ public class MiniTeleOp extends OpMode {
 		// g2 right stick X: rotate turret
 
 //		robot.turret.setPower( controller2.right_stick_x );
-		robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller1.right_stick_y ) );
+		robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller2.right_stick_y ), robotHeading );
 
 
 		// dpad: auto lift positions
@@ -193,7 +199,7 @@ public class MiniTeleOp extends OpMode {
 		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
 //		telemetry.addLine( );
 
-		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle );
+		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ) );
 //		telemetry.addData( "powerOveridden", powerOverridden );
 
 

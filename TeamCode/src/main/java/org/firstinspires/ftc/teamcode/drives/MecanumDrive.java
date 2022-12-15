@@ -67,4 +67,37 @@ public class MecanumDrive extends FourWheelDrive {
 		setMotorPower( frontLeftPower, backLeftPower, frontRightPower, backRightPower );
 	}
 
+	/**
+	 * Sets power to the wheel motors to drive in straight line left or right
+	 *
+	 * @param power  power for sideways motion
+	 */
+	public void strafe( double power ) {
+		setMotorPower( power, -power, -power, power );
+	}
+
+	/**
+	 * Sets the target position of each motor
+	 *
+	 * @param frontLeftPos target position of frontLeft motor
+	 * @param backLeftPos target position of backLeft motor
+	 * @param frontRightPos target position of frontRight motor
+	 * @param backRightPos target position of backRight motor
+	 */
+	public void setMotorTargetPositions( int frontLeftPos, int backLeftPos, int frontRightPos, int backRightPos ) {
+		frontLeft.setTargetPosition( frontLeftPos );
+		backLeft.setTargetPosition( backLeftPos );
+		frontRight.setTargetPosition( frontRightPos );
+		backRight.setTargetPosition( backRightPos );
+	}
+
+	/**
+	 * Sets the target position of each motor to the same value
+	 *
+	 * @param position position to run motors to
+	 */
+	public void setTargetPosition( int position ) {
+		setMotorTargetPositions( position, position, position, position );
+	}
+
 }

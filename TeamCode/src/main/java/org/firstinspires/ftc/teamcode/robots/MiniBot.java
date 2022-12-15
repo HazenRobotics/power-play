@@ -44,11 +44,12 @@ public class MiniBot extends Robot {
 	public SignalUtil signalUtil;
 	public BNO055IMU gyro;
 
-	public static final float ROBOT_LENGTH = 12.25f;
+	public static final float ROBOT_LENGTH = 13.5f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
 	//	public static final float ROBOT_WIDTH = 14.125f;
-	public static final float ROBOT_MAX_WIDTH = 14.5f;
+	public static final float ROBOT_MAX_WIDTH = 13.375f;
 
+	public static final float CONE_OFFSET = 12.0f;
 
 	public enum LiftPosition {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
@@ -84,16 +85,16 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 0.73, 0.48, 0.3 } );
+		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.73, 0.48, 0.3 } );
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, -255, 75 );
+		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 75 );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 
 		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
-		initGyro();
+		initGyro( );
 	}
 
 	public void waitSeconds( double seconds ) {
@@ -111,7 +112,7 @@ public class MiniBot extends Robot {
 
 	public void initGyro( ) {
 		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters( );
-		parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+		parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
 		gyro.initialize( parameters );
 	}
 
@@ -145,11 +146,11 @@ public class MiniBot extends Robot {
 	public Pose2d getStartPos( boolean red, boolean right ) {
 		double x, y, heading;
 		if( red ) { // red side
-			x = right ? (TILE_SIZE + ROBOT_MAX_WIDTH / 2) : -(2 * TILE_SIZE - ROBOT_MAX_WIDTH / 2);
+			x = right ? (TILE_SIZE + 3 * TILE_CONNECTOR / 2 + ROBOT_MAX_WIDTH / 2) : -(2 * TILE_SIZE + 3 * TILE_CONNECTOR / 2 - ROBOT_MAX_WIDTH / 2);
 			y = -(3 * (TILE_CONNECTOR + TILE_SIZE) - MiniBot.ROBOT_LENGTH / 2);
 			heading = Math.toRadians( 90 );
 		} else { // blue side
-			x = right ? -(TILE_SIZE + ROBOT_MAX_WIDTH / 2) : (2 * TILE_SIZE - ROBOT_MAX_WIDTH / 2);
+			x = right ? -(TILE_SIZE + 3 * TILE_CONNECTOR / 2 + ROBOT_MAX_WIDTH / 2) : (2 * TILE_SIZE + 3 * TILE_CONNECTOR / 2 - ROBOT_MAX_WIDTH / 2);
 			y = (3 * (TILE_CONNECTOR + TILE_SIZE) - MiniBot.ROBOT_LENGTH / 2);
 			heading = Math.toRadians( 270 );
 		}
@@ -213,6 +214,23 @@ public class MiniBot extends Robot {
 		double x = junctionPos.getX( ) - Math.cos( angle ) * ROBOT_MAX_LENGTH;
 		double y = junctionPos.getY( ) - Math.sin( angle ) * ROBOT_MAX_LENGTH;
 		return new Pose2d( x, y, angle );
+	}
+
+	/**
+	 * @param angle     angle of robot relative to pole
+	 * @param distance  the distance away from the pole to center of robot
+	 * @param heading   end heading of robot
+	 * @param junctionX x pos of junction
+	 * @param junctionY y pos of junction
+	 * @return the position/heading (Pose2D) of where to go
+	 */
+	public static Pose2d getJunctionOffsetPos( double angle, double distance, double heading, int junctionX, int junctionY ) {
+		Vector2d junctionPos = PPField.getJunctionPose( junctionX, junctionY, false );
+		double dist = (distance + ROBOT_LENGTH / 2);
+		angle = Math.toRadians( angle );
+		double x = junctionPos.getX( ) - Math.cos( angle ) * distance;
+		double y = junctionPos.getY( ) - Math.sin( angle ) * distance;
+		return new Pose2d( x, y, Math.toRadians( heading ) );
 	}
 
 	/**

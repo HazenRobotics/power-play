@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
@@ -14,25 +16,27 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 public class NeverFail extends LinearOpMode {
 
 	MiniBot robot;
+	MecanumDrive drive;
 
 	@Override
 	public void runOpMode( ) {
 
 		robot = new MiniBot( this );
+		drive = new MecanumDrive( hardwareMap );
 		SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
 		detector.init( );
 
 		DcMotorEx[] motors = {
-				robot.mecanumDrive.frontLeft,
-				robot.mecanumDrive.backLeft,
-				robot.mecanumDrive.frontRight,
-				robot.mecanumDrive.backRight,
+				drive.frontLeft,
+				drive.backLeft,
+				drive.frontRight,
+				drive.backRight,
 		};
 		for( DcMotorEx d : motors ) {
 			d.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 		}
 		for( DcMotorEx d : motors ) {
-			d.setTargetPosition( robot.mecanumDrive.convertDistTicks( 24 ) );
+			d.setTargetPosition( drive.convertDistTicks( 24 ) );
 		}
 		SignalDetector.SignalPosition park;
 		while( !isStopRequested( ) && !isStarted( ) ) {
@@ -54,7 +58,7 @@ public class NeverFail extends LinearOpMode {
 				d.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 			}
 			for( DcMotorEx d : motors ) {
-				d.setTargetPosition( robot.mecanumDrive.convertDistTicks( 24 ) );
+				d.setTargetPosition( drive.convertDistTicks( 24 ) );
 			}
 			if( park == SignalDetector.SignalPosition.LEFT ) {
 				motors[0].setPower( -0.25 );

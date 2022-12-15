@@ -81,7 +81,7 @@ public class Turret {
 		setRotationPower( power, position, unit, true );
 	}
 
-	public void setLiveRotationPower( Vector2d move ) {
+	public void setLiveRotationPower( Vector2d move, double robotAngle ) {
 
 		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
 
@@ -90,7 +90,7 @@ public class Turret {
 		double moveX = move.getX( );
 		double moveY = move.getY( );
 
-		double target = -(Math.toDegrees( move.angle() ) - 90); // target angle between
+		double target = -(Math.toDegrees( move.angle() ) - 90 - robotAngle); // target angle between
 		double power = Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) ) * .5;
 
 		double currentHeading = getTurretHeading( );

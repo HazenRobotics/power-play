@@ -114,6 +114,28 @@ public class MiniBot {
 
 
 	/**
+	 * @param angle the heading to face the Junction (degrees)
+	 * @return the position/heading (Pose2D) of where to go
+	 */
+	public static Pose2d getJunctionOffsetPos( double angle, int junctionX, int junctionY ) {
+		Vector2d junctionPos = PPField.getJunctionPose( junctionX, junctionY, false );
+		angle = Math.toRadians( angle );
+		double x = junctionPos.getX( ) - Math.cos( angle ) * ROBOT_MAX_LENGTH;
+		double y = junctionPos.getY( ) - Math.sin( angle ) * ROBOT_MAX_LENGTH;
+		return new Pose2d( x, y, angle );
+	}
+
+	public static Pose2d getJunctionOffsetPos( double angle, double distance, double heading, int junctionX, int junctionY ) {
+		Vector2d junctionPos = PPField.getJunctionPose( junctionX, junctionY, false );
+		double dist = (distance + ROBOT_LENGTH / 2);
+		angle = Math.toRadians( angle );
+		double x = junctionPos.getX( ) - Math.cos( angle ) * dist;
+		double y = junctionPos.getY( ) - Math.sin( angle ) * dist;
+		return new Pose2d( x, y, Math.toRadians( heading ) );
+	}
+
+
+	/**
 	 * @param angle            the heading to face the Junction (degrees)
 	 * @param junctionDistance the distance away from the shipping hub base to be
 	 * @param junctionPos      the position of the junction to go to

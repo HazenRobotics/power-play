@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -25,11 +26,14 @@ public class MovingTurretAndLiftWhileDriving extends LinearOpMode {
 
 		robot.initSubsystems();
 
+		telemetry.addLine("done");
+		telemetry.update();
+
 		waitForStart();
 		robot.signalUtil.stopCamera( );
 
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
-		robot.drive.setPoseEstimate( robot.getStartPos( red, right ) );
+		robot.drive.setPoseEstimate( new Pose2d( 0, 0, 0 ) );
 
 		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
 				.forward( 20 )
@@ -43,6 +47,7 @@ public class MovingTurretAndLiftWhileDriving extends LinearOpMode {
 				.build( );
 
 		robot.drive.followTrajectorySequence( mainTrajectory );
+
 
 	}
 }

@@ -316,7 +316,7 @@ public class MecanumDriveMini extends MecanumDrive {
 
 	@Override
 	public Double getExternalHeadingVelocity( ) {
-		return (double) imu.getAngularVelocity( ).yRotationRate;
+		return (double) imu.getAngularVelocity( ).zRotationRate;
 	}
 
 	public static TrajectoryVelocityConstraint getVelocityConstraint( double maxVel, double maxAngularVel, double trackWidth ) {
