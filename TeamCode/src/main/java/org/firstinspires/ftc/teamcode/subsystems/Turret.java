@@ -83,27 +83,32 @@ public class Turret {
 
 	public void setLiveRotationPower( Vector2d move ) {
 
+		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
 
-		double tolerance = 0.0;
+		double tolerance = 5;
 
 		double moveX = move.getX( );
 		double moveY = move.getY( );
 
-		double target = move.angle( ); // target angle between
-		double power = Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) );
+		double target = -(Math.toDegrees( move.angle() ) - 90); // target angle between
+		double power = Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) ) * .5;
 
 		double currentHeading = getTurretHeading( );
 
 		Robot.writeToDefaultFile( tolerance + ", " + move + ", " + target + ", " + currentHeading, true, false );
 
 
-		if( target < leftLimit || target > rightLimit )
-			power *= -1;
+//		if( target < leftLimit || target > rightLimit ) {
+//			return;
+//		}
 
-		if( target > currentHeading + tolerance )
-			motor.setPower( -power );
-		else if( target < currentHeading - tolerance )
+		if (Math.abs( target - currentHeading ) < tolerance )
+			power *= .1;
+
+		if( target > currentHeading )
 			motor.setPower( power );
+		else if( target < currentHeading )
+			motor.setPower( -power );
 	}
 
 	public void setRotationPower( double power, double position, AngleUnit angleUnit, boolean async ) {

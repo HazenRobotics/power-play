@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -28,7 +29,7 @@ public class MiniTeleOp extends OpMode {
 	double maxCurrent = 10;
 	float power = 0.1f;
 //	boolean powerOverridden = false;
-	double robotAngle = 0;
+	double robotTiltAngle = 0;
 
 	public enum Speeds {
 
@@ -83,10 +84,10 @@ public class MiniTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-		robotAngle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
+		robotTiltAngle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
 
-		if( Math.abs( robotAngle ) > 10 )
-			robot.mecanumDrive.drive( Math.signum( robotAngle ) * Drive.normalize( Math.abs( robotAngle ), 0, 70, 0, 0.8 ), 0 );
+		if( Math.abs( robotTiltAngle ) > 10 )
+			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
 		else
 			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
 					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
@@ -127,7 +128,10 @@ public class MiniTeleOp extends OpMode {
 //			robot.lift.moveDistancePower( 1, 10, true );
 
 		// g2 right stick X: rotate turret
-		robot.turret.setPower( controller2.right_stick_x );
+
+//		robot.turret.setPower( controller2.right_stick_x );
+		robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller1.right_stick_y ) );
+
 
 		// dpad: auto lift positions
 		dpadToLiftPos( );

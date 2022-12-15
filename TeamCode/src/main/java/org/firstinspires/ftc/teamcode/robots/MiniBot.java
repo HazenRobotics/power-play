@@ -84,11 +84,11 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 0.73, 0.53, 0.3 } );
+		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 0.73, 0.48, 0.3 } );
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, 0, 360 );
+		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, -255, 75 );
 
 		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 

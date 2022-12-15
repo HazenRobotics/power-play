@@ -23,30 +23,23 @@ public class MovingTurretAndLiftWhileDriving extends LinearOpMode {
 
 		robot = new MiniBot( this );
 
+		robot.initSubsystems();
+
+		waitForStart();
+		robot.signalUtil.stopCamera( );
+
+		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
+		robot.drive.setPoseEstimate( robot.getStartPos( red, right ) );
+
 		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
-				.addTemporalMarker( () -> {
-					robot.lift.setHeightPower( 20, 0.75 );
-				} )
 				.forward( 20 )
 				.turn( Math.toRadians( 90 ) )
-				.addTemporalMarker( () -> {
-					robot.turret.setRotationPower( 0.5, -90 );
-				} )
 				.forward( 20 )
 				.turn( Math.toRadians( 90 ) )
-				.addTemporalMarker( () -> {
-					robot.turret.setRotationPower( 0.5, -180 );
-				} )
 				.forward( 20 )
 				.turn( Math.toRadians( 90 ) )
-				.addTemporalMarker( () -> {
-					robot.turret.setRotationPower( 0.5, -90 );
-				} )
 				.forward( 20 )
 				.turn( Math.toRadians( 90 ) )
-				.addTemporalMarker( () -> {
-					robot.turret.setRotationPower( 0.5, 90 );
-				} )
 				.build( );
 
 		robot.drive.followTrajectorySequence( mainTrajectory );
