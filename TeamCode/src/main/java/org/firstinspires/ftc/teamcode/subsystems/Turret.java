@@ -112,6 +112,8 @@ public class Turret {
 	}
 
 	public void setRotationPower( double power, double position, AngleUnit angleUnit, boolean async ) {
+		Robot.writeToDefaultFile( "Turret told to rotate", false, true );
+
 		position = angleUnit == AngleUnit.DEGREES ? position : Math.toDegrees( position );
 
 		motor.setTargetPosition( convertHeadingToTicks( position ) );

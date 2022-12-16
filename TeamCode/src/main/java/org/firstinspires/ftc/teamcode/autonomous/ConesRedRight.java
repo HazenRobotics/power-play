@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
@@ -26,30 +27,34 @@ public class ConesRedRight extends LinearOpMode {
 
 		robot = new MiniBot( this );
 
-		robot.initSubsystems( );
-
-		telemetry.addLine( "Ready!" );
-		telemetry.update( );
-
-		while( !isStopRequested( ) && !isStarted( ) ) {
-			telemetry.addData( "Element position", robot.signalUtil.getSignalPosition( ) );
-			telemetry.update( );
-		}
-
-		waitForStart( );
-
-		robot.junctionToLiftPos( PPField.Junction.GROUND );
+//		robot.initSubsystems( );
+		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
 
 		Vector2d parkPos = robot.parkPosInit( red, right );
 		Vector2d conePos = MiniBot.getSignalPos( red, right );
 		Pose2d medJunction = MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), quadSign[0], quadSign[1] );
-		Pose2d highJunction = MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), MiniBot.CONE_OFFSET, quadSign[1] == -1 ? 90 : 270, quadSign[0], 0 );
+		Pose2d initialHighJunction = MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), MiniBot.CONE_OFFSET, quadSign[1] == -1 ? 90 : 270, quadSign[0], 0 );
+		Pose2d cycleHighJunction = new Pose2d( initialHighJunction.getX(), initialHighJunction.getY(), 0 );
 		Pose2d pickUpPos = MiniBot.getJunctionOffsetPos( Math.toRadians( quadSign[0] == 1 ? 0 : 180 ), MiniBot.ROBOT_MAX_LENGTH - MiniBot.ROBOT_LENGTH / 2, new Vector2d( quadSign[0] * PPField.TILE_SIZE * 3, (red ? -1 : 1) * PPField.TILE_SIZE / 2 ) );
 
-		robot.signalUtil.stopCamera( );
+//		camden's because i have no clue how to utilize the offset pos function above
+		Pose2d altPickupPos = new Pose2d( 2.5 * (PPField.TILE_SIZE + PPField.TILE_CONNECTOR) - 7, -PPField.TILE_SIZE / 2 - PPField.TILE_CONNECTOR + 2, 0 );
 
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
 		robot.drive.setPoseEstimate( robot.getStartPos( red, right ) );
+
+		telemetry.addLine( "Ready!" );
+		telemetry.update( );
+
+//		while( !isStopRequested( ) && !isStarted( ) ) {
+//			telemetry.addData( "Element position", robot.signalUtil.getSignalPosition( ) );
+//			telemetry.update( );
+//		}
+
+		waitForStart( );
+
+		robot.junctionToLiftPos( PPField.Junction.GROUND );
+//		robot.signalUtil.stopCamera( );
 
 		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
 //				.lineTo( conePos )
@@ -58,37 +63,175 @@ public class ConesRedRight extends LinearOpMode {
 						( ) -> {
 							robot.junctionToLiftPos( PPField.Junction.HIGH );
 						} )
-				.lineToLinearHeading( highJunction ) // move to medium junction
+				.lineToLinearHeading( initialHighJunction ) // move to high junction
+				.waitSeconds( 0.2 )
 				.addTemporalMarker( ( ) -> {
-					// move lift up async
+					// move turret async
 					robot.turret.setRotationPower( 0.5, -45 );
 				} )
-				.waitSeconds( 2 ) // wait
+				.waitSeconds( 0.5 ) // wait
 				.addTemporalMarker( ( ) -> {
 					// deploy & open claw
 					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 					robot.claw.setState( TiltingClaw.ClawState.OPEN );
-					// return lift down async
-					robot.junctionToLiftPos( PPField.Junction.GROUND );
-					// stow claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
+					// return turret to front
 				} )
-				.waitSeconds( 1 )
+				.waitSeconds( 0.25 )
+				.lineToLinearHeading( altPickupPos ) // straighten out and center
 				// grab new cone
-				.lineToLinearHeading( pickUpPos ) // straighten out and center
-				.addTemporalMarker( ( ) -> {
-					// deploy & open claw
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+				.addTemporalMarker( () -> {
+					robot.turret.setRotationPower( 0.5, 0 );
+					// return lift down async
+					robot.lift.setHeightPower( 1, 5 );
+					// stow claw
 					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
 				.waitSeconds( 0.5 ) // wait
+				.forward( 4.5 )
 				.addTemporalMarker( ( ) -> {
 					// close claw
 					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
 					// move lift up async
 					robot.junctionToLiftPos( PPField.Junction.HIGH );
 				} )
-				.lineTo( parkPos ) // go to park position
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( cycleHighJunction )
+				.addTemporalMarker( ( ) -> {
+					// move turret async
+					robot.turret.setRotationPower( 0.5, -135 );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.addTemporalMarker( ( ) -> {
+					// deploy & open claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					// return turret to front
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( altPickupPos ) // straighten out and center
+				// grab new cone
+				.addTemporalMarker( () -> {
+					robot.turret.setRotationPower( 0.5, 0 );
+					// return lift down async
+					robot.lift.setHeightPower( 1, 4 );
+					// stow claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.forward( 4.5 )
+				.addTemporalMarker( ( ) -> {
+					// close claw
+					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+					// move lift up async
+					robot.junctionToLiftPos( PPField.Junction.HIGH );
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( cycleHighJunction )
+				.addTemporalMarker( ( ) -> {
+					// move turret async
+					robot.turret.setRotationPower( 0.5, -135 );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.addTemporalMarker( ( ) -> {
+					// deploy & open claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					// return turret to front
+				} )
+				.waitSeconds( 0.25 )
+				.lineToLinearHeading( altPickupPos ) // straighten out and center
+				// grab new cone
+				.addTemporalMarker( () -> {
+					robot.turret.setRotationPower( 0.5, 0 );
+					// return lift down async
+					robot.lift.setHeightPower( 1, 3 );
+					// stow claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.forward( 4.5 )
+				.addTemporalMarker( ( ) -> {
+					// close claw
+					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+					// move lift up async
+					robot.junctionToLiftPos( PPField.Junction.HIGH );
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( cycleHighJunction )
+				.addTemporalMarker( ( ) -> {
+					// move turret async
+					robot.turret.setRotationPower( 0.5, -135 );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.addTemporalMarker( ( ) -> {
+					// deploy & open claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					// return turret to front
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( altPickupPos ) // straighten out and center
+				// grab new cone
+				.addTemporalMarker( () -> {
+					robot.turret.setRotationPower( 0.5, 0 );
+					// return lift down async
+					robot.lift.setHeightPower( 1, 2 );
+					// stow claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.forward( 4.5 )
+				.addTemporalMarker( ( ) -> {
+					// close claw
+					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+					// move lift up async
+					robot.junctionToLiftPos( PPField.Junction.HIGH );
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( cycleHighJunction )
+				.addTemporalMarker( ( ) -> {
+					// move turret async
+					robot.turret.setRotationPower( 0.5, -135 );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.addTemporalMarker( ( ) -> {
+					// deploy & open claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					// return turret to front
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( altPickupPos ) // straighten out and center
+				// grab new cone
+				.addTemporalMarker( () -> {
+					robot.turret.setRotationPower( 0.5, 0 );
+					// return lift down async
+					robot.lift.setHeightPower( 1, 1 );
+					// stow claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.forward( 4.5 )
+				.addTemporalMarker( ( ) -> {
+					// close claw
+					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+					// move lift up async
+					robot.junctionToLiftPos( PPField.Junction.HIGH );
+				} )
+				.waitSeconds( 0.5 )
+				.lineToLinearHeading( cycleHighJunction )
+				.addTemporalMarker( ( ) -> {
+					// move turret async
+					robot.turret.setRotationPower( 0.5, -135 );
+				} )
+				.waitSeconds( 0.5 ) // wait
+				.addTemporalMarker( ( ) -> {
+					// deploy & open claw
+					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					// return turret to front
+				} )
+//				.lineTo( parkPos ) // go to park position
 				.build( );
 
 		robot.drive.followTrajectorySequence( mainTrajectory );

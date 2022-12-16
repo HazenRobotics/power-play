@@ -204,6 +204,10 @@ public class MiniBot extends Robot {
 		lift.setHeightPower( 1, junction.height( ) + 3 );
 	}
 
+	public void junctionToLiftPosNotAsync( PPField.Junction junction ) {
+		lift.setHeightPower( 1, junction.height( ) + 3, false, false );
+	}
+
 	/**
 	 * @param angle the heading to face the Junction (degrees)
 	 * @return the position/heading (Pose2D) of where to go

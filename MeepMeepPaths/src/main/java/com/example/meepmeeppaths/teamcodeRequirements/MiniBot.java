@@ -14,6 +14,8 @@ public class MiniBot {
 	public static final float ROBOT_WIDTH = 14.125f;
 	public static final float ROBOT_MAX_WIDTH = 13.8125f;
 
+	public static final float CONE_OFFSET = 12.0f;
+
 	public enum LiftPosition {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH
 	}

@@ -45,7 +45,7 @@ public class ConesRedRight implements MeepMeepPath {
 		Pose2d highJunction = MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), 12, quadSign[1] == -1 ? 90 : 270 , quadSign[0], 0 );
 		Pose2d pickUpPos = MiniBot.getJunctionOffsetPos( Math.toRadians( quadSign[0] == 1 ? 0 : 180 ), MiniBot.ROBOT_MAX_LENGTH - MiniBot.ROBOT_LENGTH / 2, new Vector2d( quadSign[0] * PPField.TILE_SIZE * 3, (red ? -1 : 1) * PPField.TILE_SIZE / 2 ) );
 
-		System.out.println( MiniBot.getAngleOnSide( red, right ) );
+		System.out.println( MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), 12, quadSign[1] == -1 ? 90 : 270 , quadSign[0], 0 ));
 
 //		robot.signalUtil.stopCamera( );
 
