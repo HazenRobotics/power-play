@@ -33,6 +33,21 @@ public class AprilTagDemo extends LinearOpMode
 	// UNITS ARE METERS
 	double tagsize = 0.166;
 
+	public enum SignalPosition {
+		LEFT,
+		MIDDLE,
+		RIGHT,
+		NOT_FOUND
+	}
+
+	private AprilTagsAuto.SignalPosition signalPosition;
+
+	// Tag ids 482, 311, and 555 from the 36h11 family
+	int leftTag = 311;
+	int middleTag = 482;
+	int rightTag = 555;
+	AprilTagDetection tagOfInterest = null;
+
 	int numFramesWithoutDetection = 0;
 
 	final float DECIMATION_HIGH = 3;

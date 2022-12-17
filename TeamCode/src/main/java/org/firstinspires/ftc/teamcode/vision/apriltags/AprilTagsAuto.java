@@ -151,26 +151,12 @@ public class AprilTagsAuto extends LinearOpMode {
 			telemetry.update( );
 		}
 
-		/* Actually do something useful */
-		if( tagOfInterest == null ) {
-			/*
-			 * Insert your autonomous code here, presumably running some default configuration
-			 * since the tag was never sighted during INIT
-			 */
-		} else {
-			/*
-			 * Insert your autonomous code here, probably using the tag pose to decide your configuration.
-			 */
-
-			// e.g.
-			if( tagOfInterest.pose.x <= 20 ) {
-				// do something
-			} else if( tagOfInterest.pose.x >= 20 && tagOfInterest.pose.x <= 50 ) {
-				// do something else
-			} else if( tagOfInterest.pose.x >= 50 ) {
-				// do something else
-			}
-		}
+		if(tagOfInterest == null || tagOfInterest.id == leftTag)
+			signalPosition = SignalPosition.LEFT;
+		else if(tagOfInterest.id == middleTag)
+			signalPosition = SignalPosition.MIDDLE;
+		else if (tagOfInterest.id == rightTag)
+			signalPosition = SignalPosition.RIGHT;
 
 
 		/* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */

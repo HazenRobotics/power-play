@@ -37,7 +37,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 
-class AprilTagDetectionPipeline extends OpenCvPipeline
+public class AprilTagDetectionPipeline extends OpenCvPipeline
 {
 	private long nativeApriltagPtr;
 	private Mat grey = new Mat();
@@ -66,6 +66,21 @@ class AprilTagDetectionPipeline extends OpenCvPipeline
 	private float decimation;
 	private boolean needToSetDecimation;
 	private final Object decimationSync = new Object();
+
+	public enum SignalPosition {
+		LEFT,
+		MIDDLE,
+		RIGHT,
+		NOT_FOUND
+	}
+
+	private SignalPosition signalPosition;
+
+	// Tag ids 482, 311, and 555 from the 36h11 family
+	int leftTag = 311;
+	int middleTag = 482;
+	int rightTag = 555;
+	AprilTagDetection tagOfInterest = null;
 
 	public AprilTagDetectionPipeline(double tagsize, double fx, double fy, double cx, double cy)
 	{
@@ -121,6 +136,17 @@ class AprilTagDetectionPipeline extends OpenCvPipeline
 		{
 			detectionsUpdate = detections;
 		}
+
+//		if(detections != null || detections.size() != 0) {
+//			if(detections[0] == null || tagOfInterest.id == leftTag)
+//				signalPosition = AprilTagsAuto.SignalPosition.LEFT;
+//			else if(tagOfInterest.id == middleTag)
+//				signalPosition = AprilTagsAuto.SignalPosition.MIDDLE;
+//			else if (tagOfInterest.id == rightTag)
+//				signalPosition = AprilTagsAuto.SignalPosition.RIGHT;
+//		}
+
+
 
 		// For fun, use OpenCV to draw 6DOF markers on the image. We actually recompute the pose using
 		// OpenCV because I haven't yet figured out how to re-use AprilTag's pose in OpenCV.
@@ -287,6 +313,11 @@ class AprilTagDetectionPipeline extends OpenCvPipeline
 
 		return pose;
 	}
+
+	public SignalPosition getSignalPosition( ) {
+		return signalPosition;
+	}
+
 
 	/*
 	 * A simple container to hold both rotation and translation
