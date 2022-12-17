@@ -42,7 +42,7 @@ public class AprilTagsUtil {
 
 		int cameraMonitorViewId = hardwareMap.appContext.getResources( ).getIdentifier( "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName( ) );
 		webcam = OpenCvCameraFactory.getInstance( ).createWebcam( hardwareMap.get( WebcamName.class, webcamName ), cameraMonitorViewId );
-		pipeline = new AprilTagDetectionPipeline( tagsize, fx, fy, cx, cy );
+		pipeline = new AprilTagDetectionPipeline( tagsize, fx, fy, cx, cy, telemetry );
 		webcam.setPipeline( pipeline );
 	}
 

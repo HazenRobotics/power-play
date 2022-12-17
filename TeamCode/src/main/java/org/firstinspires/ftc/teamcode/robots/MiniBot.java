@@ -22,7 +22,9 @@ import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
+import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
+import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 
 public class MiniBot extends Robot {
@@ -41,7 +43,8 @@ public class MiniBot extends Robot {
 //	public RotatingClaw claw;
 	public TiltingClaw claw;
 	//	public TwoAxesClaw claw;
-	public SignalUtil signalUtil;
+//	public SignalUtil signalUtil;
+	public AprilTagsUtil signalUtil;
 	public BNO055IMU gyro;
 
 	public boolean rightSide;
@@ -133,7 +136,9 @@ public class MiniBot extends Robot {
 
 		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 75 );
 
-		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
+//		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
+
+		signalUtil = new AprilTagsUtil( hardwareMap, "webcam1", telemetry );
 
 		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
 		initGyro( );
@@ -254,12 +259,12 @@ public class MiniBot extends Robot {
 
 		double x, y;
 
-		SignalDetector.SignalPosition signalPosition = signalUtil.getSignalPosition( );
+		AprilTagDetectionPipeline.SignalPosition signalPosition = signalUtil.getSignalPosition( );
 
 		double tilePos = 0.05;
-		if( signalPosition == SignalDetector.SignalPosition.LEFT )
+		if( signalPosition == AprilTagDetectionPipeline.SignalPosition.LEFT )
 			tilePos = -1;
-		else if( signalPosition == SignalDetector.SignalPosition.RIGHT )
+		else if( signalPosition == AprilTagDetectionPipeline.SignalPosition.RIGHT )
 			tilePos = 1;
 
 		if( red ) {
