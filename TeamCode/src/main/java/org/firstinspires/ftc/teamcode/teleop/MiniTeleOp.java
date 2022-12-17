@@ -29,16 +29,17 @@ public class MiniTeleOp extends OpMode {
 	boolean movingLift = false;
 	double maxCurrent = 10;
 	float power = 0.1f;
-//	boolean powerOverridden = false;
+	//	boolean powerOverridden = false;
 	Orientation gyroOrientation;
 	double robotTiltAngle = 0;
 	double robotHeading = 0;
+	boolean fieldCentricTurret = true;
 
 	public enum Speeds {
 
 		DRIVE( 0.6, 0.8 ),
 		STRAFE( 1.0, 1.0 ),
-		ROTATE( 0.45, 0.9 );
+		ROTATE( .4, 0.9 );
 
 		Speeds( double min, double max ) {
 			this.min = min;
@@ -92,6 +93,13 @@ public class MiniTeleOp extends OpMode {
 		robotTiltAngle = gyroOrientation.secondAngle;
 		robotHeading = gyroOrientation.firstAngle;
 
+		if( controller2.y.onPress( ) )
+			fieldCentricTurret = !fieldCentricTurret;
+
+		if( controller2.x.onPress( ) )
+			robot.turret.resetTurret( );
+
+
 		if( Math.abs( robotTiltAngle ) > 10 )
 			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
 		else
@@ -135,9 +143,10 @@ public class MiniTeleOp extends OpMode {
 
 		// g2 right stick X: rotate turret
 
-//		robot.turret.setPower( controller2.right_stick_x );
-		robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller2.right_stick_y ), robotHeading );
-
+		if( fieldCentricTurret )
+			robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller2.right_stick_y ), robotHeading );
+		else
+			robot.turret.setPower( controller2.right_stick_x * 0.5 );
 
 		// dpad: auto lift positions
 		dpadToLiftPos( );

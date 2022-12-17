@@ -8,15 +8,14 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
-import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @Autonomous(group = "Park")
-public class JustParkRedRight extends LinearOpMode {
+public class JustParkLeft extends LinearOpMode {
 
 	MiniBot robot;
 
-	final boolean red = true, right = true;
+	final boolean right = false;
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
@@ -40,13 +39,13 @@ public class JustParkRedRight extends LinearOpMode {
 		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
 		robot.junctionToLiftPos( PPField.Junction.GROUND );
 
-		Vector2d parkPos = robot.parkPosInit( red, right );
-		Vector2d conePos = MiniBot.getSignalPos( red, right );
+		Vector2d parkPos = robot.parkPosInit( right );
+		Vector2d conePos = MiniBot.getSignalPos( right );
 
 		robot.signalUtil.stopCamera( );
 
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
-		robot.drive.setPoseEstimate( robot.getStartPos( red, right ) );
+		robot.drive.setPoseEstimate( robot.getStartPos( right ) );
 
 		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
 				.lineTo( conePos )

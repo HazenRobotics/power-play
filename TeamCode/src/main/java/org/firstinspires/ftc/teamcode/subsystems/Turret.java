@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robots.Robot;
 
 public class Turret {
 
-	public DcMotorEx motor;
+	DcMotorEx motor;
 
 	AngleUnit unit;
 
@@ -26,6 +26,9 @@ public class Turret {
 	public enum MovementState {
 		REST, MOVING;
 	}
+
+	boolean redSide = true;
+
 
 	MovementState movementState = MovementState.REST;
 
@@ -54,6 +57,10 @@ public class Turret {
 		setLimit( lLimit, rLimit );
 
 		resetTurret( );
+	}
+
+	public double getPower( ) {
+		return motor.getPower( );
 	}
 
 	public void setPower( double power ) {
@@ -90,20 +97,15 @@ public class Turret {
 		double moveX = move.getX( );
 		double moveY = move.getY( );
 
-		double target = -(Math.toDegrees( move.angle() ) - 90 - robotAngle); // target angle between
-		double power = Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) ) * .5;
+		double target = -(Math.toDegrees( move.angle( ) ) - 90 - robotAngle); // target angle between
+		double power = Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) ) * 0.5;
 
 		double currentHeading = getTurretHeading( );
 
-		Robot.writeToDefaultFile( tolerance + ", " + move + ", " + target + ", " + currentHeading, true, false );
+		Robot.writeToMatchFile( "Live Rotate: " + tolerance + ", " + move + ", " + target + ", " + currentHeading, true );
 
-
-//		if( target < leftLimit || target > rightLimit ) {
-//			return;
-//		}
-
-		if (Math.abs( target - currentHeading ) < tolerance )
-			power *= .1;
+		if( Math.abs( target - currentHeading ) < tolerance )
+			power *= 0.1;
 
 		if( target > currentHeading )
 			motor.setPower( power );
@@ -112,7 +114,6 @@ public class Turret {
 	}
 
 	public void setRotationPower( double power, double position, AngleUnit angleUnit, boolean async ) {
-		Robot.writeToDefaultFile( "Turret told to rotate", false, true );
 
 		position = angleUnit == AngleUnit.DEGREES ? position : Math.toDegrees( position );
 
@@ -120,8 +121,10 @@ public class Turret {
 
 		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 
-		if (position < getTurretHeading())
+		if( position < getTurretHeading( ) )
 			power *= -1;
+
+		Robot.writeToMatchFile( "Turret to (pos) " + position + ", (pow) " + power + ", (heading) " + getTurretHeading( AngleUnit.DEGREES ), true );
 
 		motor.setPower( power );
 
@@ -140,6 +143,7 @@ public class Turret {
 
 	public void waitForMoveFinish( ) {
 		while( isBusy( ) ) {
+			Robot.writeToMatchFile( "Busy heading: " + getTurretHeading( AngleUnit.DEGREES ) + "  -  " + motor.getTargetPosition( ) + "  -  " + motor.getPower( ), true );
 			try {
 				Thread.sleep( 50 );
 			} catch( InterruptedException ignored ) {
@@ -156,15 +160,16 @@ public class Turret {
 
 		if( position > getTurretHeading( ) ) {
 			motor.setPower( power );
-			while( position > getTurretHeading( ) ) {}
+			while( position > getTurretHeading( ) ) {
+			}
 		} else if( position < getTurretHeading( ) ) {
 			motor.setPower( -power );
-			while( position < getTurretHeading( ) );
+			while( position < getTurretHeading( ) ) ;
 		}
 		setPower( 0 );
 	}
 
-	public void turnToPosPower( double power, double position  ) {
+	public void turnToPosPower( double power, double position ) {
 		turnToPosPower( power, position, unit );
 	}
 

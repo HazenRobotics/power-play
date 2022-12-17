@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Stores information about the field so that it can represent a digital "map" of the field.
  * All measurements are in mm so that it is easier to use with vuforia
  */
-public class FFFieldMap {
+public class UGFieldMap {
 
 	//All measurements are in mm
 	private static final float mmPerInch = (float) DistanceUnit.mmPerInch;

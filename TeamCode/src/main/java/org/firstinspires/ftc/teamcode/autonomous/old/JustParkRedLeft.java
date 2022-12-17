@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.old;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,11 +12,11 @@ import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @Autonomous(group = "Park")
-public class JustParkBlueRight extends LinearOpMode {
+public class JustParkRedLeft extends LinearOpMode {
 
 	MiniBot robot;
 
-	final boolean red = false, right = true;
+	final boolean red = true, right = false;
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {

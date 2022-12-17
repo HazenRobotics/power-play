@@ -44,31 +44,73 @@ public class MiniBot extends Robot {
 	public SignalUtil signalUtil;
 	public BNO055IMU gyro;
 
+	public boolean rightSide;
+
+	/*public enum RobotDimensions {
+		FL( 7f, 6.625f ),
+		BL( 7f, 6.625f ),
+		FR( 6f, 7.5f ),
+		BR( 6f, 6.875f );
+
+		RobotDimensions( float x, float y ) {
+			xOffset = x;
+			yOffset = y;
+		}
+
+		public float xOffset;
+		public float yOffset;
+
+		public float getXOffset( ) {
+			return xOffset;
+		}
+
+		public float getYOffset( ) {
+			return yOffset;
+		}
+	}*/
+
 	public static final float ROBOT_LENGTH = 13.5f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
 	//	public static final float ROBOT_WIDTH = 14.125f;
 	public static final float ROBOT_MAX_WIDTH = 13.375f;
 
-	public static final float CONE_OFFSET = 12.0f;
+	public static final float ROBOT_BACK_OFFSET = 6f;
+
+	public static final float CLAW_OFFSET = 12.0f;
+
+	public static boolean redSide = true;
+
+	public static double autoEndHeading;
 
 	public enum LiftPosition {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
 	}
 
-	public static final Vector3D clawOffSet = new Vector3D( 15.5, 1.075, 2 );
+//	public static final Vector3D clawOffSet = new Vector3D( 0, 12, 3 );
+
+	/**
+	 * Creates a Mini Robot
+	 *
+	 * @param op robot's opMode
+	 */
+	public MiniBot( OpMode op ) {
+		this( op, true );
+	}
 
 	/**
 	 * Creates a Robot
 	 *
 	 * @param op robot's opMode
 	 */
-	public MiniBot( OpMode op ) {
+	public MiniBot( OpMode op, boolean rightSide ) {
 		super( op );
 
 		Robot.writeToDefaultFile( "written", false, true );
 
 		opMode = op;
 		hardwareMap = op.hardwareMap;
+
+		this.rightSide = rightSide;
 
 		super.driveTrain = new MecanumDrive( hardwareMap );
 		mecanumDrive = (MecanumDrive) driveTrain;//REVERSE
@@ -85,7 +127,7 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.73, 0.48, 0.3 } );
+		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.73, 0.43, 0.05 } );
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
@@ -116,6 +158,16 @@ public class MiniBot extends Robot {
 		gyro.initialize( parameters );
 	}
 
+//	public Vector3D getClawPos () {
+//		final Pose2d robotPose = drive.getPoseEstimate();
+//		Vector2d robotXyCoords = new Vector2d( robotPose.getX(), robotPose.getY() );
+//
+//		return new Vector3D(
+//				robotXyCoords.getX() + Math.sin( turret.getTurretHeading() - (robotPose.getHeading() < 0 : robotPose.getHeading() ),
+//				robotXyCoords.getX() + Math.cos( turret.getTurretHeading() ),
+//				lift.getMotorPositionInch());
+//	}
+
 	public void setClawPos( Vector3D clawPos, double... powers ) {
 
 		Vector2d xyPos = new Vector2d( clawPos.getX( ), clawPos.getY( ) );
@@ -139,6 +191,15 @@ public class MiniBot extends Robot {
 	}
 
 	/**
+	 * @param right true if on the right side from the perspective of the driver
+	 * @return the starting position of the robot in these circumstances
+	 */
+	public Pose2d getStartPos( boolean right ) {
+		double x = right ? (TILE_SIZE + 3 * TILE_CONNECTOR / 2 + ROBOT_MAX_WIDTH / 2) : -(2 * TILE_SIZE + 3 * TILE_CONNECTOR / 2 - ROBOT_MAX_WIDTH / 2);
+		return new Pose2d( x, -(3 * (TILE_CONNECTOR + TILE_SIZE) - ROBOT_BACK_OFFSET/*MiniBot.ROBOT_LENGTH / 2*/), Math.toRadians( 90 ) );
+	}
+
+	/**
 	 * @param red   true if on the red side, false for blue
 	 * @param right true if on the right side from the perspective of the driver
 	 * @return the starting position of the robot in these circumstances
@@ -155,6 +216,30 @@ public class MiniBot extends Robot {
 			heading = Math.toRadians( 270 );
 		}
 		return new Pose2d( x, y, heading );
+	}
+
+	/**
+	 * signal needs to be initted!!
+	 * robot.signalUtil.init( );
+	 *
+	 * @param right true if on right side of the field
+	 * @return the position to park
+	 */
+	public Vector2d parkPosInit( boolean right ) {
+
+//		SignalDetector.SignalPosition signalPosition = signalUtil.getSignalPosition( );
+//		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.RIGHT;
+		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.MIDDLE;
+//		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.LEFT;
+//		SignalDetector.SignalPosition signalPosition = null;
+
+		double tilePos = 0.05;
+		if( signalPosition == SignalDetector.SignalPosition.LEFT )
+			tilePos = -1;
+		else if( signalPosition == SignalDetector.SignalPosition.RIGHT )
+			tilePos = 1;
+
+		return new Vector2d( (right ? -1 : 1) * THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3), THREE_HALVES_TILE );
 	}
 
 	/**
@@ -188,6 +273,10 @@ public class MiniBot extends Robot {
 		return new Vector2d( x, y );
 	}
 
+	public static Vector2d getSignalPos( boolean right ) {
+		return new Vector2d( (right ? 1 : -1) * (THREE_HALVES_TILE + 3), -THREE_HALVES_TILE );
+	}
+
 	public static Vector2d getSignalPos( boolean red, boolean right ) {
 		double x, y;
 		if( red ) { // red side
@@ -201,7 +290,11 @@ public class MiniBot extends Robot {
 	}
 
 	public void junctionToLiftPos( PPField.Junction junction ) {
-		lift.setHeightPower( 1, junction.height( ) + 3 );
+		junctionToLiftPos( junction, 3 );
+	}
+
+	public void junctionToLiftPos( PPField.Junction junction, double extension ) {
+		lift.setHeightPower( 1, junction.height( ) + extension );
 	}
 
 	public void junctionToLiftPosNotAsync( PPField.Junction junction ) {
@@ -246,8 +339,8 @@ public class MiniBot extends Robot {
 	public static Pose2d getJunctionOffsetPos( double angle, double junctionDistance, Vector2d junctionPos ) {
 		double dist = (junctionDistance + ROBOT_LENGTH / 2);
 		angle = Math.toRadians( angle );
-		double x = junctionPos.getX( ) - Math.cos( angle ) * dist;
-		double y = junctionPos.getY( ) - Math.sin( angle ) * dist;
+		double x = junctionPos.getX( ) - Math.cos( angle ) * junctionDistance;
+		double y = junctionPos.getY( ) - Math.sin( angle ) * junctionDistance;
 		return new Pose2d( x, y, angle );
 	}
 
@@ -284,6 +377,18 @@ public class MiniBot extends Robot {
 
 	public TrajectoryBuilder getTrajectoryBuilder( ) {
 		return drive.trajectoryBuilder( drive.getPoseEstimate( ) );
+	}
+
+	public static void setRedSide( boolean redSide ) {
+		MiniBot.redSide = redSide;
+	}
+
+
+	/**
+	 * @return if the robot is on the red side of the field
+	 */
+	public static boolean getRedSide( ) {
+		return redSide;
 	}
 
 }

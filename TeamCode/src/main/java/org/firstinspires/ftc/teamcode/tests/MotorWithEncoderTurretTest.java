@@ -25,13 +25,13 @@ public class MotorWithEncoderTurretTest extends OpMode {
 
 		turret.setLiveRotationPower( joystick, 0 );
 
-		double moveX = joystick.getX();
-		double moveY = joystick.getY();
+		double moveX = joystick.getX( );
+		double moveY = joystick.getY( );
 
-		telemetry.addData( "desired pos (heading)", -(Math.toDegrees( joystick.angle() ) - 90) );
+		telemetry.addData( "desired pos (heading)", -(Math.toDegrees( joystick.angle( ) ) - 90) );
 		telemetry.addData( "desired power", Math.sqrt( moveX * moveX + moveY * moveY - (moveX * moveX * moveY * moveY) ) * .25 );
-		telemetry.addData( "actualHeading", turret.getTurretHeading() );
-		telemetry.addData( "actualPower", turret.motor.getPower() );
-		telemetry.update();
+		telemetry.addData( "actualHeading", turret.getTurretHeading( ) );
+		telemetry.addData( "actualPower", turret.getPower( ) );
+		telemetry.update( );
 	}
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils.localization;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
@@ -20,14 +21,15 @@ public class PPField {
 
 	public static final float THREE_HALVES_TILE = 3f / 2f * TILE_SIZE;
 
-	private static final float FIELD_SIZE = (TILE_SIZE * 6 + TILE_CONNECTOR * 5); // 140.25"
+	public static final float FIELD_SIZE = (TILE_SIZE * 6 + TILE_CONNECTOR * 5); // 140.25"
 	//	private static final float MM_TARGET_HEIGHT = (6) * mmPerInch;
-	private static final float HALF_FIELD = FIELD_SIZE / 2;
-	private static final float QUAD_FIELD = FIELD_SIZE / 4;
+	public static final float HALF_FIELD = FIELD_SIZE / 2;
+	public static final float QUAD_FIELD = FIELD_SIZE / 4;
 
-	// x = 2 * PPField.TILE_SIZE - ROBOT_WIDTH / 2 + 3 * TILE_CONNECTOR / 2
-	// y = PPField.HALF_FIELD - ROBOT_LENGTH / 2
-	// heading = Math.toRadians( 270 )
+	public static final float CONE_STACK_OFFSET = 12f;
+	public static final float CONE_RADIUS = 2f;
+	public static final float CONE_HEIGHT = 5f;
+	public static final float CONE_BASE = 0.75f;
 
 	// Goals information
 	public static float toMM( float n ) {
@@ -125,8 +127,5 @@ public class PPField {
 			return inMM ? toMM( poses ) : poses;
 		}
 	}
-
-	// 29 1/4" from the inside of the field to the edge of the paper
-	// 1 7/8" from the bottom of the paper to the floor, outside of the field
 
 }

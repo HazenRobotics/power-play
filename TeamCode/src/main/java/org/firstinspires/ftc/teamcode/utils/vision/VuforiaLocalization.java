@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.utils.localization.FFFieldMap;
+import org.firstinspires.ftc.teamcode.utils.localization.UGFieldMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class VuforiaLocalization {
 
 		for( int i = 0; i < targets.size( ); i++ ) {
 			trackables.add( targets.get( i ) );
-			targets.get( i ).setLocation( FFFieldMap.VuforiaTargets.TARGET_POSITIONS[i] );
+			targets.get( i ).setLocation( UGFieldMap.VuforiaTargets.TARGET_POSITIONS[i] );
 		}
 	}
 
@@ -70,7 +70,7 @@ public class VuforiaLocalization {
 	 */
 	private void setCameraPosition( ) {
 		for( VuforiaTrackable trackable : trackables ) {
-			((VuforiaTrackableDefaultListener) trackable.getListener( )).setPhoneInformation( FFFieldMap.RobotInfo.CAMERA_FROM_ROBOT, VuforiaLocalizer.CameraDirection.BACK );
+			((VuforiaTrackableDefaultListener) trackable.getListener( )).setPhoneInformation( UGFieldMap.RobotInfo.CAMERA_FROM_ROBOT, VuforiaLocalizer.CameraDirection.BACK );
 		}
 	}
 
@@ -131,12 +131,12 @@ public class VuforiaLocalization {
 	}
 
 	/**
-	 * Updates the robot's position in the {@link FFFieldMap}
+	 * Updates the robot's position in the {@link UGFieldMap}
 	 */
 	public void updateRobotLocation( ) {
 		OpenGLMatrix robotLocation = getRobotLocationTransform( );
 		if( robotLocation != null ) {
-			FFFieldMap.RobotInfo.robotLocation = robotLocation;
+			UGFieldMap.RobotInfo.robotLocation = robotLocation;
 		}
 	}
 
@@ -146,7 +146,7 @@ public class VuforiaLocalization {
 	 * @return robot's current position
 	 */
 	public VectorF getRobotPosition( ) {
-		OpenGLMatrix robotLocation = FFFieldMap.RobotInfo.robotLocation;
+		OpenGLMatrix robotLocation = UGFieldMap.RobotInfo.robotLocation;
 		if( robotLocation == null ) {
 			return null;
 		}
@@ -159,7 +159,7 @@ public class VuforiaLocalization {
 	 * @return robot's current orientation
 	 */
 	public Orientation getRobotRotation( ) {
-		OpenGLMatrix robotLocation = FFFieldMap.RobotInfo.robotLocation;
+		OpenGLMatrix robotLocation = UGFieldMap.RobotInfo.robotLocation;
 		if( robotLocation == null ) {
 			return null;
 		}
