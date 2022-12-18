@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.vision;
 
 import android.util.Log;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -32,6 +33,7 @@ public class ColorCalibratorUtil {
 		webcam = OpenCvCameraFactory.getInstance( ).createWebcam( hardwareMap.get( WebcamName.class, webcamName ), cameraMonitorViewId );
 		pipeline = new ColorCalibrator( telemetry );
 		webcam.setPipeline( pipeline );
+		FtcDashboard.getInstance().startCameraStream( webcam, 60 );
 	}
 
 	public void init( ) {

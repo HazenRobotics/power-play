@@ -85,7 +85,15 @@ public class Turret {
 	 * @param position the rotation of the turret in the predetermined AngleUnit
 	 */
 	public void setRotationPower( double power, double position ) {
-		setRotationPower( power, position, unit, true );
+		setRotationPower( power, position, true );
+	}
+
+	/**
+	 * @param power    power to turn at
+	 * @param position the rotation of the turret in the predetermined AngleUnit
+	 */
+	public void setRotationPower( double power, double position, boolean async ) {
+		setRotationPower( power, position, unit, async );
 	}
 
 	public void setLiveRotationPower( Vector2d move, double robotAngle ) {

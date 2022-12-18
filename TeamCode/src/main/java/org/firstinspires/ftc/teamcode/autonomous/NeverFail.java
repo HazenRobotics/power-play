@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
+import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
+import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 
 @Autonomous(name = "NeverFail", group = "Autonomous")
@@ -23,7 +25,7 @@ public class NeverFail extends LinearOpMode {
 
 		robot = new MiniBot( this );
 		drive = new MecanumDrive( hardwareMap );
-		SignalUtil detector = new SignalUtil( hardwareMap, "webcam1", telemetry );
+		AprilTagsUtil detector = new AprilTagsUtil( hardwareMap, "webcam1", telemetry );
 		detector.init( );
 
 		DcMotorEx[] motors = {
@@ -38,7 +40,7 @@ public class NeverFail extends LinearOpMode {
 		for( DcMotorEx d : motors ) {
 			d.setTargetPosition( drive.convertDistTicks( 24 ) );
 		}
-		SignalDetector.SignalPosition park;
+		AprilTagDetectionPipeline.SignalPosition park;
 		while( !isStopRequested( ) && !isStarted( ) ) {
 			telemetry.addData( "Element position", robot.signalUtil.getSignalPosition( ) );
 			telemetry.update( );
@@ -50,7 +52,7 @@ public class NeverFail extends LinearOpMode {
 		}
 		while( motors[0].isBusy( ) ) ;
 
-		if( park != SignalDetector.SignalPosition.MIDDLE ) {
+		if( park != AprilTagDetectionPipeline.SignalPosition.MIDDLE ) {
 			for( DcMotorEx d : motors ) {
 				d.setMode( DcMotor.RunMode.RESET_ENCODERS );
 			}
@@ -60,13 +62,13 @@ public class NeverFail extends LinearOpMode {
 			for( DcMotorEx d : motors ) {
 				d.setTargetPosition( drive.convertDistTicks( 24 ) );
 			}
-			if( park == SignalDetector.SignalPosition.LEFT ) {
+			if( park == AprilTagDetectionPipeline.SignalPosition.LEFT ) {
 				motors[0].setPower( -0.25 );
 				motors[1].setPower( 0.25 );
 				motors[2].setPower( -0.25 );
 				motors[3].setPower( 0.25 );
 			}
-			if( park == SignalDetector.SignalPosition.RIGHT ) {
+			if( park == AprilTagDetectionPipeline.SignalPosition.RIGHT ) {
 				motors[0].setPower( 0.25 );
 				motors[1].setPower( -0.25 );
 				motors[2].setPower( 0.25 );

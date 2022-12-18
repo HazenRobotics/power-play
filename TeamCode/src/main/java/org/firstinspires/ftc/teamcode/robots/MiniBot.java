@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.SignalUtil;
-import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagDetectionPipeline.SignalPosition;
 import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 
 public class MiniBot extends Robot {
@@ -85,6 +85,8 @@ public class MiniBot extends Robot {
 
 	public static double autoEndHeading;
 
+	public static Pose2d endAutoPos;
+
 	public enum LiftPosition {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
 	}
@@ -130,7 +132,7 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.73, 0.43, 0.05 } );
+		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.8, 0.43, 0.05 } );
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
@@ -155,6 +157,8 @@ public class MiniBot extends Robot {
 	public void initSubsystems( ) {
 		signalUtil.init( );
 		claw.setState( TiltingClaw.ClawState.CLOSED );
+		waitSeconds( 0.25 );
+		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
 
 	public void initGyro( ) {
@@ -172,6 +176,20 @@ public class MiniBot extends Robot {
 //				robotXyCoords.getX() + Math.cos( turret.getTurretHeading() ),
 //				lift.getMotorPositionInch());
 //	}
+
+	public boolean isOverJunction(  ) {
+
+		double play = 2;
+
+		Pose2d poseEst = drive.getPoseEstimate( );
+		double heading = poseEst.getHeading( ) + turret.getTurretHeading( AngleUnit.RADIANS);
+		double x = poseEst.getX( ) + CLAW_OFFSET * Math.sin( heading );
+		double y = poseEst.getY( ) + CLAW_OFFSET * Math.cos( heading );
+
+		double dist = TILE_CONNECTOR + TILE_SIZE;
+
+		return Math.abs(x % dist) < play && Math.abs(y % dist) < play;
+	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {
 
@@ -232,19 +250,21 @@ public class MiniBot extends Robot {
 	 */
 	public Vector2d parkPosInit( boolean right ) {
 
-//		SignalDetector.SignalPosition signalPosition = signalUtil.getSignalPosition( );
+		SignalPosition signalPosition = signalUtil.getSignalPosition( );
 //		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.RIGHT;
-		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.MIDDLE;
+//		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.MIDDLE;
 //		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.LEFT;
 //		SignalDetector.SignalPosition signalPosition = null;
 
 		double tilePos = 0.05;
-		if( signalPosition == SignalDetector.SignalPosition.LEFT )
+		if( signalPosition == SignalPosition.LEFT )
 			tilePos = -1;
-		else if( signalPosition == SignalDetector.SignalPosition.RIGHT )
+		else if( signalPosition == SignalPosition.RIGHT )
 			tilePos = 1;
 
-		return new Vector2d( (right ? -1 : 1) * THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3), THREE_HALVES_TILE );
+		float THREE_HALVES = 3f / 2 * TILE_CONNECTOR + THREE_HALVES_TILE;
+
+		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -THREE_HALVES );
 	}
 
 	/**
@@ -259,19 +279,19 @@ public class MiniBot extends Robot {
 
 		double x, y;
 
-		AprilTagDetectionPipeline.SignalPosition signalPosition = signalUtil.getSignalPosition( );
+		SignalPosition signalPosition = signalUtil.getSignalPosition( );
 
 		double tilePos = 0.05;
-		if( signalPosition == AprilTagDetectionPipeline.SignalPosition.LEFT )
+		if( signalPosition == SignalPosition.LEFT )
 			tilePos = -1;
-		else if( signalPosition == AprilTagDetectionPipeline.SignalPosition.RIGHT )
+		else if( signalPosition == SignalPosition.RIGHT )
 			tilePos = 1;
 
 		if( red ) {
-			x = right ? (THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3)) : -(THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3));
+			x = right ? (THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3)) : (-THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3));
 			y = -THREE_HALVES_TILE;
 		} else {
-			x = right ? -(THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3)) : (THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3));
+			x = right ? (-THREE_HALVES_TILE + tilePos * (TILE_SIZE + 3)) : (THREE_HALVES_TILE - tilePos * (TILE_SIZE + 3));
 			y = THREE_HALVES_TILE;
 		}
 

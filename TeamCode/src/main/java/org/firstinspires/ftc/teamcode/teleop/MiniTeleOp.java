@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -77,7 +78,8 @@ public class MiniTeleOp extends OpMode {
 		robot.lift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
 		robot.claw.init( );
 
-//		startAntiTip( );
+		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
+		robot.drive.setPoseEstimate( MiniBot.endAutoPos == null ? new Pose2d( 0, 0, 0 ) : MiniBot.endAutoPos );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );
@@ -135,12 +137,6 @@ public class MiniTeleOp extends OpMode {
 		else if( controller2.dpad_down.onPress( ) )
 			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
 
-//		robot.claw.rotate( (gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0) );
-
-		// test
-//		if( gamepad1.y )
-//			robot.lift.moveDistancePower( 1, 10, true );
-
 		// g2 right stick X: rotate turret
 
 		if( fieldCentricTurret )
@@ -163,8 +159,8 @@ public class MiniTeleOp extends OpMode {
 			Robot.writeToDefaultFile( "Current: " + maxCurrent, true, false );
 			robot.lift.resetLift( );
 		}
-		// update controllers and telemetry
 
+		// update controllers and telemetry
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );
@@ -199,16 +195,18 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addData( "heading z", imu.getAngularVelocity( ).zRotationRate );
 //		telemetry.addLine( );
 
-		telemetry.addData( "power shift", power );
+//		telemetry.addData( "power shift", power );
 //		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
-		telemetry.addData( "power", robot.lift.getPower( ) );
-		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
-		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
-		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
-		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
+//		telemetry.addData( "power", robot.lift.getPower( ) );
+//		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
+//		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
+//		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
+//		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
 //		telemetry.addLine( );
 
-		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ) );
+//		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ) );
+		telemetry.addData( "isOverJunction", robot.isOverJunction( ) );
+		telemetry.addData( "pos", robot.drive.getPoseEstimate( ) );
 //		telemetry.addData( "powerOveridden", powerOverridden );
 
 
