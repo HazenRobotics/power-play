@@ -159,8 +159,10 @@ public class MiniTeleOp extends OpMode {
 			Robot.writeToDefaultFile( "Current: " + maxCurrent, true, false );
 			robot.lift.resetLift( );
 		}
-		if(robot.isOverJunction()) {
+		if(robot.isOverJunction() && !gamepad1.isRumbling( )) {
 			gamepad1.rumble( 100 );
+		} else if( !robot.isOverJunction( ) ) {
+			gamepad1.stopRumble();
 		}
 		// update controllers and telemetry
 		displayTelemetry( );
