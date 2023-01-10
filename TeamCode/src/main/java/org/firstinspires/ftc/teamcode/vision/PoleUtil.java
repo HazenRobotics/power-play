@@ -2,38 +2,26 @@ package org.firstinspires.ftc.teamcode.vision;
 
 import android.util.Log;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.utils.localization.PPField;
+import org.firstinspires.ftc.teamcode.vision.pipelines.PoleDetector;
+import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class AprilTagsUtil {
+public class PoleUtil {
 
 	Telemetry telemetry;
 	private OpenCvWebcam webcam;
-	private AprilTagDetectionPipeline pipeline;
+	private PoleDetector pipeline;
 
-	static final double FEET_PER_METER = 3.28084;
-
-	// Lens intrinsics
-	// UNITS ARE PIXELS
-	// NOTE: this calibration is for the C920 webcam at 800x448.
-	// You will need to do your own calibration for other configurations!
-	double fx = 578.272;
-	double fy = 578.272;
-	double cx = 402.145;
-	double cy = 221.506;
-
-	// UNITS ARE METERS
-	double tagsize = 0.166;
-
-
-	public AprilTagsUtil( HardwareMap hardwareMap, String webcamName, Telemetry telemetry ) {
+	public PoleUtil( HardwareMap hardwareMap, String webcamName, Telemetry telemetry ) {
 		this.telemetry = telemetry;
 		setup( hardwareMap, webcamName );
 	}
@@ -42,7 +30,7 @@ public class AprilTagsUtil {
 
 		int cameraMonitorViewId = hardwareMap.appContext.getResources( ).getIdentifier( "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName( ) );
 		webcam = OpenCvCameraFactory.getInstance( ).createWebcam( hardwareMap.get( WebcamName.class, webcamName ), cameraMonitorViewId );
-		pipeline = new AprilTagDetectionPipeline( tagsize, fx, fy, cx, cy, telemetry );
+		pipeline = new PoleDetector( telemetry );
 		webcam.setPipeline( pipeline );
 	}
 
@@ -71,8 +59,8 @@ public class AprilTagsUtil {
 		} );
 	}
 
-	public AprilTagDetectionPipeline.SignalPosition getSignalPosition( ) {
-		return pipeline.getSignalPosition( );
+	public PoleDetector.PolePosition getPolePosition( ) {
+		return pipeline.getPolePosition( );
 	}
 
 	public void stopCamera( ) {

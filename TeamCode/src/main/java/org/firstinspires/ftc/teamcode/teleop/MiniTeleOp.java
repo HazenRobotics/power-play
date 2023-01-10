@@ -34,7 +34,7 @@ public class MiniTeleOp extends OpMode {
 	Orientation gyroOrientation;
 	double robotTiltAngle = 0;
 	double robotHeading = 0;
-	boolean fieldCentricTurret = true;
+	boolean fieldCentricTurret = false;
 
 	public enum Speeds {
 
@@ -102,12 +102,12 @@ public class MiniTeleOp extends OpMode {
 			robot.turret.resetTurret( );
 
 
-		if( Math.abs( robotTiltAngle ) > 10 )
+		if( Math.abs( robotTiltAngle + 90 ) > 10 )
 			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
 		else
 			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
 					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+					-gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
 			robot.lift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger)/* + power*/ );
@@ -129,13 +129,13 @@ public class MiniTeleOp extends OpMode {
 //		else if( controller1.right_bumper.onPress( ) || controller2.right_bumper.onPress( ) )
 //			robot.claw.setState( TiltingClaw.VerticalClawState.RIGHT );
 
-		// g2 dpad: tilt claw
-		if( controller2.dpad_up.onPress( ) )
-			robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
-		else if( controller2.dpad_left.onPress( ) )
-			robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-		else if( controller2.dpad_down.onPress( ) )
-			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
+//		// g2 dpad: tilt claw
+//		if( controller2.dpad_up.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
+//		else if( controller2.dpad_left.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//		else if( controller2.dpad_down.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
 
 		// g2 right stick X: rotate turret
 

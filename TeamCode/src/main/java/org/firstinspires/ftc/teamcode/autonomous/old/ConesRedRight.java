@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -33,7 +34,7 @@ public class ConesRedRight extends LinearOpMode {
 		MiniBot.setRedSide( true );
 
 //		robot.initSubsystems( );
-		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 
 		Vector2d parkPos = robot.parkPosInit( red, right );
 		Vector2d conePos = MiniBot.getSignalPos( red, right );
@@ -79,8 +80,8 @@ public class ConesRedRight extends LinearOpMode {
 				.waitSeconds( 0.75 ) // wait
 				.addTemporalMarker( ( ) -> {
 					// deploy & open claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 					// return turret to front
 				} )
 				.waitSeconds( 0.25 )
@@ -91,13 +92,13 @@ public class ConesRedRight extends LinearOpMode {
 					// return lift down async
 					robot.lift.setHeightPower( 1, 5 );
 					// stow claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
 				.waitSeconds( 0.5 ) // wait
 				.forward( 4.5 )
 				.addTemporalMarker( ( ) -> {
 					// close claw
-					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+//					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
 					// move lift up async
 					robot.junctionToLiftPos( PPField.Junction.HIGH );
 				} )
@@ -110,8 +111,8 @@ public class ConesRedRight extends LinearOpMode {
 				.waitSeconds( 0.5 ) // wait
 				.addTemporalMarker( ( ) -> {
 					// deploy & open claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+					robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 					// return turret to front
 				} )
 				.build( );

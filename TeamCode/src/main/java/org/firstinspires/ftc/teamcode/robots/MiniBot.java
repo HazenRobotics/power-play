@@ -17,15 +17,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
-import org.firstinspires.ftc.teamcode.vision.SignalUtil;
-import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagDetectionPipeline.SignalPosition;
-import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
+import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline.SignalPosition;
 
 public class MiniBot extends Robot {
 
@@ -39,10 +39,11 @@ public class MiniBot extends Robot {
 	//	public Lift horizontalLift;
 //	public ServoTurret turret;
 	public Turret turret;
-	//	public Claw claw;
+//	public Claw claw;
 //	public RotatingClaw claw;
-	public TiltingClaw claw;
-	//	public TwoAxesClaw claw;
+//	public TiltingClaw claw;
+//	public TwoAxesClaw claw;
+	public SingleServoClaw claw;
 //	public SignalUtil signalUtil;
 	public AprilTagsUtil signalUtil;
 	public BNO055IMU gyro;
@@ -120,7 +121,7 @@ public class MiniBot extends Robot {
 		super.driveTrain = new MecanumDrive( hardwareMap );
 		mecanumDrive = (MecanumDrive) driveTrain;//REVERSE
 		// note these must be the same as in MecanumDriveMini
-		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
+		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE );
 		mecanumDrive.setWheelDiameter( 4 );
 		mecanumDrive.setPulsesPerRevolution( MotorType.Gobilda192.TICKS_PER_ROTATION );
 
@@ -132,11 +133,13 @@ public class MiniBot extends Robot {
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
 
-		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.8, 0.43, 0.05 } );
+//		claw = new TiltingClaw( hardwareMap, "claw", "clawV", new double[]{ 0.61, 0.45 }, new double[]{ 0.8, 0.43, 0.05 } );
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 75 );
+		claw = new SingleServoClaw( hardwareMap, "claw", 0, 1 );
+
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 75 );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 
@@ -156,9 +159,9 @@ public class MiniBot extends Robot {
 
 	public void initSubsystems( ) {
 		signalUtil.init( );
-		claw.setState( TiltingClaw.ClawState.CLOSED );
+		claw.setState( SingleServoClaw.ClawState.CLOSED );
 		waitSeconds( 0.25 );
-		claw.setState( TiltingClaw.VerticalClawState.STOWED );
+//		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
 
 	public void initGyro( ) {
@@ -182,7 +185,7 @@ public class MiniBot extends Robot {
 		double play = 2;
 
 		Pose2d poseEst = drive.getPoseEstimate( );
-		double heading = poseEst.getHeading( ) + turret.getTurretHeading( AngleUnit.RADIANS);
+		double heading = poseEst.getHeading( ) + turret.getTurretHeading( AngleUnit.RADIANS );
 		double x = poseEst.getX( ) + CLAW_OFFSET * Math.sin( heading );
 		double y = poseEst.getY( ) + CLAW_OFFSET * Math.cos( heading );
 

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.subsystems.InternalIMU;
+import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -26,8 +27,8 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 
 		robot.mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
 
-		robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+//		robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 
 		waitForStart( );
 
@@ -63,7 +64,7 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 
 		while(robot.mecanumDrive.frontLeft.isBusy());
 
-		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 
 		robot.junctionToLiftPos( PPField.Junction.HIGH );
 
@@ -83,7 +84,7 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 
 		robot.turret.setRotationPower( 0.5, -45 );
 
-		robot.claw.setState( TiltingClaw.ClawState.OPEN );
+		robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 
 	}
 

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -55,14 +56,14 @@ public class ConesRight extends LinearOpMode {
 				.addTemporalMarker( ( ) -> {
 					// move turret async
 					robot.turret.setRotationPower( 0.5, -40 );
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
 				.waitSeconds( 0.75 ) // wait
 				.addTemporalMarker( ( ) -> {
 					// deploy & open claw
 					robot.lift.setHeightPower( 1, PPField.Junction.HIGH.height( ), false, true ); /// double check height
 					robot.waitSeconds( 0.1 );
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 					// return turret to front
 				} )
 				.waitSeconds( 0.35 )
@@ -76,13 +77,13 @@ public class ConesRight extends LinearOpMode {
 					// return lift down async
 					robot.lift.setHeightPower( 1, STACK_HEIGHT_OFFSET + STACK_HEIGHT_SCALAR * currentConeHeight-- );
 					// stow claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
 				.waitSeconds( 0.5 ) // wait
 				.forward( 4.35 )
 				.addTemporalMarker( ( ) -> {
 					// grab come #
-					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+//					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
 					robot.waitSeconds( 0.1 );
 					// move lift up async
 					robot.junctionToLiftPos( PPField.Junction.HIGH );
@@ -98,11 +99,11 @@ public class ConesRight extends LinearOpMode {
 					// deploy & open claw
 					while( robot.turret.isBusy( ) && Math.abs( robot.turret.getPower( ) ) > 0.05 ) ;
 
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 					robot.waitSeconds( 0.1 );
 					robot.lift.setHeightPower( 1, PPField.Junction.HIGH.height( ), false, true ); /// double check height
 					robot.waitSeconds( 0.1 );
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 					// return turret to front
 				} )
 
@@ -115,13 +116,13 @@ public class ConesRight extends LinearOpMode {
 					// return lift down async
 					robot.lift.setHeightPower( 1, STACK_HEIGHT_OFFSET + STACK_HEIGHT_SCALAR * currentConeHeight-- );
 					// stow claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
 				.waitSeconds( 0.5 ) // wait
 				.forward( 4.35 )
 				.addTemporalMarker( ( ) -> {
 					// close claw
-					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+					robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 					robot.waitSeconds( 0.2 );
 					// move lift up async
 					robot.junctionToLiftPos( PPField.Junction.HIGH );
@@ -137,11 +138,11 @@ public class ConesRight extends LinearOpMode {
 					// deploy & open claw
 					while( robot.turret.isBusy( ) && Math.abs( robot.turret.getPower( ) ) > 0.05 ) ;
 
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 					robot.waitSeconds( 0.1 );
 					robot.lift.setHeightPower( 1, PPField.Junction.HIGH.height( ), false, true ); /// double check height
 					robot.waitSeconds( 0.1 );
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 					// return turret to front
 				} )
 
@@ -154,13 +155,13 @@ public class ConesRight extends LinearOpMode {
 					// return lift down async
 					robot.lift.setHeightPower( 1, STACK_HEIGHT_OFFSET + STACK_HEIGHT_SCALAR * currentConeHeight-- );
 					// stow claw
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
 				.waitSeconds( 0.5 ) // wait
 				.forward( 4.35 )
 				.addTemporalMarker( ( ) -> {
 					// close claw
-					robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+					robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 					robot.waitSeconds( 0.1 );
 					// move lift up async
 					robot.junctionToLiftPos( PPField.Junction.HIGH );
@@ -176,11 +177,11 @@ public class ConesRight extends LinearOpMode {
 					// deploy & open claw
 					while( robot.turret.isBusy( ) && Math.abs( robot.turret.getPower( ) ) > 0.05 ) ;
 
-					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 					robot.waitSeconds( 0.1 );
 					robot.lift.setHeightPower( 1, PPField.Junction.HIGH.height( ), false, true ); /// double check height
 					robot.waitSeconds( 0.1 );
-					robot.claw.setState( TiltingClaw.ClawState.OPEN );
+					robot.claw.setState( SingleServoClaw.ClawState.OPEN );
 					// return turret to front
 				} )
 
@@ -206,7 +207,7 @@ public class ConesRight extends LinearOpMode {
 
 		robot.turret.setRotationPower( 0.75, 0, true );
 		robot.lift.setHeightPower( 1, 0 );
-		robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
+//		robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
 
 		Trajectory toParkTrajectory = robot.drive.trajectoryBuilder( robot.drive.getPoseEstimate( ) )
 				.lineToLinearHeading( new Pose2d( conePos.getX( ), conePos.getY( ), 90 ) )
