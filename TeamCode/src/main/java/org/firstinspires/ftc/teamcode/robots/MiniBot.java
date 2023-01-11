@@ -17,11 +17,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
-import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
-import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.teleop.MiniTeleOp;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
@@ -39,16 +38,18 @@ public class MiniBot extends Robot {
 	//	public Lift horizontalLift;
 //	public ServoTurret turret;
 	public Turret turret;
-//	public Claw claw;
+	//	public Claw claw;
 //	public RotatingClaw claw;
 //	public TiltingClaw claw;
 //	public TwoAxesClaw claw;
 	public SingleServoClaw claw;
-//	public SignalUtil signalUtil;
+	//	public SignalUtil signalUtil;
 	public AprilTagsUtil signalUtil;
 	public BNO055IMU gyro;
 
 	public boolean rightSide;
+	Pose2d lastPose = drive.getPoseEstimate( );
+
 
 	/*public enum RobotDimensions {
 		FL( 7f, 6.625f ),
@@ -89,7 +90,7 @@ public class MiniBot extends Robot {
 	public static Pose2d endAutoPos;
 
 	public enum LiftPosition {
-		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH;
+		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH
 	}
 
 //	public static final Vector3D clawOffSet = new Vector3D( 0, 12, 3 );
@@ -180,7 +181,7 @@ public class MiniBot extends Robot {
 //				lift.getMotorPositionInch());
 //	}
 
-	public boolean isOverJunction(  ) {
+	public boolean isOverJunction( ) {
 
 		double play = 2;
 
@@ -191,7 +192,7 @@ public class MiniBot extends Robot {
 
 		double dist = TILE_CONNECTOR + TILE_SIZE;
 
-		return Math.abs(x % dist) < play && Math.abs(y % dist) < play;
+		return Math.abs( x % dist ) < play && Math.abs( y % dist ) < play;
 	}
 
 	public void setClawPos( Vector3D clawPos, double... powers ) {
@@ -267,7 +268,7 @@ public class MiniBot extends Robot {
 
 		float THREE_HALVES = 3f / 2 * TILE_CONNECTOR + THREE_HALVES_TILE;
 
-		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -THREE_HALVES );
+		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -THREE_HALVES * 1 );
 	}
 
 	/**
@@ -302,7 +303,7 @@ public class MiniBot extends Robot {
 	}
 
 	public static Vector2d getSignalPos( boolean right ) {
-		return new Vector2d( (right ? 1 : -1) * (THREE_HALVES_TILE + 3), -THREE_HALVES_TILE );
+		return new Vector2d( (right ? 1 : -1) * (THREE_HALVES_TILE + 3), -THREE_HALVES_TILE - 5 );
 	}
 
 	public static Vector2d getSignalPos( boolean red, boolean right ) {
@@ -409,6 +410,14 @@ public class MiniBot extends Robot {
 
 	public static void setRedSide( boolean redSide ) {
 		MiniBot.redSide = redSide;
+	}
+
+	public boolean inSubstation( ) {
+		Pose2d pose = drive.getPoseEstimate( );
+		double maxX = 14 + ROBOT_MAX_LENGTH;
+		double maxY = 58 + ROBOT_MAX_WIDTH;
+		return ( pose.getX( ) > -maxX && pose.getX( ) < maxX ) &&
+				( pose.getY( ) > maxY || pose.getY( ) < -maxY );
 	}
 
 

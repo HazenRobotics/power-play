@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -15,8 +16,8 @@ import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
-import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
+import org.firstinspires.ftc.teamcode.utils.RGBLights;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @TeleOp(name = "MiniTeleOp", group = "TeleOp")
@@ -35,6 +36,8 @@ public class MiniTeleOp extends OpMode {
 	double robotTiltAngle = 0;
 	double robotHeading = 0;
 	boolean fieldCentricTurret = false;
+	ElapsedTime time = new ElapsedTime( );
+	RGBLights lights = new RGBLights( hardwareMap, "blinkin" );
 
 	public enum Speeds {
 
@@ -82,6 +85,7 @@ public class MiniTeleOp extends OpMode {
 		robot.drive.setPoseEstimate( MiniBot.endAutoPos == null ? new Pose2d( 0, 0, 0 ) : MiniBot.endAutoPos );
 
 		telemetry.addData( "Mode", "waiting for start??" );
+		time.reset( );
 		telemetry.update( );
 		controller1.update( );
 		controller2.update( );
@@ -159,22 +163,30 @@ public class MiniTeleOp extends OpMode {
 			Robot.writeToDefaultFile( "Current: " + maxCurrent, true, false );
 			robot.lift.resetLift( );
 		}
-		if(robot.isOverJunction() && !gamepad1.isRumbling( )) {
+		if( robot.isOverJunction( ) && !gamepad1.isRumbling( ) ) {
 			gamepad1.rumble( 100 );
 		} else if( !robot.isOverJunction( ) ) {
-			gamepad1.stopRumble();
+			gamepad1.stopRumble( );
+		}
+		if( time.startTime( ) / 1000 > 110 ) {
+			lights.showStatus( RGBLights.StatusLights.CELEBRATION );
+			telemetry.addLine( "End Game started" );
+		}
+		if( robot.inSubstation( ) ) {
+			lights.showStatus( RGBLights.StatusLights.ERROR );
+			telemetry.addLine( "Over substation" );
 		}
 		// update controllers and telemetry
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );
 		// nothing else after this line
+
 	}
 
-	public void waitRobot( int mills ) {
+	public static void waitRobot( int mills ) {
 		long startTime = System.currentTimeMillis( );
-		while( (startTime + mills) > System.currentTimeMillis( ) )
-			telemetry.update( );
+		while( (startTime + mills) > System.currentTimeMillis( ) );
 	}
 
 	public void displayTelemetry( ) {
