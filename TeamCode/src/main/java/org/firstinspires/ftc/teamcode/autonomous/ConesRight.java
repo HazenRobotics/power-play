@@ -22,7 +22,7 @@ public class ConesRight extends LinearOpMode {
 
 	final double CYCLE_TURRET_HEADING = -(90 + 45);
 	final float STACK_HEIGHT_SCALAR = 1.5f;
-	final float STACK_HEIGHT_OFFSET = 0.2f;
+	final float STACK_HEIGHT_OFFSET = 0.1f;
 	int currentConeHeight = 4;
 
 
