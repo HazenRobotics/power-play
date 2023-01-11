@@ -48,7 +48,7 @@ public class MiniBot extends Robot {
 	public BNO055IMU gyro;
 
 	public boolean rightSide;
-	Pose2d lastPose = drive.getPoseEstimate();
+	Pose2d lastPose = drive.getPoseEstimate( );
 
 
 	/*public enum RobotDimensions {
@@ -414,26 +414,10 @@ public class MiniBot extends Robot {
 
 	public boolean inSubstation( ) {
 		Pose2d pose = drive.getPoseEstimate( );
-		if( pose.getX( ) > -14 && pose.getX( ) < 14 ) {
-			return pose.getY( ) > 58 || pose.getY( ) < -58;
-		}
-		return false;
-	}
-
-	public boolean nearSubstation( ) {
-		Pose2d pose = drive.getPoseEstimate( );
-		if( pose.getX( ) > -38 && pose.getX( ) < -38 ) {
-			return pose.getY( ) > 36 || pose.getY( ) < -36;
-		}
-		return false;
-	}
-
-	public boolean movingOutOfSubstation( ) {
-		new Thread( ( ) -> {
-			MiniTeleOp.waitRobot( 10 );
-			lastPose = drive.getPoseEstimate( );
-		} );
-		return !inSubstation( ) && movingOutOfSubstation( );
+		double maxX = 14 + ROBOT_MAX_LENGTH;
+		double maxY = 58 + ROBOT_MAX_WIDTH;
+		return ( pose.getX( ) > -maxX && pose.getX( ) < maxX ) &&
+				( pose.getY( ) > maxY || pose.getY( ) < -maxY );
 	}
 
 

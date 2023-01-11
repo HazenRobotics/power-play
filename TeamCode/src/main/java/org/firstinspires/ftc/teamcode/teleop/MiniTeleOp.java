@@ -169,11 +169,12 @@ public class MiniTeleOp extends OpMode {
 			gamepad1.stopRumble( );
 		}
 		if( time.startTime( ) / 1000 > 110 ) {
-			lights.showStatus( RGBLights.StatusLights.ERROR );
+			lights.showStatus( RGBLights.StatusLights.CELEBRATION );
 			telemetry.addLine( "End Game started" );
 		}
 		if( robot.inSubstation( ) ) {
-
+			lights.showStatus( RGBLights.StatusLights.ERROR );
+			telemetry.addLine( "Over substation" );
 		}
 		// update controllers and telemetry
 		displayTelemetry( );
