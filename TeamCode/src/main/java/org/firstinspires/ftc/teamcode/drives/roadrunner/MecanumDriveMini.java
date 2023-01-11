@@ -151,10 +151,10 @@ public class MecanumDriveMini extends MecanumDrive {
 
 		// TODO: reverse any motors using DcMotor.setDirection()
 
-		frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-		backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-//		frontRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
-//		backRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
+//		frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
+//		backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
+		frontRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
+		backRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
 
 		// TODO: if desired, use setLocalizer() to change the localization method
 		// note: this class is a mecanum drive localizer

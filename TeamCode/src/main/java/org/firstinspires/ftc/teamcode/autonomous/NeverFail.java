@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
-import org.firstinspires.ftc.teamcode.vision.SignalUtil;
-import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
+import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline;
 
 @Autonomous(name = "NeverFail", group = "Autonomous")
 //@Disabled

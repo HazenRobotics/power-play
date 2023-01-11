@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -15,8 +16,8 @@ import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
-import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
+import org.firstinspires.ftc.teamcode.utils.RGBLights;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @TeleOp(name = "MiniTeleOp", group = "TeleOp")
@@ -34,7 +35,9 @@ public class MiniTeleOp extends OpMode {
 	Orientation gyroOrientation;
 	double robotTiltAngle = 0;
 	double robotHeading = 0;
-	boolean fieldCentricTurret = true;
+	boolean fieldCentricTurret = false;
+	ElapsedTime time = new ElapsedTime( );
+	RGBLights lights = new RGBLights( hardwareMap, "blinkin" );
 
 	public enum Speeds {
 
@@ -82,6 +85,7 @@ public class MiniTeleOp extends OpMode {
 		robot.drive.setPoseEstimate( MiniBot.endAutoPos == null ? new Pose2d( 0, 0, 0 ) : MiniBot.endAutoPos );
 
 		telemetry.addData( "Mode", "waiting for start??" );
+		time.reset( );
 		telemetry.update( );
 		controller1.update( );
 		controller2.update( );
@@ -102,12 +106,12 @@ public class MiniTeleOp extends OpMode {
 			robot.turret.resetTurret( );
 
 
-		if( Math.abs( robotTiltAngle ) > 10 )
+		if( Math.abs( robotTiltAngle + 90 ) > 10 )
 			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
 		else
 			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
 					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+					-gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift )
 			robot.lift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger)/* + power*/ );
@@ -129,13 +133,13 @@ public class MiniTeleOp extends OpMode {
 //		else if( controller1.right_bumper.onPress( ) || controller2.right_bumper.onPress( ) )
 //			robot.claw.setState( TiltingClaw.VerticalClawState.RIGHT );
 
-		// g2 dpad: tilt claw
-		if( controller2.dpad_up.onPress( ) )
-			robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
-		else if( controller2.dpad_left.onPress( ) )
-			robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-		else if( controller2.dpad_down.onPress( ) )
-			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
+//		// g2 dpad: tilt claw
+//		if( controller2.dpad_up.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
+//		else if( controller2.dpad_left.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
+//		else if( controller2.dpad_down.onPress( ) )
+//			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
 
 		// g2 right stick X: rotate turret
 
@@ -159,22 +163,29 @@ public class MiniTeleOp extends OpMode {
 			Robot.writeToDefaultFile( "Current: " + maxCurrent, true, false );
 			robot.lift.resetLift( );
 		}
-		if(robot.isOverJunction() && !gamepad1.isRumbling( )) {
+		if( robot.isOverJunction( ) && !gamepad1.isRumbling( ) ) {
 			gamepad1.rumble( 100 );
 		} else if( !robot.isOverJunction( ) ) {
-			gamepad1.stopRumble();
+			gamepad1.stopRumble( );
+		}
+		if( time.startTime( ) / 1000 > 110 ) {
+			lights.showStatus( RGBLights.StatusLights.ERROR );
+			telemetry.addLine( "End Game started" );
+		}
+		if( robot.inSubstation( ) ) {
+
 		}
 		// update controllers and telemetry
 		displayTelemetry( );
 		controller1.update( );
 		controller2.update( );
 		// nothing else after this line
+
 	}
 
-	public void waitRobot( int mills ) {
+	public static void waitRobot( int mills ) {
 		long startTime = System.currentTimeMillis( );
-		while( (startTime + mills) > System.currentTimeMillis( ) )
-			telemetry.update( );
+		while( (startTime + mills) > System.currentTimeMillis( ) );
 	}
 
 	public void displayTelemetry( ) {

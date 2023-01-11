@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
@@ -36,7 +37,7 @@ public class JustParkLeft extends LinearOpMode {
 
 		waitForStart( );
 
-		robot.claw.setState( TiltingClaw.ClawState.CLOSED );
+		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 		robot.junctionToLiftPos( PPField.Junction.GROUND );
 
 		Vector2d parkPos = robot.parkPosInit( right );
