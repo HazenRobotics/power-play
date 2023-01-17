@@ -127,9 +127,9 @@ public class MecanumDriveMini extends MecanumDrive {
 		BNO055IMUUtil.remapZAxis( imu, AxisDirection.POS_Y );
 
 		frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft" );
-		backLeft = hardwareMap.get( DcMotorEx.class, "backLeft" );
+		backLeft = hardwareMap.get( DcMotorEx.class, "backLeft/paraL" );
+		frontRight = hardwareMap.get( DcMotorEx.class, "frontRight/paraR" );
 		backRight = hardwareMap.get( DcMotorEx.class, "backRight" );
-		frontRight = hardwareMap.get( DcMotorEx.class, "frontRight" );
 
 		motors = Arrays.asList( frontLeft, backLeft, backRight, frontRight );
 
@@ -151,10 +151,10 @@ public class MecanumDriveMini extends MecanumDrive {
 
 		// TODO: reverse any motors using DcMotor.setDirection()
 
-//		frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-//		backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-		frontRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
-		backRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
+		frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
+		backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
+		frontRight.setDirection( DcMotorSimple.Direction.FORWARD ); // for strafing
+		backRight.setDirection( DcMotorSimple.Direction.FORWARD ); // for strafing
 
 		// TODO: if desired, use setLocalizer() to change the localization method
 		// note: this class is a mecanum drive localizer

@@ -24,7 +24,7 @@ public class MotorTest extends OpMode {
 	@Override
 	public void init( ) {
 		controller = new GamepadEvents( gamepad1 );
-		String[] names = { "topLeft", "bottomLeft", "topRight", "bottomRight", "frontLeft", "backLeft", "frontRight", "backRight", "lift", "para", "perp", "enc", "encoder", "turret", "turr" };
+		String[] names = { "topLeft", "bottomLeft", "topRight", "bottomRight", "frontLeft", "backLeft", "frontRight", "backRight", "lift", "para", "perp", "enc", "encoder", "turret", "turr", "backLeft/paraL", "frontRight/paraR"};
 
 		for( int i = 0; i < names.length; i++ ) {
 			try {

@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -29,6 +28,7 @@ public class MiniTeleOp extends OpMode {
 	GamepadEvents controller2;
 	boolean opened = true;
 	boolean movingLift = false;
+	boolean movingTurret = false;
 	double maxCurrent = 10;
 	float power = 0.1f;
 	//	boolean powerOverridden = false;
@@ -37,7 +37,7 @@ public class MiniTeleOp extends OpMode {
 	double robotHeading = 0;
 	boolean fieldCentricTurret = false;
 	ElapsedTime time = new ElapsedTime( );
-	RGBLights lights = new RGBLights( hardwareMap, "blinkin" );
+	double linkagePosition = 0;
 
 	public enum Speeds {
 
@@ -78,7 +78,8 @@ public class MiniTeleOp extends OpMode {
 		telemetry.update( );
 
 		robot = new MiniBot( this );
-		robot.lift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
+		robot.leftLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
+		robot.rightLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
 		robot.claw.init( );
 
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
@@ -106,24 +107,37 @@ public class MiniTeleOp extends OpMode {
 			robot.turret.resetTurret( );
 
 
-		if( Math.abs( robotTiltAngle + 90 ) > 10 )
-			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
-		else
-			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
-					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-					-gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+//		if( Math.abs( robotTiltAngle + 90 ) > 10 )
+//			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
+//		else
+//		robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
+//				gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
+//				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+		robot.mecanumDrive.drive( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
 
-		if( !movingLift )
-			robot.lift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger)/* + power*/ );
-		else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
-
+		if( !movingLift ) {
+			robot.leftLift.setPower( (gamepad1.right_trigger /*+ gamepad2.right_trigger*/)  - gamepad1.left_trigger /* + gamepad2.left_trigger) + power*/ );
+			robot.rightLift.setPower( (gamepad1.right_trigger /* + gamepad2.right_trigger*/) - gamepad1.left_trigger /* + gamepad2.left_trigger) + power*/ );
+		} else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
 			movingLift = false;
-			robot.lift.setTeleOpPowerMode( );
+			robot.leftLift.setTeleOpPowerMode( );
+			robot.rightLift.setTeleOpPowerMode( );
+		}
+
+		if( !movingTurret ) {
+			robot.turret.setTurretPower( controller2.right_stick_x * 0.5 );
+		} else if( gamepad2.right_stick_x > 0.1 ) {
+			movingTurret = false;
+			robot.turret.motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
 		}
 
 		// g1/g2 a: toggle claw
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
+
+		linkagePosition += ((gamepad2.right_trigger - gamepad2.left_trigger) * 0.01);
+		linkagePosition = Math.min(robot.linkage.maxRotationLimit, linkagePosition);
+		robot.linkage.setPosition( linkagePosition );
 
 		// g1/g2 bumpers: rotate claw
 //		if( (gamepad1.right_bumper && gamepad1.left_bumper) || (gamepad2.right_bumper && gamepad2.left_bumper) )
@@ -143,13 +157,14 @@ public class MiniTeleOp extends OpMode {
 
 		// g2 right stick X: rotate turret
 
-		if( fieldCentricTurret )
-			robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller2.right_stick_y ), robotHeading );
-		else
-			robot.turret.setPower( controller2.right_stick_x * 0.5 );
+//		if( fieldCentricTurret )
+//			robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller2.right_stick_y ), robotHeading );
+//		else
+//			robot.turret.setPower( controller2.right_stick_x * 0.5 );
 
 		// dpad: auto lift positions
 		dpadToLiftPos( );
+		dpadToLiftPos();
 
 		if( controller1.b.onPress( ) ) {
 			power += 0.05f;
@@ -158,22 +173,26 @@ public class MiniTeleOp extends OpMode {
 		}
 
 		// reset the lift position to its current zero position
-		if( gamepad1.ps || (robot.lift.getCurrent( CurrentUnit.AMPS ) > maxCurrent && !movingLift) ) {
+		if( gamepad1.ps || (robot.leftLift.getCurrent( CurrentUnit.AMPS ) > maxCurrent && !movingLift) ) {
 //			maxCurrent = robot.lift.getCurrent( CurrentUnit.AMPS );
 			Robot.writeToDefaultFile( "Current: " + maxCurrent, true, false );
-			robot.lift.resetLift( );
+			robot.leftLift.resetLift( );
+			robot.rightLift.resetLift( );
 		}
+
 		if( robot.isOverJunction( ) && !gamepad1.isRumbling( ) ) {
 			gamepad1.rumble( 100 );
 		} else if( !robot.isOverJunction( ) ) {
 			gamepad1.stopRumble( );
 		}
+
 		if( time.startTime( ) / 1000 > 110 ) {
-			lights.showStatus( RGBLights.StatusLights.CELEBRATION );
+			robot.lights.showStatus( RGBLights.StatusLights.CELEBRATION );
 			telemetry.addLine( "End Game started" );
 		}
+
 		if( robot.inSubstation( ) ) {
-			lights.showStatus( RGBLights.StatusLights.ERROR );
+			robot.lights.showStatus( RGBLights.StatusLights.ERROR );
 			telemetry.addLine( "Over substation" );
 		}
 		// update controllers and telemetry
@@ -225,6 +244,8 @@ public class MiniTeleOp extends OpMode {
 		telemetry.addData( "pos", robot.drive.getPoseEstimate( ) );
 //		telemetry.addData( "powerOveridden", powerOverridden );
 
+		telemetry.addData( "linkagePosition", linkagePosition );
+
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
 
@@ -254,17 +275,19 @@ public class MiniTeleOp extends OpMode {
 		}
 	}
 
-//	public void startAntiTip( ) {
-//		new Thread( ( ) -> {
-//			double angle;
-//			while( robot.opModeIsActive( ) ) {
-//				angle = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ).secondAngle;
-//				powerOverridden = Math.abs( angle ) > 15;
-//				if( powerOverridden )
-//					robot.mecanumDrive.drive( Math.signum( angle ) * Drive.normalize( Math.abs( angle ), 0, 70, 0, 0.8 ), 0 );
-//			}
-//		} ).start( );
-//	}
-
+	public void dpadToTurretPos( ) {
+		if( controller2.dpad_up.onPress( ) ) {
+			movingTurret = true;
+			robot.turret.setRotationPower( 0.5, 0 );
+		}
+		if( controller2.dpad_left.onPress( ) ) {
+			movingTurret = true;
+			robot.turret.setRotationPower( 0.5, 90 );
+		}
+		if( controller2.dpad_down.onPress( ) ) {
+			movingTurret = true;
+			robot.turret.setRotationPower( 0.5, 180 );
+		}
+	}
 
 }

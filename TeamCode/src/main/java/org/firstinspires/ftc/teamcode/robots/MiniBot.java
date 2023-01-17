@@ -18,10 +18,12 @@ import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.teleop.MiniTeleOp;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
+import org.firstinspires.ftc.teamcode.utils.RGBLights;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline.SignalPosition;
@@ -34,8 +36,9 @@ public class MiniBot extends Robot {
 	public MecanumDrive mecanumDrive;
 	public MecanumDriveMini drive;
 
-	public Lift lift;
-	//	public Lift horizontalLift;
+	public Lift leftLift;
+	public Lift rightLift;
+	public Linkage linkage;
 //	public ServoTurret turret;
 	public Turret turret;
 	//	public Claw claw;
@@ -46,12 +49,13 @@ public class MiniBot extends Robot {
 	//	public SignalUtil signalUtil;
 	public AprilTagsUtil signalUtil;
 	public BNO055IMU gyro;
+	public RGBLights lights;
 
 	public boolean rightSide;
-	Pose2d lastPose = drive.getPoseEstimate( );
+//	Pose2d lastPose = drive.getPoseEstimate( );
 
 
-	/*public enum RobotDimensions {
+	/*public enum89. RobotDimensions {
 		FL( 7f, 6.625f ),
 		BL( 7f, 6.625f ),
 		FR( 6f, 7.5f ),
@@ -119,16 +123,17 @@ public class MiniBot extends Robot {
 
 		this.rightSide = rightSide;
 
-		super.driveTrain = new MecanumDrive( hardwareMap );
-		mecanumDrive = (MecanumDrive) driveTrain;//REVERSE
+		mecanumDrive = new MecanumDrive( hardwareMap, "frontLeft", "backLeft/paraL", "frontRight/paraR", "backRight" );
+//		super.driveTrain = mecanumDrive;//REVERSE
 		// note these must be the same as in MecanumDriveMini
-		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE );
-		mecanumDrive.setWheelDiameter( 4 );
-		mecanumDrive.setPulsesPerRevolution( MotorType.Gobilda192.TICKS_PER_ROTATION );
+		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
+//		mecanumDrive.setWheelDiameter( 4 );
+//		mecanumDrive.setPulsesPerRevolution( MotorType.Gobilda192.TICKS_PER_ROTATION );
 
 		drive = new MecanumDriveMini( hardwareMap );
 
-		lift = new Lift( hardwareMap, "lift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
+		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
+		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
 
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
@@ -138,16 +143,22 @@ public class MiniBot extends Robot {
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		claw = new SingleServoClaw( hardwareMap, "claw", 0, 1 );
+		claw = new SingleServoClaw( hardwareMap, "claw", 0.2, 0 );
 
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 75 );
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 30 );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
+
+		linkage = new Linkage( hardwareMap, "linkage", true,
+				90, 0, 0,
+				0.3, 0, 1, 1, 1 );
 
 		signalUtil = new AprilTagsUtil( hardwareMap, "webcam1", telemetry );
 
 		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
 		initGyro( );
+
+		lights = new RGBLights( hardwareMap, "blinkin" );
 	}
 
 	public void waitSeconds( double seconds ) {
@@ -165,7 +176,7 @@ public class MiniBot extends Robot {
 //		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
 
-	public void initGyro( ) {
+	private void initGyro( ) {
 		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters( );
 		parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
 		gyro.initialize( parameters );
@@ -212,7 +223,7 @@ public class MiniBot extends Robot {
 		if( powers.length == 3 )
 			powers = new double[]{ powers[0], powers[1], powers[2] };
 
-		lift.setHeightPower( powers[0], clawPos.getX( ) );
+//		lift.setHeightPower( powers[0], clawPos.getX( ) );
 //		horizontalLift.setHeightPower( powers[1], clawPos.getY( ) );
 //		turret.setRotationPower( powers[2], rotation, angleUnit );
 	}
@@ -318,16 +329,28 @@ public class MiniBot extends Robot {
 		return new Vector2d( x, y );
 	}
 
+	public void liftToHeightPower( double power, double height) {
+		leftLift.setHeightPower( power, height );
+		rightLift.setHeightPower( power, height );
+	}
+
+	public void liftToHeightPowerNotAsync( double power, double height) {
+		leftLift.setHeightPower( power, height, false, true );
+		rightLift.setHeightPower( power, height, false, true );
+	}
+
 	public void junctionToLiftPos( PPField.Junction junction ) {
 		junctionToLiftPos( junction, 3 );
 	}
 
 	public void junctionToLiftPos( PPField.Junction junction, double extension ) {
-		lift.setHeightPower( 1, junction.height( ) + extension );
+		leftLift.setHeightPower( 1, junction.height( ) + extension );
+		rightLift.setHeightPower( 1, junction.height( ) + extension );
 	}
 
 	public void junctionToLiftPosNotAsync( PPField.Junction junction ) {
-		lift.setHeightPower( 1, junction.height( ) + 3, false, false );
+		leftLift.setHeightPower( 1, junction.height( ) + 3, false, false );
+		rightLift.setHeightPower( 1, junction.height( ) + 3, false, false );
 	}
 
 	/**
