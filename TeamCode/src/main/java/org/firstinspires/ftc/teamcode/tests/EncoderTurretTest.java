@@ -32,16 +32,13 @@ public class EncoderTurretTest extends OpMode {
 		if( gamepad.dpad_up.onPress( ) ) {
 			turret.setRotation( 0.4, 0 );
 			async = true;
-		}
-		else if( gamepad.dpad_left.onPress( ) ) {
+		} else if( gamepad.dpad_left.onPress( ) ) {
 			turret.setRotation( 0.2, -Math.PI / 2 );
 			async = true;
-		}
-		else if( gamepad.dpad_down.onPress( ) ) {
+		} else if( gamepad.dpad_down.onPress( ) ) {
 			turret.setRotation( 0.3, -Math.PI );
 			async = true;
-		}
-		else if( gamepad.dpad_right.onPress( ) ) {
+		} else if( gamepad.dpad_right.onPress( ) ) {
 			turret.setRotation( 0.4, -3 * Math.PI / 2 );
 			async = true;
 		}

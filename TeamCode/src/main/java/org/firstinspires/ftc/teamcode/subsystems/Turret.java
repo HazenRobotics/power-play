@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robots.Robot;
 
 public class Turret {
 
-	DcMotorEx motor;
+	public DcMotorEx motor;
 
 	AngleUnit unit;
 
@@ -63,7 +63,9 @@ public class Turret {
 		return motor.getPower( );
 	}
 
-	public void setPower( double power ) {
+	public void setTurretPower( double power ) {
+		power *= (getTurretHeading() < leftLimit || getTurretHeading() > rightLimit) ? -1 : 1;
+
 		motor.setPower( power );
 	}
 
@@ -140,11 +142,11 @@ public class Turret {
 			// create a new thread so that it doesn't interfere with other mechanisms
 			new Thread( ( ) -> {
 				waitForMoveFinish( );
-				setPower( 0 );
+				motor.setPower( 0 );
 			} ).start( );
 		} else {
 			waitForMoveFinish( );
-			setPower( 0 );
+			motor.setPower( 0 );
 		}
 
 	}
@@ -161,24 +163,6 @@ public class Turret {
 
 	public boolean isBusy( ) {
 		return motor.isBusy( );
-	}
-
-	public void turnToPosPower( double power, double position, AngleUnit angleUnit ) {
-		position = angleUnit == AngleUnit.DEGREES ? position : Math.toDegrees( position );
-
-		if( position > getTurretHeading( ) ) {
-			motor.setPower( power );
-			while( position > getTurretHeading( ) ) {
-			}
-		} else if( position < getTurretHeading( ) ) {
-			motor.setPower( -power );
-			while( position < getTurretHeading( ) ) ;
-		}
-		setPower( 0 );
-	}
-
-	public void turnToPosPower( double power, double position ) {
-		turnToPosPower( power, position, unit );
 	}
 
 	public double convertTicksToHeading( double ticks ) {

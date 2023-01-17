@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
-import org.firstinspires.ftc.teamcode.subsystems.TiltingClaw;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @Disabled
@@ -90,7 +89,7 @@ public class ConesRedRight extends LinearOpMode {
 				.addTemporalMarker( () -> {
 					robot.turret.setRotationPower( 0.5, 0 );
 					// return lift down async
-					robot.lift.setHeightPower( 1, 5 );
+					robot.liftToHeightPowerNotAsync( 1, 5 );
 					// stow claw
 //					robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 				} )
