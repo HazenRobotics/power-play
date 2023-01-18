@@ -23,7 +23,7 @@ public class HertzCalculator {
 			timeRan = System.currentTimeMillis( ) - startTime;
 			hertz = cycles/(timeRan/1000);
 			target.telemetry.addData( "HZ:",hertz );
-			target.telemetry.addData( "Time eplased",timeRan )
+			target.telemetry.addData( "Time elapsed",timeRan );
 		}
 	}
 }

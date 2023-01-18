@@ -7,11 +7,11 @@ public class Linkage {
 
 	Servo servo;
 
-	public double minAngleLimit;
-	public double maxAngleLimit;
+	public double retractionAngleLimit;
+	public double extensionAngleLimit;
 
-	public double minRotationLimit;
-	public double maxRotationLimit;
+	public double retractionServoLimit;
+	public double extensionServoLimit;
 
 	public double retractionLength;
 	public double extensionLength;
@@ -25,27 +25,32 @@ public class Linkage {
 				0, 1, 1, 1  );
 	}
 
-	public Linkage( HardwareMap hw, String servoName, boolean reversed, double retractionAngleLimit, double extensionAngleLimit, double retractionServoLimit, double extensionServoLimit, double zeroLength, double maxLength, double length1, double length2 ) {
+	public Linkage( HardwareMap hw, String servoName, boolean reversed, double retractionAngleLimit,
+					double extensionAngleLimit, double retractionServoLimit, double extensionServoLimit,
+					double retractionLength, double extensionLength, double bar1Length, double bar2Length ) {
 		servo = hw.servo.get( servoName );
 
 		if( reversed )
 			servo.setDirection( Servo.Direction.REVERSE );
 
-		minAngleLimit = retractionAngleLimit;
-		maxAngleLimit = extensionAngleLimit;
+		this.retractionAngleLimit = retractionAngleLimit;
+		this.extensionAngleLimit = extensionAngleLimit;
 
-		retractionLength = zeroLength;
-		extensionLength = maxLength;
+		this.retractionServoLimit = retractionServoLimit;
+		this.extensionServoLimit = extensionServoLimit;
 
-		bar1Length = length1;
-		bar2Length = length2;
+		this.retractionLength = retractionLength;
+		this.extensionLength = extensionLength;
+
+		this.bar1Length = bar1Length;
+		this.bar2Length = bar2Length;
 	}
 
 	public void moveToExtensionAngle( double angle ) {
-		if (angle < minAngleLimit )
-			angle = minAngleLimit;
-		if (angle > maxAngleLimit )
-			angle = maxAngleLimit;
+		if (angle < retractionAngleLimit )
+			angle = retractionAngleLimit;
+		if (angle > extensionAngleLimit )
+			angle = extensionAngleLimit;
 
 		setPosition( angle / 180 );
 	}
@@ -55,7 +60,7 @@ public class Linkage {
 	}
 
 	public void setPosition( double position ) {
-		position = Math.min(position, maxRotationLimit);
+		position = Math.min(position, extensionServoLimit );
 
 		servo.setPosition( position );
 	}
