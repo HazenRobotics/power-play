@@ -143,9 +143,9 @@ public class MiniBot extends Robot {
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		claw = new SingleServoClaw( hardwareMap, "claw", 0.2, 0 );
+		claw = new SingleServoClaw( hardwareMap, "claw", 0.48, 0.13 );
 
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -255, 30 );
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 50 );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 

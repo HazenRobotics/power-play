@@ -63,18 +63,24 @@ public class Turret {
 		return motor.getPower( );
 	}
 
+	public double getLeftLimit ( ) {
+		return leftLimit;
+	}
+
+	public double getRightLimit ( ) {
+		return rightLimit;
+	}
+
 	public void setTurretPower( double power ) {
-		power *= (getTurretHeading() < leftLimit || getTurretHeading() > rightLimit) ? -1 : 1;
+		if (getTurretHeading() < leftLimit && power < 0 || getTurretHeading() > rightLimit && power > 0 )
+			power = 0;
 
 		motor.setPower( power );
 	}
 
 	public void setLimit( double left, double right ) {
-		double multiplyer = 1;
-		if( unit.equals( AngleUnit.DEGREES ) )
-			multiplyer = Math.PI / 180;
-		leftLimit = left * multiplyer;
-		rightLimit = right * multiplyer;
+		leftLimit = left;
+		rightLimit = right;
 	}
 
 	public void setRotationVelocity( double velocity, double position ) {

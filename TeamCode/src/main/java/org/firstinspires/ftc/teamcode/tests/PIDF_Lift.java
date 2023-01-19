@@ -18,43 +18,51 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 @TeleOp
 public class PIDF_Lift extends OpMode {
 
-	private PIDController controller;
+	private PIDController leftController;
+	private PIDController rightController;
 
 	public static double p = 0, i = 0, d = 0;
 	public static double f = 0;
 
 	public static int target = 0;
 
-	private DcMotorEx motor;
+	private Lift left;
+	private Lift right;
 
 	@Override
 	public void init( ) {
-		controller = new PIDController( p, i, d );
+		leftController = new PIDController( p, i, d );
+		rightController = new PIDController( p, i, d );
+
 		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
 
-		motor = hardwareMap.get( DcMotorEx.class, "lift");
-		motor.setDirection( DcMotorSimple.Direction.REVERSE );
-		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
-		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+		left = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
+		right = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
+
 	}
 
 	@Override
 	public void loop( ) {
-		controller.setPID( p, i, d );
-		int liftPos = motor.getCurrentPosition( );
-		double pid = controller.calculate( liftPos, target);
+		leftController.setPID( p, i, d );
+		rightController.setPID( p, i, d );
 
-		double ff = Drive.normalize( liftPos, 0, 900, 0, f );
+		int leftLiftPos = left.getPosition( );
+		int rightLiftPos = right.getPosition( );
 
-		double power = pid + ff;
+		double leftPID = leftController.calculate( leftLiftPos, target );
+		double rightPID = rightController.calculate( rightLiftPos, target);
 
-		motor.setPower( power );
+		double leftPower = leftPID + f;
+		double rightPower = rightPID + f;
 
-		telemetry.addData( "pos", liftPos );
+		left.setPower( leftPower );
+		right.setPower( rightPower );
+
+		telemetry.addData( "left pos", leftLiftPos );
+		telemetry.addData( "right pos", rightLiftPos );
 		telemetry.addData( "target", target );
-		telemetry.addData( "pid", pid );
-		telemetry.addData( "ff", ff );
-		telemetry.addData( "power", power );
+		telemetry.addData( "left PID", leftPID );
+		telemetry.addData( "right PID", rightPID );
 		telemetry.update();
 	}
 }
