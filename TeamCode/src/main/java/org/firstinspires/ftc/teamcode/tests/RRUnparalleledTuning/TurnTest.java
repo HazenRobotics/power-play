@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
+package org.firstinspires.ftc.teamcode.tests.RRUnparalleledTuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveUnparalleled;
 
 /*
  * This is a simple routine to test turning capabilities.
@@ -18,7 +17,7 @@ public class TurnTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
+        MecanumDriveUnparalleled drive = new MecanumDriveUnparalleled(hardwareMap);
 
         waitForStart();
 

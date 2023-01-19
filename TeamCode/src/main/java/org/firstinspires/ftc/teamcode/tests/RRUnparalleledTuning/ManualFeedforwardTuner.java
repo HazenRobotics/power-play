@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
+package org.firstinspires.ftc.teamcode.tests.RRUnparalleledTuning;
 
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.kA;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.kStatic;
-import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsMini.kV;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.kA;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.kStatic;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.kV;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,11 +17,10 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveUnparalleled;
 
 import java.util.Objects;
 
@@ -48,7 +47,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    private MecanumDriveMini drive;
+    private MecanumDriveUnparalleled drive;
 
     enum Mode {
         DRIVER_MODE,
@@ -72,7 +71,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        drive = new MecanumDriveMini(hardwareMap);
+        drive = new MecanumDriveUnparalleled(hardwareMap);
 
         mode = Mode.TUNING_MODE;
 

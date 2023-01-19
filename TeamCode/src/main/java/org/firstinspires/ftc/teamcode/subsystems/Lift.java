@@ -99,6 +99,7 @@ public class Lift {
 	 * stops and resets the physical motor and its encoder and sets liftPosition to 0
 	 */
 	public void resetLift( ) {
+		motor.setPower( 0 );
 		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
 		setEncoder( EncoderState.WITH_ENCODER );
 		movementState = MovementState.REST;

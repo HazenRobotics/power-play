@@ -1,12 +1,11 @@
-package org.firstinspires.ftc.teamcode.tests.RRMiniBotTuning;
+package org.firstinspires.ftc.teamcode.tests.RRUnparalleledTuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveUnparalleled;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
 /*
@@ -30,7 +29,7 @@ public class FollowerPIDTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        MecanumDriveMini drive = new MecanumDriveMini(hardwareMap);
+        MecanumDriveUnparalleled drive = new MecanumDriveUnparalleled(hardwareMap);
 
         Pose2d startPose = new Pose2d(-DISTANCE / 2, -DISTANCE / 2, 0);
 

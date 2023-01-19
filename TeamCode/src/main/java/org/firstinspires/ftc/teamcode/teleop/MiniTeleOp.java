@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -26,12 +27,11 @@ public class MiniTeleOp extends OpMode {
 	MiniBot robot;
 	GamepadEvents controller1;
 	GamepadEvents controller2;
-	boolean opened = true;
 	boolean movingLift = false;
 	boolean movingTurret = false;
-	double maxCurrent = 10;
+	double maxCurrent = 5;
 	float power = 0.1f;
-	//	boolean powerOverridden = false;
+	boolean powerOverridden = false;
 	Orientation gyroOrientation;
 	double robotTiltAngle = 0;
 	double robotHeading = 0;
@@ -100,25 +100,21 @@ public class MiniTeleOp extends OpMode {
 		robotTiltAngle = gyroOrientation.secondAngle;
 		robotHeading = gyroOrientation.firstAngle;
 
-		if( controller2.y.onPress( ) )
-			fieldCentricTurret = !fieldCentricTurret;
-
 		if( controller2.x.onPress( ) )
 			robot.turret.resetTurret( );
 
 
-//		if( Math.abs( robotTiltAngle + 90 ) > 10 )
-//			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
-//		else
-//		robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
-//				gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-//				gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
-		robot.mecanumDrive.drive( -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
+		if( Math.abs( robotTiltAngle + 90 ) > 10 )
+			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
+		else
+			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
+					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
+					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
 
 		if( !movingLift ) {
-			robot.leftLift.setPower( (gamepad1.right_trigger /*+ gamepad2.right_trigger*/)  - gamepad1.left_trigger /* + gamepad2.left_trigger) + power*/ );
-			robot.rightLift.setPower( (gamepad1.right_trigger /* + gamepad2.right_trigger*/) - gamepad1.left_trigger /* + gamepad2.left_trigger) + power*/ );
-		} else if( gamepad1.right_trigger + gamepad1.left_trigger /*+ gamepad2.right_trigger + gamepad2.left_trigger*/ > 0.05 ) {
+			robot.leftLift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger) /*+ power*/ );
+			robot.rightLift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger) /*+ power*/ );
+		} else if( gamepad1.right_trigger + gamepad1.left_trigger + gamepad2.right_trigger + gamepad2.left_trigger > 0.05 ) {
 			movingLift = false;
 			robot.leftLift.setTeleOpPowerMode( );
 			robot.rightLift.setTeleOpPowerMode( );
@@ -137,39 +133,16 @@ public class MiniTeleOp extends OpMode {
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
 
-		linkagePosition += ((gamepad2.right_trigger - gamepad2.left_trigger) * 0.05);
-		linkagePosition = Math.min(robot.linkage.extensionServoLimit, Math.max( linkagePosition, 0 ));
+		linkagePosition += ((gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0));
+		linkagePosition = Math.min( robot.linkage.extensionServoLimit, Math.max( linkagePosition, 0 ) );
 		robot.linkage.setPosition( linkagePosition );
-
-		// g1/g2 bumpers: rotate claw
-//		if( (gamepad1.right_bumper && gamepad1.left_bumper) || (gamepad2.right_bumper && gamepad2.left_bumper) )
-//			robot.claw.setState( TwoAxesClaw.HorizontalClawState.CENTER );
-//		else if( controller1.left_bumper.onPress( ) || controller2.left_bumper.onPress( ) )
-//			robot.claw.setState( TwoAxesClaw.HorizontalClawState.LEFT );
-//		else if( controller1.right_bumper.onPress( ) || controller2.right_bumper.onPress( ) )
-//			robot.claw.setState( TiltingClaw.VerticalClawState.RIGHT );
-
-//		// g2 dpad: tilt claw
-//		if( controller2.dpad_up.onPress( ) )
-//			robot.claw.setState( TiltingClaw.VerticalClawState.STOWED );
-//		else if( controller2.dpad_left.onPress( ) )
-//			robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
-//		else if( controller2.dpad_down.onPress( ) )
-//			robot.claw.setState( TiltingClaw.VerticalClawState.PICKUP );
-
-		// g2 right stick X: rotate turret
-
-//		if( fieldCentricTurret )
-//			robot.turret.setLiveRotationPower( new Vector2d( controller2.right_stick_x, -controller2.right_stick_y ), robotHeading );
-//		else
-//			robot.turret.setPower( controller2.right_stick_x * 0.5 );
 
 		// dpad: auto lift positions
 		dpadToLiftPos( );
-		dpadToLiftPos();
+		dpadToTurretPos( );
 
-		if(controller1.x.onPress())
-			cycleCone();
+		if( controller1.x.onPress( ) )
+			cycleCone( );
 
 		// reset the lift position to its current zero position
 		if( gamepad1.ps || (robot.leftLift.getCurrent( CurrentUnit.AMPS ) > maxCurrent && !movingLift) ) {
@@ -179,11 +152,10 @@ public class MiniTeleOp extends OpMode {
 			robot.rightLift.resetLift( );
 		}
 
-		if( robot.isOverJunction( ) && !gamepad1.isRumbling( ) ) {
+		if( robot.isOverJunction( ) && !gamepad1.isRumbling( ) )
 			gamepad1.rumble( 100 );
-		} else if( !robot.isOverJunction( ) ) {
+		else if( !robot.isOverJunction( ) )
 			gamepad1.stopRumble( );
-		}
 
 		if( time.startTime( ) / 1000 > 110 ) {
 			robot.lights.showStatus( RGBLights.StatusLights.CELEBRATION );
@@ -204,7 +176,7 @@ public class MiniTeleOp extends OpMode {
 
 	public static void waitRobot( int mills ) {
 		long startTime = System.currentTimeMillis( );
-		while( (startTime + mills) > System.currentTimeMillis( ) );
+		while( (startTime + mills) > System.currentTimeMillis( ) ) ;
 	}
 
 	public void displayTelemetry( ) {
@@ -230,7 +202,8 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addLine( );
 
 //		telemetry.addData( "power shift", power );
-//		telemetry.addData( "current", robot.lift.getCurrent( CurrentUnit.AMPS ) );
+		telemetry.addData( "currentL", robot.leftLift.getCurrent( CurrentUnit.AMPS ) );
+		telemetry.addData( "currentR", robot.rightLift.getCurrent( CurrentUnit.AMPS ) );
 //		telemetry.addData( "power", robot.lift.getPower( ) );
 //		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
 //		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
@@ -242,11 +215,11 @@ public class MiniTeleOp extends OpMode {
 		telemetry.addData( "isOverJunction", robot.isOverJunction( ) );
 		telemetry.addData( "pos", robot.drive.getPoseEstimate( ) );
 //		telemetry.addData( "powerOveridden", powerOverridden );
-		telemetry.addData( "turret heading", robot.turret.getTurretHeading() );
-		telemetry.addData( "left limit", robot.turret.getLeftLimit() );
-		telemetry.addData( "right limit", robot.turret.getRightLimit() );
-		telemetry.addData( "too far left:", robot.turret.getTurretHeading() < robot.turret.getLeftLimit() );
-		telemetry.addData( "too far right:", robot.turret.getTurretHeading() > robot.turret.getRightLimit() );
+		telemetry.addData( "turret heading", robot.turret.getTurretHeading( ) );
+		telemetry.addData( "left limit", robot.turret.getLeftLimit( ) );
+		telemetry.addData( "right limit", robot.turret.getRightLimit( ) );
+		telemetry.addData( "too far left:", robot.turret.getTurretHeading( ) < robot.turret.getLeftLimit( ) );
+		telemetry.addData( "too far right:", robot.turret.getTurretHeading( ) > robot.turret.getRightLimit( ) );
 
 		telemetry.addData( "linkagePosition", linkagePosition );
 
@@ -282,48 +255,59 @@ public class MiniTeleOp extends OpMode {
 	public void dpadToTurretPos( ) {
 		if( controller2.dpad_up.onPress( ) && controller2.dpad_right.onPress( ) ) {
 			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, -45 );
+			robot.turret.setRotationPower( 0.5, 45 );
 		} else if( controller2.dpad_up.onPress( ) && controller2.dpad_left.onPress( ) ) {
 			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 45 );
+			robot.turret.setRotationPower( 0.5, -45 );
 		} else if( controller2.dpad_down.onPress( ) && controller2.dpad_left.onPress( ) ) {
 			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 135 );
+			robot.turret.setRotationPower( 0.5, -135 );
 		} else if( controller2.dpad_down.onPress( ) && controller2.dpad_right.onPress( ) ) {
 			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 225 );
+			robot.turret.setRotationPower( 0.5, -225 );
 		} else if( controller2.dpad_up.onPress( ) ) {
 			movingTurret = true;
 			robot.turret.setRotationPower( 0.5, 0 );
 		} else if( controller2.dpad_left.onPress( ) ) {
 			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 90 );
-		} else if( controller2.dpad_left.onPress( ) ) {
+			robot.turret.setRotationPower( 0.5, -90 );
+		} else if( controller2.dpad_down.onPress( ) ) {
 			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 180 );
+			robot.turret.setRotationPower( 0.5, -180 );
 		}
 	}
 
 	public void cycleCone( ) {
+		// make sure turret and lift are in the right place so nothing breaks + alignment
 		robot.turret.setRotationPower( 0.5, 0 );
-		robot.waitSeconds( 250 );
+		Robot.waitTime( 250 );
 		robot.liftToHeightPower( 1, 0 );
-		while (robot.turret.motor.isBusy() || robot.leftLift.isBusy() ) {
-			if( gamepad1.y )
-				return;
+
+		while( (robot.turret.motor.isBusy( ) || robot.leftLift.isBusy( )) && robot.opModeIsActive( ) ) {
+			try {
+				Thread.sleep( 10 );
+				if( gamepad1.y )
+					return;
+			} catch( InterruptedException ignored ) {
+			}
 		}
 
-		robot.linkage.setPosition( 0.3 );
-		robot.waitSeconds( 500 );
-		robot.claw.close();
+		robot.linkage.setPosition( robot.linkage.extensionServoLimit );
+		Robot.waitTime( 500 );
+		robot.claw.close( );
 		robot.junctionToLiftPos( PPField.Junction.HIGH );
-		robot.waitSeconds( 0.1 );
-		robot.turret.setRotationPower( 0.5, 115 );
+		Robot.waitTime( 100 );
+		robot.turret.setRotationPower( 0.5, -115 );
 
-		while (robot.turret.motor.isBusy() || robot.leftLift.isBusy() ) {
-			if( gamepad1.y )
-				return;
+		while( (robot.turret.motor.isBusy( ) || robot.leftLift.isBusy( )) && robot.opModeIsActive( ) ) {
+			try {
+				Thread.sleep( 10 );
+				if( gamepad1.y )
+					return;
+			} catch( InterruptedException ignored ) {
+			}
 		}
-		robot.claw.open();
+
+		robot.claw.open( );
 	}
 }

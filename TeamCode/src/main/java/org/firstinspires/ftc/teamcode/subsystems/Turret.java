@@ -142,7 +142,7 @@ public class Turret {
 
 		Robot.writeToMatchFile( "Turret to (pos) " + position + ", (pow) " + power + ", (heading) " + getTurretHeading( AngleUnit.DEGREES ), true );
 
-		motor.setPower( power );
+		setTurretPower( power );
 
 		if( async ) {
 			// create a new thread so that it doesn't interfere with other mechanisms

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.drives.Drive;
+
 public class Linkage {
 
 	Servo servo;
@@ -20,9 +22,9 @@ public class Linkage {
 	public double bar2Length;
 
 	public Linkage( HardwareMap hw ) {
-		this( hw, "linkage", false, 0,
-				1, 0, 0.3,
-				0, 1, 1, 1  );
+		this( hw, "linkage", true,
+				90, 7, 0,
+				0.36, 0, 14, 7, 8.25 );
 	}
 
 	public Linkage( HardwareMap hw, String servoName, boolean reversed, double retractionAngleLimit,
@@ -46,33 +48,59 @@ public class Linkage {
 		this.bar2Length = bar2Length;
 	}
 
-	public void moveToExtensionAngle( double angle ) {
-		if (angle < retractionAngleLimit )
-			angle = retractionAngleLimit;
-		if (angle > extensionAngleLimit )
-			angle = extensionAngleLimit;
+	public double getServoPos( ) {
+		return servo.getPosition( );
+	}
 
-		setPosition( angle / 180 );
+	public double getAngle( ) {
+		return Drive.normalize( getServoPos( ), retractionServoLimit, extensionServoLimit, retractionAngleLimit, extensionAngleLimit );
+	}
+
+	public double getExtensionDistance( ) {
+		return Drive.normalize( convertAngleToDistance( getAngle( ) ),
+				convertAngleToDistance( retractionAngleLimit ), convertAngleToDistance( extensionAngleLimit ),
+				retractionLength, extensionLength );
 	}
 
 	public void moveToExtensionDistance( double distance ) {
-		setPosition( convertDistanceToAngle( distance ) );
+		setPosition( convertAngleToServoPos( convertDistanceToAngle( distance ) ) );
 	}
 
 	public void setPosition( double position ) {
-		position = Math.min(position, extensionServoLimit );
+		position = Math.min( position, extensionServoLimit );
+		position = Math.max( position, retractionServoLimit );
 
 		servo.setPosition( position );
 	}
 
+	public double convertAngleToServoPos( double angle ) {
+		return Drive.normalize( angle, retractionAngleLimit, extensionAngleLimit, retractionServoLimit, extensionServoLimit );
+	}
+
 	/**
 	 * converts the desired distance to travel by the slides to the servo angle
+	 *
 	 * @param distance the distance in inches
 	 */
 	public double convertDistanceToAngle( double distance ) {
-		double extensionDistance = Math.min( extensionLength , distance ) - retractionLength;
 
-		return Math.toDegrees( Math.acos( ( Math.pow( bar1Length, 2 ) + Math.pow( extensionDistance, 2 ) - Math.pow( bar2Length, 2 ) ) / (2 * bar1Length * distance) ) );
+		distance = Drive.normalize( distance, 0, 14, 4.4, 15.2 );
+
+		if (distance == retractionLength)
+			return 90;
+
+		return Math.toDegrees( Math.acos( (square( bar2Length ) - square( bar1Length ) - square( distance )) / (-2 * bar1Length * distance) ) );
+	}
+
+	public double convertAngleToDistance( double angle ) {
+		angle = Math.toRadians( angle );
+
+//		return Math.sqrt( square( bar1Length ) + square( bar2Length ) - (2 * bar1Length * bar2Length * Math.cos( angle )) );
+		return (bar1Length * Math.cos( angle )) + Math.sqrt( square( bar1Length * Math.cos( angle ) ) + (square( bar2Length ) - square( bar1Length )) );
+	}
+
+	public double square( double x ) {
+		return Math.pow( x, 2 );
 	}
 
 }

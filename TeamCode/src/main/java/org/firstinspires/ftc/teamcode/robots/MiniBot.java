@@ -145,13 +145,13 @@ public class MiniBot extends Robot {
 
 		claw = new SingleServoClaw( hardwareMap, "claw", 0.48, 0.13 );
 
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 50 );
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45 );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 
 		linkage = new Linkage( hardwareMap, "linkage", true,
-				90, 0, 0,
-				0.3, 0, 1, 1, 1 );
+				90, 10, 0,
+				0.36, 0, 14, 7, 8.25 );
 
 		signalUtil = new AprilTagsUtil( hardwareMap, "webcam1", telemetry );
 
@@ -163,7 +163,7 @@ public class MiniBot extends Robot {
 
 	public void waitSeconds( double seconds ) {
 		double startTime = opMode.getRuntime( );
-		while( /*opModeIsActive( ) && */startTime + seconds > opMode.getRuntime( ) ) {
+		while( opModeIsActive( ) && startTime + seconds > opMode.getRuntime( ) ) {
 //			telemetry.addLine(  startTime + seconds + " > " + opMode.getRuntime( ) );
 //			telemetry.update( );b
 		}
