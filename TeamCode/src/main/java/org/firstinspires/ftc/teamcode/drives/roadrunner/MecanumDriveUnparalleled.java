@@ -1,17 +1,17 @@
 package org.firstinspires.ftc.teamcode.drives.roadrunner;
 
 
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.kA;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.kStatic;
+import static org.firstinspires.ftc.teamcode.drives.roadrunner.DriveConstantsUnparalleled.kV;
 
 import androidx.annotation.NonNull;
 
@@ -43,6 +43,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.roadrunner.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.LynxModuleUtil;
 
 import java.util.ArrayList;
@@ -119,8 +120,8 @@ public class MecanumDriveUnparalleled extends MecanumDrive {
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
         frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft" );
-        backLeft = hardwareMap.get( DcMotorEx.class, "backLeft/paraL" );
-        frontRight = hardwareMap.get( DcMotorEx.class, "frontRight/paraR" );
+        backLeft = hardwareMap.get( DcMotorEx.class, "backLeft/para" );
+        frontRight = hardwareMap.get( DcMotorEx.class, "frontRight/perp" );
         backRight = hardwareMap.get( DcMotorEx.class, "backRight" );
 
         motors = Arrays.asList( frontLeft, backLeft, backRight, frontRight );
@@ -144,12 +145,12 @@ public class MecanumDriveUnparalleled extends MecanumDrive {
         // TODO: reverse any motors using DcMotor.setDirection()
         frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
         backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-        frontRight.setDirection( DcMotorSimple.Direction.FORWARD ); // for strafing
+        frontRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
         backRight.setDirection( DcMotorSimple.Direction.FORWARD ); // for strafing
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        setLocalizer( new ThreeWheelTrackingLocalizerUnparalleled( hardwareMap ) );
+        setLocalizer( new TwoWheelTrackingLocalizerUnparalleled( hardwareMap, this ) );
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
@@ -305,7 +306,7 @@ public class MecanumDriveUnparalleled extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getAngularVelocity().zRotationRate;
+        return (double) imu.getAngularVelocity().xRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

@@ -71,11 +71,11 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         MecanumDriveUnparalleled drive = new MecanumDriveUnparalleled(hardwareMap);
 
-        if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
-            RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "
-                    + "drive class. Ensure that \"setLocalizer(new StandardTrackingWheelLocalizer"
-                    + "(hardwareMap));\" is called in MecanumDriveLifter.java");
-        }
+//        if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
+//            RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "
+//                    + "drive class. Ensure that \"setLocalizer(new StandardTrackingWheelLocalizer"
+//                    + "(hardwareMap));\" is called in MecanumDriveUnparalleled.java");
+//        }
 
         telemetry.addLine("Prior to beginning the routine, please read the directions "
                 + "located in the comments of the opmode file.");

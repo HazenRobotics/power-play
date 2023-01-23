@@ -127,8 +127,8 @@ public class MecanumDriveMini extends MecanumDrive {
 		BNO055IMUUtil.remapZAxis( imu, AxisDirection.POS_Y );
 
 		frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft" );
-		backLeft = hardwareMap.get( DcMotorEx.class, "backLeft/paraL" );
-		frontRight = hardwareMap.get( DcMotorEx.class, "frontRight/paraR" );
+		backLeft = hardwareMap.get( DcMotorEx.class, "backLeft/para" );
+		frontRight = hardwareMap.get( DcMotorEx.class, "frontRight/perp" );
 		backRight = hardwareMap.get( DcMotorEx.class, "backRight" );
 
 		motors = Arrays.asList( frontLeft, backLeft, backRight, frontRight );

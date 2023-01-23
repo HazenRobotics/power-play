@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,52 +16,44 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline
 public class NeverFail extends LinearOpMode {
 
     MiniBot robot;
-    MecanumDrive drive;
 
     @Override
     public void runOpMode() {
 
         robot = new MiniBot(this);
-        drive = new MecanumDrive(hardwareMap);
-        AprilTagsUtil detector = new AprilTagsUtil(hardwareMap, "webcam1", telemetry);
-        detector.init();
 
-        DcMotorEx[] motors = {
-                drive.frontLeft,
-                drive.backLeft,
-                drive.frontRight,
-                drive.backRight,
-        };
+        robot.initSubsystems();
 
-        AprilTagDetectionPipeline.SignalPosition park;
         while (!isStopRequested() && !isStarted()) {
             telemetry.addData("Element position", robot.signalUtil.getSignalPosition());
             telemetry.update();
         }
+
         waitForStart();
-        park = robot.signalUtil.getSignalPosition();
-        for (DcMotorEx d : motors) {
-            d.setPower(0.25);
-        }
-        waitRobot(2000);
 
-        while (motors[0].isBusy()) ;
+        AprilTagDetectionPipeline.SignalPosition signalPosition = robot.signalUtil.getSignalPosition();
 
-        if (park != AprilTagDetectionPipeline.SignalPosition.MIDDLE) {
-            if (park == AprilTagDetectionPipeline.SignalPosition.LEFT) {
-                motors[0].setPower(-0.25);
-                motors[1].setPower(0.25);
-                motors[2].setPower(-0.25);
-                motors[3].setPower(0.25);
-            }
-            if (park == AprilTagDetectionPipeline.SignalPosition.RIGHT) {
-                motors[0].setPower(0.25);
-                motors[1].setPower(-0.25);
-                motors[2].setPower(0.25);
-                motors[3].setPower(-0.25);
-            }
-            waitRobot(2000);
+        robot.claw.close();
+
+        waitRobot( 250 );
+
+        robot.drive.setWeightedDrivePower(new Pose2d( 0,0,0 ));
+
+        if (signalPosition == AprilTagDetectionPipeline.SignalPosition.LEFT) {
+            robot.drive.setWeightedDrivePower( new Pose2d( 0, 0.5, -0.025  ) );
+            waitRobot( 1500 );
+        } else if (signalPosition == AprilTagDetectionPipeline.SignalPosition.RIGHT) {
+            robot.drive.setWeightedDrivePower( new Pose2d( 0, -0.5, 0.025  ) );
+            waitRobot( 1500 );
         }
+
+        robot.drive.setWeightedDrivePower( new Pose2d( 0,0,0 ) );
+
+        robot.drive.setWeightedDrivePower(new Pose2d( 0.25,0,0 ) );
+
+        waitRobot(2700);
+
+        robot.drive.setWeightedDrivePower( new Pose2d( 0,0,0 ) );
     }
 
     public static void waitRobot(int mills) {

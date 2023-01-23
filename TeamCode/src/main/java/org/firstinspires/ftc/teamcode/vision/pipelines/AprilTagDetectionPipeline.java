@@ -163,9 +163,9 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline {
 			else if( tagOfInterest.id == rightTag )
 				signalPosition = SignalPosition.RIGHT;
 
-			telemetry.addData( "tagOfInterest null status", tagOfInterest == null );
-			telemetry.addData( "signalPos", signalPosition );
-			telemetry.update();
+//			telemetry.addData( "tagOfInterest null status", tagOfInterest == null );
+//			telemetry.addData( "signalPos", signalPosition );
+//			telemetry.update();
 		}
 
 

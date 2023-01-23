@@ -23,9 +23,9 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 		robot = new MiniBot( this );
 		gyro = new InternalIMU( hardwareMap );
 
-		robot.mecanumDrive.setWheelDiameter( 3.77953 );
+//		robot.mecanumDrive.setWheelDiameter( 3.77953 );
 
-		robot.mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
+//		robot.mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
 
 //		robot.claw.setState( TiltingClaw.VerticalClawState.DEPLOYED );
 		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
@@ -46,10 +46,10 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 	}
 
 	public void displayTelemetry( ) {
-		telemetry.addData( "fl", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.frontLeft.getCurrentPosition( ) ) );
-		telemetry.addData( "bl", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.backLeft.getCurrentPosition( ) ) );
-		telemetry.addData( "fr", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.frontRight.getCurrentPosition( ) ) );
-		telemetry.addData( "br", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.backRight.getCurrentPosition( ) ) );
+//		telemetry.addData( "fl", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.frontLeft.getCurrentPosition( ) ) );
+//		telemetry.addData( "bl", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.backLeft.getCurrentPosition( ) ) );
+//		telemetry.addData( "fr", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.frontRight.getCurrentPosition( ) ) );
+//		telemetry.addData( "br", robot.mecanumDrive.convertTicksDist( robot.mecanumDrive.backRight.getCurrentPosition( ) ) );
 		telemetry.addData( "gyro", gyro.getOrientation( ) );
 		telemetry.update( );
 	}
@@ -62,7 +62,7 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 	public void cycle( double coneHeight ) {
 		driveDistance( 30, 0.25 );
 
-		while(robot.mecanumDrive.frontLeft.isBusy());
+//		while(robot.mecanumDrive.frontLeft.isBusy());
 
 		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 
@@ -89,28 +89,28 @@ public class FiveConeMotorEncoderRight extends LinearOpMode {
 	}
 
 	public void turnToDegrees( double angle, double power ) {
-		robot.mecanumDrive.setRunMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+//		robot.mecanumDrive.setRunMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
 
 		if (angle > gyro.getOrientation().firstAngle)
 			power *= -1;
 
-		robot.mecanumDrive.turn( power );
+//		robot.mecanumDrive.turn( power );
 
 		new Thread( () -> {
 			while( gyro.getOrientation( ).firstAngle > angle )
 				displayTelemetry( );
-			robot.mecanumDrive.drive(0,0);
+//			robot.mecanumDrive.drive(0,0);
 		}).start();
 
 	}
 
 	public void driveDistance( double distance, double power ) {
-		robot.mecanumDrive.setRunMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
-
-		robot.mecanumDrive.setTargetPosition( robot.mecanumDrive.convertDistTicks( 48 ) );
-
-		robot.mecanumDrive.setRunMode( DcMotor.RunMode.RUN_TO_POSITION );
-
-		robot.mecanumDrive.move( power );
+//		robot.mecanumDrive.setRunMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+//
+//		robot.mecanumDrive.setTargetPosition( robot.mecanumDrive.convertDistTicks( 48 ) );
+//
+//		robot.mecanumDrive.setRunMode( DcMotor.RunMode.RUN_TO_POSITION );
+//
+//		robot.mecanumDrive.move( power );
 	}
 }

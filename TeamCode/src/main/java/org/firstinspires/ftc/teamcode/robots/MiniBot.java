@@ -16,6 +16,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
+import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveUnparalleled;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
@@ -33,8 +34,8 @@ public class MiniBot extends Robot {
 	public OpMode opMode;
 	public HardwareMap hardwareMap;
 
-	public MecanumDrive mecanumDrive;
-	public MecanumDriveMini drive;
+//	public MecanumDrive mecanumDrive;
+	public MecanumDriveUnparalleled drive;
 
 	public Lift leftLift;
 	public Lift rightLift;
@@ -123,14 +124,14 @@ public class MiniBot extends Robot {
 
 		this.rightSide = rightSide;
 
-		mecanumDrive = new MecanumDrive( hardwareMap, "frontLeft", "backLeft/paraL", "frontRight/paraR", "backRight" );
+//		mecanumDrive = new MecanumDrive( hardwareMap, "frontLeft", "backLeft/para", "frontRight/perp", "backRight" );
 //		super.driveTrain = mecanumDrive;//REVERSE
 		// note these must be the same as in MecanumDriveMini
-		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
+//		mecanumDrive.setMotorDirections( DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD );
 //		mecanumDrive.setWheelDiameter( 4 );
 //		mecanumDrive.setPulsesPerRevolution( MotorType.Gobilda192.TICKS_PER_ROTATION );
 
-		drive = new MecanumDriveMini( hardwareMap );
+		drive = new MecanumDriveUnparalleled( hardwareMap );
 
 		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
 		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
@@ -143,7 +144,7 @@ public class MiniBot extends Robot {
 
 //		claw = new TwoAxesClaw( hardwareMap, "claw", "clawH", "clawV", new double[]{ 0.61, 0.35 }, new double[]{ 1, 0.5, 0 }, new double[]{ 0.3, 0.53, 0.73 } );
 
-		claw = new SingleServoClaw( hardwareMap, "claw", 0.48, 0.13 );
+		claw = new SingleServoClaw( hardwareMap, "claw", 1, 0.65 );
 
 		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45 );
 
@@ -171,7 +172,7 @@ public class MiniBot extends Robot {
 
 	public void initSubsystems( ) {
 		signalUtil.init( );
-		claw.setState( SingleServoClaw.ClawState.CLOSED );
+//		claw.setState( SingleServoClaw.ClawState.CLOSED );
 		waitSeconds( 0.25 );
 //		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
@@ -327,6 +328,11 @@ public class MiniBot extends Robot {
 			y = THREE_HALVES_TILE;
 		}
 		return new Vector2d( x, y );
+	}
+
+	public void liftPower(double power) {
+		leftLift.setPower( power );
+		rightLift.setPower( power );
 	}
 
 	public void liftToHeightPower( double power, double height) {

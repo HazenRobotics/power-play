@@ -16,8 +16,8 @@ public class MecanumTeleOp extends OpMode {
 
 	@Override
 	public void init( ) {
-		drive = new MecanumDrive( hardwareMap, "frontLeft", "backLeft/paraL", "frontRight/paraR", "backRight" );
-		drive.setMotorDirections(DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE , DcMotorSimple.Direction.FORWARD, DcMotorSimple.Direction.FORWARD);
+		drive = new MecanumDrive( hardwareMap, "frontLeft", "backLeft/para", "frontRight/perp", "backRight" );
+		drive.setMotorDirections(DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.REVERSE , DcMotorSimple.Direction.REVERSE, DcMotorSimple.Direction.FORWARD);
 //		drive.setRunMode( DcMotor.RunMode.RUN_USING_ENCODER, DcMotor.RunMode.RUN_USING_ENCODER, DcMotor.RunMode.RUN_USING_ENCODER, DcMotor.RunMode.RUN_USING_ENCODER );
 	}
 

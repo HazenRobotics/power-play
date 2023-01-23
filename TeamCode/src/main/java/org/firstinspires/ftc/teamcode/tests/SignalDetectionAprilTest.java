@@ -14,8 +14,10 @@ public class SignalDetectionAprilTest extends LinearOpMode {
 		AprilTagsUtil detector = new AprilTagsUtil( hardwareMap, "webcam1", telemetry );
 		detector.init();
 
-		telemetry.addLine("camera is ready");
-		telemetry.update();
+		while (!isStopRequested() && !isStarted()) {
+			telemetry.addData("Element position", detector.getSignalPosition());
+			telemetry.update();
+		}
 
 		waitForStart();
 	}

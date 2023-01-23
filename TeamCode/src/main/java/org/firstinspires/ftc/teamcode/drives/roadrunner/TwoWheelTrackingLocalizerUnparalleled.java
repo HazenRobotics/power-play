@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.Encoder;
 
@@ -35,37 +34,26 @@ import java.util.List;
  *    \--------------/
  *
  */
-public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
+public class TwoWheelTrackingLocalizerUnparalleled extends TwoTrackingWheelLocalizer {
 
 	public static double TICKS_PER_REV = 4000;
 	public static double WHEEL_RADIUS = 0.75; // in
 	public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-	// 210mm distance between deadwheels
+	public static double PARALLEL_X = -0.984252; // X is the up and down direction
+	public static double PARALLEL_Y = -5.15748; // Y is the strafe direction
 
-//	0.98903375147251753550445135598407
-//	0.98739220883145156590682343984545
-//  0.98535061658064837698561555819895
-	public static double X_MULTIPLIER = 0.98725885896153915946563011800949; // 1.02743 Multiplier in the X direction
-//  0.9867006438220013926146611499961
-//  0.98952878916097665534438197194642
-//  0.9920634044666234639656413357742
-	public static double Y_MULTIPLIER = 0.98943094581653383730822815257224; // 1.01201 Multiplier in the Y direction
-
-	public static double PARALLEL_X = -0.787402; // 0.394 X is the up and down direction
-	public static double PARALLEL_Y = 4.1417323; // 0.787 Y is the strafe direction
-
-	public static double PERPENDICULAR_X = -0.6102362; //0.787
-	public static double PERPENDICULAR_Y = -4.8228346; // 3.937
+	public static double PERPENDICULAR_X = -0.787402;
+	public static double PERPENDICULAR_Y = 4.48819;
 
 	// Parallel/Perpendicular to the forward axis
 	// Parallel wheel is parallel to the forward axis
 	// Perpendicular is perpendicular to the forward axis
 	private Encoder parallelEncoder, perpendicularEncoder;
 
-	private MecanumDriveMini drive;
+	private MecanumDriveUnparalleled drive;
 
-	public TwoWheelTrackingLocalizerMini( HardwareMap hardwareMap, MecanumDriveMini drive ) {
+	public TwoWheelTrackingLocalizerUnparalleled( HardwareMap hardwareMap, MecanumDriveUnparalleled drive ) {
 		super( Arrays.asList(
 				new Pose2d( PARALLEL_X, PARALLEL_Y, 0 ),
 				new Pose2d( PERPENDICULAR_X, PERPENDICULAR_Y, Math.toRadians( 90 ) )
@@ -73,11 +61,12 @@ public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 
 		this.drive = drive;
 
-		parallelEncoder = new Encoder( hardwareMap.get( DcMotorEx.class, "backLeft/para") );
+		parallelEncoder = new Encoder( hardwareMap.get( DcMotorEx.class, "backLeft/para" ) );
 		perpendicularEncoder = new Encoder( hardwareMap.get( DcMotorEx.class, "frontRight/perp" ) );
 
 		// TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
-		parallelEncoder.setDirection( Encoder.Direction.REVERSE );
+		parallelEncoder.setDirection( Encoder.Direction.FORWARD );
+		perpendicularEncoder.setDirection( Encoder.Direction.FORWARD );
 	}
 
 	public static double encoderTicksToInches( double ticks ) {
@@ -98,8 +87,8 @@ public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 	@Override
 	public List<Double> getWheelPositions( ) {
 		return Arrays.asList(
-				encoderTicksToInches( parallelEncoder.getCurrentPosition( ) ) * X_MULTIPLIER,
-				encoderTicksToInches( perpendicularEncoder.getCurrentPosition( ) ) * Y_MULTIPLIER
+				encoderTicksToInches( parallelEncoder.getCurrentPosition( ) ),
+				encoderTicksToInches( perpendicularEncoder.getCurrentPosition( ) )
 		);
 	}
 
@@ -111,8 +100,8 @@ public class TwoWheelTrackingLocalizerMini extends TwoTrackingWheelLocalizer {
 		//  compensation method
 
 		return Arrays.asList(
-				encoderTicksToInches( parallelEncoder.getRawVelocity() ) * X_MULTIPLIER,
-				encoderTicksToInches( perpendicularEncoder.getRawVelocity() ) * Y_MULTIPLIER
+				encoderTicksToInches( parallelEncoder.getRawVelocity( ) ),
+				encoderTicksToInches( perpendicularEncoder.getRawVelocity( ) )
 		);
 	}
 }

@@ -39,6 +39,28 @@ public class MiniTeleOp extends OpMode {
 	ElapsedTime time = new ElapsedTime( );
 	double linkagePosition = 0;
 
+	Thread cycleConeThread = new Thread ( () -> {
+		// make sure turret and lift are in the right place so nothing breaks + alignment
+		robot.turret.setRotationPowerNotAsync( 0.5, 0 );
+		cycleWaitTime( 250 );
+		robot.leftLift.setHeightPower( 0.5, 0, false, false );
+		robot.rightLift.setHeightPower( 0.5, 0, false, false );
+
+		if (cycleWaitTurretLift())
+			return;
+
+
+		robot.linkage.moveToExtensionDistance( 14 );
+		cycleWaitTime( 500 );
+		robot.claw.close( );
+		robot.junctionToLiftPos( PPField.Junction.HIGH );
+		cycleWaitTime( 200 );
+		robot.turret.setRotationPower( 0.5, -115 );
+		cycleWaitTime( 500 );
+
+		robot.claw.open( );
+	} );
+
 	public enum Speeds {
 
 		DRIVE( 0.6, 0.8 ),
@@ -78,8 +100,8 @@ public class MiniTeleOp extends OpMode {
 		telemetry.update( );
 
 		robot = new MiniBot( this );
-		robot.leftLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
-		robot.rightLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
+		robot.leftLift.setEncoder( Lift.EncoderState.WITH_ENCODER );
+		robot.rightLift.setEncoder( Lift.EncoderState.WITH_ENCODER );
 		robot.claw.init( );
 
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
@@ -104,16 +126,22 @@ public class MiniTeleOp extends OpMode {
 			robot.turret.resetTurret( );
 
 
-		if( Math.abs( robotTiltAngle + 90 ) > 10 )
-			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
-		else
-			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
-					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+//		if( Math.abs( robotTiltAngle + 90 ) > 10 )
+//			robot.mecanumDrive.drive( Math.signum( robotTiltAngle ) * Drive.normalize( Math.abs( robotTiltAngle ), 0, 70, 0, 0.8 ), 0 );
+//		else
+//			robot.mecanumDrive.drive( -gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
+//					gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
+//					gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 ) );
+		robot.drive.setWeightedDrivePower(
+				new Pose2d(
+						-gamepad1.left_stick_y,
+						-gamepad1.left_stick_x,
+						-gamepad1.right_stick_x
+				)
+		);
 
 		if( !movingLift ) {
-			robot.leftLift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger) /*+ power*/ );
-			robot.rightLift.setPower( (gamepad1.right_trigger + gamepad2.right_trigger) - (gamepad1.left_trigger + gamepad2.left_trigger) /*+ power*/ );
+			robot.liftPower( (gamepad1.right_trigger + gamepad2.right_trigger) - ((gamepad1.left_trigger + gamepad2.left_trigger) * .2) /*+ power*/ );
 		} else if( gamepad1.right_trigger + gamepad1.left_trigger + gamepad2.right_trigger + gamepad2.left_trigger > 0.05 ) {
 			movingLift = false;
 			robot.leftLift.setTeleOpPowerMode( );
@@ -130,10 +158,10 @@ public class MiniTeleOp extends OpMode {
 //		robot.turret.motor.setPower( controller2.right_stick_x * 0.5 );
 
 		// g1/g2 a: toggle claw
-		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
+		if( /*controller1.a.onPress( ) ||*/ controller2.a.onPress( ) )
 			robot.claw.toggle( );
 
-		linkagePosition += ((gamepad1.right_bumper || gamepad2.right_bumper ? 0.05 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.05 : 0));
+		linkagePosition += ((gamepad1.right_bumper || gamepad2.right_bumper ? 0.025 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.025 : 0));
 		linkagePosition = Math.min( robot.linkage.extensionServoLimit, Math.max( linkagePosition, 0 ) );
 		robot.linkage.setPosition( linkagePosition );
 
@@ -141,8 +169,8 @@ public class MiniTeleOp extends OpMode {
 		dpadToLiftPos( );
 		dpadToTurretPos( );
 
-		if( controller1.x.onPress( ) )
-			cycleCone( );
+//		if( controller1.x.onPress( ) )
+//			cycleConeThread.start();
 
 		// reset the lift position to its current zero position
 		if( gamepad1.ps || (robot.leftLift.getCurrent( CurrentUnit.AMPS ) > maxCurrent && !movingLift) ) {
@@ -204,22 +232,27 @@ public class MiniTeleOp extends OpMode {
 //		telemetry.addData( "power shift", power );
 		telemetry.addData( "currentL", robot.leftLift.getCurrent( CurrentUnit.AMPS ) );
 		telemetry.addData( "currentR", robot.rightLift.getCurrent( CurrentUnit.AMPS ) );
-//		telemetry.addData( "power", robot.lift.getPower( ) );
+		telemetry.addData( "powerL", robot.leftLift.getPower( ) );
+		telemetry.addData( "powerR", robot.rightLift.getPower() );
 //		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
-//		telemetry.addData( "pos (ticks)", robot.lift.getPosition( ) );
-//		telemetry.addData( "pos (in)", robot.lift.getPositionInch( ) );
-//		telemetry.addData( "target pos (in)", robot.lift.getTargetPositionInch( ) );
+		telemetry.addData( "pos (ticks) L", robot.leftLift.getPosition( ) );
+		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
+		telemetry.addData( "pos (ticks) R", robot.leftLift.getPosition( ) );
+		telemetry.addData( "pos (in) R", robot.rightLift.getPositionInch( ) );
+		telemetry.addData( "target pos (in) L", robot.leftLift.getTargetPosition( ) );
+		telemetry.addData( "target pos (in) R", robot.rightLift.getTargetPosition( ) );
+
 //		telemetry.addLine( );
 
 //		telemetry.addData( "gyro", robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES ) );
-		telemetry.addData( "isOverJunction", robot.isOverJunction( ) );
-		telemetry.addData( "pos", robot.drive.getPoseEstimate( ) );
-//		telemetry.addData( "powerOveridden", powerOverridden );
-		telemetry.addData( "turret heading", robot.turret.getTurretHeading( ) );
-		telemetry.addData( "left limit", robot.turret.getLeftLimit( ) );
-		telemetry.addData( "right limit", robot.turret.getRightLimit( ) );
-		telemetry.addData( "too far left:", robot.turret.getTurretHeading( ) < robot.turret.getLeftLimit( ) );
-		telemetry.addData( "too far right:", robot.turret.getTurretHeading( ) > robot.turret.getRightLimit( ) );
+//		telemetry.addData( "isOverJunction", robot.isOverJunction( ) );
+//		telemetry.addData( "pos", robot.drive.getPoseEstimate( ) );
+//	telemetry.addData( "powerOveridden", powerOverridden );
+//		telemetry.addData( "turret heading", robot.turret.getTurretHeading( ) );
+//		telemetry.addData( "left limit", robot.turret.getLeftLimit( ) );
+//		telemetry.addData( "right limit", robot.turret.getRightLimit( ) );
+//		telemetry.addData( "too far left:", robot.turret.getTurretHeading( ) < robot.turret.getLeftLimit( ) );
+//		telemetry.addData( "too far right:", robot.turret.getTurretHeading( ) > robot.turret.getRightLimit( ) );
 
 		telemetry.addData( "linkagePosition", linkagePosition );
 
@@ -277,37 +310,26 @@ public class MiniTeleOp extends OpMode {
 		}
 	}
 
-	public void cycleCone( ) {
-		// make sure turret and lift are in the right place so nothing breaks + alignment
-		robot.turret.setRotationPower( 0.5, 0 );
-		Robot.waitTime( 250 );
-		robot.liftToHeightPower( 1, 0 );
-
-		while( (robot.turret.motor.isBusy( ) || robot.leftLift.isBusy( )) && robot.opModeIsActive( ) ) {
-			try {
-				Thread.sleep( 10 );
-				if( gamepad1.y )
-					return;
-			} catch( InterruptedException ignored ) {
+	public void cycleWaitTime (long time) {
+		long startTime = System.currentTimeMillis( );
+		while( System.currentTimeMillis( ) < startTime + time && robot.opModeIsActive( ) ) {
+			if( gamepad1.y ) {
+				robot.turret.setTurretPower( 0 );
+				robot.liftPower( 0 );
+				return;
 			}
 		}
-
-		robot.linkage.setPosition( robot.linkage.extensionServoLimit );
-		Robot.waitTime( 500 );
-		robot.claw.close( );
-		robot.junctionToLiftPos( PPField.Junction.HIGH );
-		Robot.waitTime( 100 );
-		robot.turret.setRotationPower( 0.5, -115 );
-
-		while( (robot.turret.motor.isBusy( ) || robot.leftLift.isBusy( )) && robot.opModeIsActive( ) ) {
-			try {
-				Thread.sleep( 10 );
-				if( gamepad1.y )
-					return;
-			} catch( InterruptedException ignored ) {
-			}
-		}
-
-		robot.claw.open( );
 	}
+
+	public boolean cycleWaitTurretLift () {
+		while( (robot.turret.motor.isBusy( ) || robot.leftLift.isBusy( )) && robot.opModeIsActive( ) ) {
+			if( gamepad1.y ) {
+				robot.turret.setTurretPower( 0 );
+				robot.liftPower( 0 );
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

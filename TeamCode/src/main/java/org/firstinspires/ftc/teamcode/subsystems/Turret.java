@@ -96,6 +96,10 @@ public class Turret {
 		setRotationPower( power, position, true );
 	}
 
+	public void setRotationPowerNotAsync( double power, double position ) {
+		setRotationPower( power, position, false );
+	}
+
 	/**
 	 * @param power    power to turn at
 	 * @param position the rotation of the turret in the predetermined AngleUnit
@@ -127,6 +131,17 @@ public class Turret {
 			motor.setPower( power );
 		else if( target < currentHeading )
 			motor.setPower( -power );
+	}
+
+	public void setRotate( double power, double position, boolean wait) {
+		int ticks = convertHeadingToTicks( position );
+
+		motor.setTargetPosition( ticks );
+		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
+		setTurretPower( power );
+
+		if (wait)
+			waitForMoveFinish();
 	}
 
 	public void setRotationPower( double power, double position, AngleUnit angleUnit, boolean async ) {

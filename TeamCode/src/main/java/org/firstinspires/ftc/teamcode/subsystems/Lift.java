@@ -130,10 +130,9 @@ public class Lift {
 		if( distance < 0 )
 			power *= -1;
 		motor.setTargetPosition( convertDistTicks( distance, 2 * spoolRadius * Math.PI ) );
-
+		setPower( power );
 		motor.setMode( DcMotor.RunMode.RUN_TO_POSITION );
 
-		setPower( power );
 
 		if( stopAsync ) {
 			// create a new thread so that it doesn't interfere with other mechanisms
@@ -144,7 +143,7 @@ public class Lift {
 				disableMotorIfUnused( );
 			} ).start( );
 		} else {
-			waitForMoveFinish( );
+//			waitForMoveFinish( );
 			if( stopMotor )
 				setPower( 0 );
 			disableMotorIfUnused( );
@@ -186,7 +185,7 @@ public class Lift {
 	}
 
 	public void waitForMoveFinish( ) {
-		while( isBusy( ) && getCurrent( CurrentUnit.AMPS ) < 11 ) {
+		while( isBusy( ) && getCurrent( CurrentUnit.AMPS ) < 11  ) {
 			try {
 				Thread.sleep( 50 );
 			} catch( InterruptedException ignored ) {
