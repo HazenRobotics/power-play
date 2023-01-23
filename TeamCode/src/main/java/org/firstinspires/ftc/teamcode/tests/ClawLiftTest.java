@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -27,7 +28,7 @@ public class ClawLiftTest extends OpMode {
 		telemetry.update( );
 
 		claw = new Claw( hardwareMap, "lCLaw", "rClaw", new double[]{ 0.5, 0.75 }, new double[]{ 05, 0.57 } );
-		lift = new Lift( hardwareMap, "lift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES, 537.7, 1 );
+		lift = new Lift( hardwareMap, "lift", false, 0, 39.25 / 25.4 / 2, 0, AngleUnit.DEGREES, 537.7, 1, new PIDController(0.02, 0, 0.00012) );
 
 		telemetry.addData( "Mode", "waiting for start??" );
 		telemetry.update( );

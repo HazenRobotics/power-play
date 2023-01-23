@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.util.Log;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -30,6 +31,9 @@ public class Lift {
 	double liftAngle; // the angle of the lift from the ground in 'angleUnit's
 	AngleUnit angleUnit; // the angle unit for the lift angle i.e. degrees or radians
 
+	public PIDController controller;
+	public int target = 0;
+
 	EncoderState encoderState;
 	MovementState movementState = MovementState.REST;
 
@@ -53,7 +57,8 @@ public class Lift {
 	 */
 	public Lift( HardwareMap hardwareMap ) {
 		this( hardwareMap, "lift", true, 0,
-				0.5, 0, AngleUnit.DEGREES, 537.7, 1 );
+				0.5, 0, AngleUnit.DEGREES, 537.7, 1,
+				new PIDController(0.02, 0, 0.00012) );
 	}
 
 	/**
@@ -65,7 +70,7 @@ public class Lift {
 	 * @param angleUnit   the angle unit to make calculations and input variables
 	 */
 	public Lift( HardwareMap hardwareMap, String motorName, boolean reverseMotor, double posOffset,
-				 double spoolRadius, double liftAngle, AngleUnit angleUnit, double PPR, double gearRatio ) {
+				 double spoolRadius, double liftAngle, AngleUnit angleUnit, double PPR, double gearRatio, PIDController controller ) {
 		motor = hardwareMap.get( DcMotorEx.class, motorName );
 		motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE );
 
@@ -80,6 +85,7 @@ public class Lift {
 		PULSES_PER_REVOLUTION = PPR;
 		GEAR_RATIO = gearRatio;
 
+		this.controller = controller;
 
 		resetLift( );
 //		motor.setTargetPosition( 10 );
@@ -112,6 +118,18 @@ public class Lift {
 	public void setEncoder( EncoderState state ) {
 		motor.setMode( state == EncoderState.WITHOUT_ENCODER ? DcMotor.RunMode.RUN_WITHOUT_ENCODER : DcMotor.RunMode.RUN_USING_ENCODER );
 		encoderState = state;
+	}
+
+	public void setLiftTarget( int target ) {
+		this.target = target;
+	}
+
+	public void setLiftTargetInches( int inches ) {
+		target = convertDistTicks( inches, 2 * spoolRadius * Math.PI );
+	}
+
+	public void updateLiftPID() {
+		motor.setPower( controller.calculate( motor.getCurrentPosition() ) );
 	}
 
 	// basic lift setters

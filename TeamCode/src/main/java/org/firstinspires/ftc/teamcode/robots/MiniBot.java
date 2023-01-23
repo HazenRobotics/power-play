@@ -7,7 +7,9 @@ import static org.firstinspires.ftc.teamcode.utils.localization.PPField.TILE_SIZ
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -22,7 +24,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.teleop.MiniTeleOp;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.RGBLights;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
@@ -53,6 +54,8 @@ public class MiniBot extends Robot {
 	public RGBLights lights;
 
 	public boolean rightSide;
+
+
 //	Pose2d lastPose = drive.getPoseEstimate( );
 
 
@@ -133,8 +136,8 @@ public class MiniBot extends Robot {
 
 		drive = new MecanumDriveUnparalleled( hardwareMap );
 
-		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
-		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 103.6, 1 );
+		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController(0.02, 0, 0.00012) );
+		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController(0.02, 0, 0.00012) );
 
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
@@ -160,6 +163,9 @@ public class MiniBot extends Robot {
 		initGyro( );
 
 		lights = new RGBLights( hardwareMap, "blinkin" );
+
+		for( LynxModule module : hardwareMap.getAll( LynxModule.class ) )
+			module.setBulkCachingMode( LynxModule.BulkCachingMode.AUTO );
 	}
 
 	public void waitSeconds( double seconds ) {
