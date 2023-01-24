@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import android.util.Log;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
@@ -35,11 +36,14 @@ public class Turret {
 	double leftLimit = Double.NEGATIVE_INFINITY;
 	double rightLimit = Double.POSITIVE_INFINITY;
 
+	PIDController controller;
+	public int target = 0;
+
 	public Turret( HardwareMap hw ) {
-		this( hw, "turret", false, AngleUnit.RADIANS, 1, 1, 0, 360 );
+		this( hw, "turret", false, AngleUnit.RADIANS, 1, 1, 0, 360, new PIDController( 0,0,0 ) );
 	}
 
-	public Turret( HardwareMap hw, String motorName, boolean reverseMotor, AngleUnit angleUnit, double ppr, double gearRatio, double lLimit, double rLimit ) {
+	public Turret( HardwareMap hw, String motorName, boolean reverseMotor, AngleUnit angleUnit, double ppr, double gearRatio, double lLimit, double rLimit, PIDController controller ) {
 		unit = angleUnit;
 
 		motor = hw.get( DcMotorEx.class, motorName );
@@ -53,6 +57,8 @@ public class Turret {
 		this.gearRatio = gearRatio;
 
 		turretPosition = 0;
+
+		this.controller = controller;
 
 		setLimit( lLimit, rLimit );
 
@@ -86,6 +92,18 @@ public class Turret {
 	public void setRotationVelocity( double velocity, double position ) {
 		motor.setTargetPosition( (int) convertTicksToHeading( position ) );
 		motor.setVelocity( velocity, unit );
+	}
+
+	public void setTarget( int target ) {
+		this.target = target;
+	}
+
+	public void setTargetHeading( double angle ) {
+		setTarget( convertHeadingToTicks( angle ) );
+	}
+
+	public void updatePID(double multiplier) {
+		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) * multiplier );
 	}
 
 	/**
@@ -186,14 +204,14 @@ public class Turret {
 		return motor.isBusy( );
 	}
 
-	public double convertTicksToHeading( double ticks ) {
+	public int convertTicksToHeading( double ticks ) {
 		return convertTicksToHeading( ticks, unit );
 	}
 
-	public double convertTicksToHeading( double ticks, AngleUnit angleUnit ) {
+	public int convertTicksToHeading( double ticks, AngleUnit angleUnit ) {
 		double heading = (2 * Math.PI * ticks) / (gearRatio * pulsesPerRevolution);
 
-		return angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading;
+		return (int) (angleUnit == AngleUnit.DEGREES ? Math.toDegrees( heading ) : heading);
 	}
 
 	public int convertHeadingToTicks( double heading ) {
@@ -231,6 +249,7 @@ public class Turret {
 		movementState = MovementState.REST;
 		turretPosition = 0;
 		motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+		target = 0;
 	}
 
 	/**
@@ -250,6 +269,10 @@ public class Turret {
 
 	public double getCurrent( CurrentUnit currentUnit ) {
 		return motor.getCurrent( currentUnit );
+	}
+
+	public int getTargetPosition() {
+		return target;
 	}
 
 }

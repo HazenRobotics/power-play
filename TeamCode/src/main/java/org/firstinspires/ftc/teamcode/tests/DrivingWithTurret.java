@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,7 +18,7 @@ public class DrivingWithTurret extends OpMode {
 	@Override
 	public void init( ) {
 		drive = new MecanumDrive( hardwareMap );
-		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, 0, 360 );
+		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, 0, 360, new PIDController( 0,0,0 ) );
 	}
 
 	@Override

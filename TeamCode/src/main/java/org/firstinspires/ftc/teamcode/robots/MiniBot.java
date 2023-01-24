@@ -53,7 +53,7 @@ public class MiniBot extends Robot {
 
 	public boolean rightSide;
 
-	public final float[] liftHeightToggles = { 0, Junction.GROUND.height( ), Junction.LOW.height( ), Junction.MEDIUM.height( ), Junction.HIGH.height( ) };
+	public final float[] liftHeights = { 0, Junction.GROUND.height( ), Junction.LOW.height( ), Junction.MEDIUM.height( ), Junction.HIGH.height( ) };
 
 //	Pose2d lastPose = drive.getPoseEstimate( );
 
@@ -148,7 +148,7 @@ public class MiniBot extends Robot {
 
 		claw = new SingleServoClaw( hardwareMap, "claw", 1, 0.65 );
 
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45 );
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45, new PIDController( 0.005,0, 0.0002 ) );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 

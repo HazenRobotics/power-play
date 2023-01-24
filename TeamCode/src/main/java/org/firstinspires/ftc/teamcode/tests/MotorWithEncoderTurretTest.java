@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -16,7 +17,7 @@ public class MotorWithEncoderTurretTest extends OpMode {
 
 	@Override
 	public void init( ) {
-		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, -255, 75 );
+		turret = new Turret( hardwareMap, "turr", true, AngleUnit.DEGREES, 384.5, 170.0 / 30.0, -255, 75, new PIDController( 0,0,0 ) );
 	}
 
 	@Override

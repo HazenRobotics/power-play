@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -7,11 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
-import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
 @TeleOp(name = "🎮 SM Mini TeleOP", group = "ANewTeleOp")
 //@Disabled
@@ -27,7 +27,6 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	double linkagePos = 0;
 	ElapsedTime timer = new ElapsedTime( );
 	double loopTime = 0;
-	int linkageTogglePos = 0;
 	int junctionHeightIndex = 0;
 
 	public enum Speeds {
@@ -63,17 +62,31 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		DRIVER_CONTROLLED,
 		EXTEND_LINKAGE,
 		GRAB_CONE,
-		DELIVER_CONE,
+		RETRACT_LINKAGE,
+		EXTEND_LIFT,
+		ROTATE_TURRET,
+		EXTEND_LINKAGE_AGAIN,
 		DROP_CONE,
 		RESET
 	}
 
-	TeleOpStates state = TeleOpStates.DRIVER_CONTROLLED;
+	public enum PowerControl {
+		USING_PID,
+		POWER_BASED
+	}
+
+	TeleOpStates opModeState = TeleOpStates.DRIVER_CONTROLLED;
+	PowerControl liftState = PowerControl.POWER_BASED;
+	PowerControl turretState = PowerControl.POWER_BASED;
+
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
 		controller1 = new GamepadEvents( gamepad1 );
 		controller2 = new GamepadEvents( gamepad2 );
+
+		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
+
 
 		telemetry.addData( "Mode", "Initiating robot..." );
 		telemetry.update( );
@@ -95,57 +108,90 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		waitForStart( );
 
 		while( opModeIsActive( ) ) {
-			switch( state ) {
+			switch( opModeState ) {
 				case DRIVER_CONTROLLED:
 					subsystemControls( );
-//					if ( controller1.b.onPress() ) {
-//						timer.reset();
-//						lift.target = 0;
-//						turret.target = 0;
-//						state = TeleOpStates.RESET;
-//					}
+					if ( controller1.x.onPress() ) {
+						timer.reset();
+						robot.linkage.moveToExtensionDistance( 3 );
+						liftState = PowerControl.USING_PID;
+						turretState = PowerControl.USING_PID;
+						robot.leftLift.setTargetInches( -0.1 );
+						robot.rightLift.setTargetInches( -0.1 );
+						robot.turret.setTarget( 0 );
+						opModeState = TeleOpStates.RESET;
+					}
 					break;
 				case RESET:
-					// add the PID loops for the lift and turret to actually be efficient and not rely on threads
-//					if (Math.abs(lift.getPos - grabConeLevel) < 10 && Math.abs(robot.turret.getTurretHeading() - 2) < 4) {
-//					    robot.claw.open();
-//						robot.linkage.moveToExtensionDistance( 14 );
-//					    timer.reset();
-//						state = TeleOpStates.EXTEND_LINKAGE;
-//					}
+					if (robot.leftLift.getPositionInch() < 0.5 && (robot.turret.getTurretHeading() < 2 && robot.turret.getTurretHeading() > -2)) {
+					    robot.claw.open();
+						robot.linkage.moveToExtensionDistance( 14 );
+					    timer.reset();
+						opModeState = TeleOpStates.EXTEND_LINKAGE;
+					}
 					break;
 				case EXTEND_LINKAGE:
-					if( timer.nanoseconds( ) > 2 * 1000000000 && controller1.a.onPress( ) ) {
+					if( timer.nanoseconds( ) > 0.5 * 1000000000 && controller1.a.onPress( ) ) {
 						robot.claw.close( );
 						timer.reset( );
-						state = TeleOpStates.GRAB_CONE;
+						opModeState = TeleOpStates.GRAB_CONE;
 					}
 					break;
 				case GRAB_CONE:
+					if (timer.nanoseconds() > 0.35 * 1000000000) {
+						robot.linkage.moveToExtensionDistance( 2 );
+						timer.reset();
+						opModeState = TeleOpStates.GRAB_CONE;
+					}
+				case RETRACT_LINKAGE:
 					if( timer.nanoseconds( ) > 0.15 * 1000000000 ) {
-//						lift.target = lift.HIGH_POS.height;
-//					    turret.target = turret.CYCLE_POS;
+						robot.leftLift.setTargetInches( robot.liftHeights[4] + 3.5 );
+						robot.rightLift.setTargetInches( robot.liftHeights[4] + + 3.5 );
+
+						opModeState = TeleOpStates.EXTEND_LIFT;
 					}
 					break;
-				case DELIVER_CONE:
+				case EXTEND_LIFT:
+					if( robot.leftLift.getPositionInch() > robot.liftHeights[4]) {
+						robot.turret.setTargetHeading( -139 );
+						timer.reset();
+						opModeState = TeleOpStates.DROP_CONE;
+					}
 					break;
+				case EXTEND_LINKAGE_AGAIN:
+					if( timer.nanoseconds( ) > 0.2 * 1000000000 ) {
+						robot.linkage.moveToExtensionDistance( 11 );
+						opModeState = TeleOpStates.DROP_CONE;
+					}
 				case DROP_CONE:
+					if(controller1.a.onPress()) {
+						robot.claw.open();
+						opModeState = TeleOpStates.DRIVER_CONTROLLED;
+					}
 					break;
 				default:
-					state = TeleOpStates.DRIVER_CONTROLLED;
+					opModeState = TeleOpStates.DRIVER_CONTROLLED;
 			}
 
-			if( gamepad1.y && state != TeleOpStates.DRIVER_CONTROLLED ) {
-				state = TeleOpStates.DRIVER_CONTROLLED;
-//				lift.target = 0;
-//				turret.target = 0;
+			if( gamepad1.y && opModeState != TeleOpStates.DRIVER_CONTROLLED ) {
+				opModeState = TeleOpStates.DRIVER_CONTROLLED;
+				liftState = PowerControl.POWER_BASED;
+				turretState = PowerControl.POWER_BASED;
+				linkagePos = robot.linkage.getExtensionDistance();
 			}
 
-			if( state != TeleOpStates.DRIVER_CONTROLLED ) {
-				updatePID( );
+
+			if(liftState == PowerControl.USING_PID){
+				robot.leftLift.updatePID();
+				robot.rightLift.updatePID();
+			}
+			if( turretState == PowerControl.USING_PID ) {
+				robot.turret.updatePID(0.2);
 			}
 
+			displayTelemetry( );
 			driveRobot( );
+			updateControllers();
 		}
 	}
 
@@ -159,45 +205,38 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		);
 	}
 
-	public void updatePID( ) {
-		// update the PID loops for the lift and turret
-//		lift.setPower(liftPIDController.calc(liftHeight, liftTarget));
-//		turret.setPower(turretPIDController.calc(turretHeading, turretTarget));
-	}
-
 	public void subsystemControls( ) {
-		if( !movingLift ) {
+		if( liftState != PowerControl.USING_PID ) {
 			robot.liftPower( (gamepad1.right_trigger + gamepad2.right_trigger) - ((gamepad1.left_trigger + gamepad2.left_trigger)) /*+ power*/ );
 		} else if( gamepad1.right_trigger + gamepad1.left_trigger + gamepad2.right_trigger + gamepad2.left_trigger > 0.05 ) {
-			movingLift = false;
-			robot.leftLift.setTeleOpPowerMode( );
-			robot.rightLift.setTeleOpPowerMode( );
+			liftState = PowerControl.POWER_BASED;
 		}
 
-		if( controller2.x.onPress( ) )
+		if( controller2.x.onPress( ) ) {
 			robot.turret.resetTurret( );
+		}
 
-		if( !movingTurret ) {
+		if( turretState != PowerControl.USING_PID ) {
 			robot.turret.setTurretPower( controller2.right_stick_x * 0.5 );
 		} else if( gamepad2.right_stick_x > 0.1 ) {
-			movingTurret = false;
-			robot.turret.motor.setMode( DcMotor.RunMode.RUN_USING_ENCODER );
+			turretState = PowerControl.POWER_BASED;
 		}
 
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
+
+		if (controller2.dpad_left.onPress() || controller2.dpad_right.onPress()) {
+			dpadToTurretPos();
+		}
 
 		linkagePos += ((/*gamepad1.right_bumper ||*/ gamepad2.right_bumper ? 0.5 : 0) - (/*gamepad1.left_bumper ||*/ gamepad2.left_bumper ? 0.5 : 0));
 		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
 //		linkagePos += (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : 0));
 		linkagePos = Math.min( robot.linkage.extensionLength, Math.max( linkagePos, robot.linkage.retractionLength ) );
 		robot.linkage.moveToExtensionDistance( linkagePos );
+	}
 
-
-		dpadToLiftPos( );
-		dpadToTurretPos( );
-
-		displayTelemetry( );
+	public void updateControllers() {
 		controller1.update( );
 		controller2.update( );
 	}
@@ -224,18 +263,18 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //		telemetry.addData( "heading z", imu.getAngularVelocity( ).zRotationRate );
 //		telemetry.addLine( );
 
-//		telemetry.addData( "power shift", power );
-		telemetry.addData( "currentL", robot.leftLift.getCurrent( CurrentUnit.AMPS ) );
-		telemetry.addData( "currentR", robot.rightLift.getCurrent( CurrentUnit.AMPS ) );
-		telemetry.addData( "powerL", robot.leftLift.getPower( ) );
-		telemetry.addData( "powerR", robot.rightLift.getPower( ) );
-//		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
-		telemetry.addData( "pos (ticks) L", robot.leftLift.motor.getCurrentPosition( ) );
-		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
-		telemetry.addData( "pos (ticks) R", robot.rightLift.motor.getCurrentPosition( ) );
-		telemetry.addData( "pos (in) R", robot.rightLift.getPositionInch( ) );
-		telemetry.addData( "target pos (in) L", robot.leftLift.getTargetPosition( ) );
-		telemetry.addData( "target pos (in) R", robot.rightLift.getTargetPosition( ) );
+////		telemetry.addData( "power shift", power );
+//		telemetry.addData( "currentL", robot.leftLift.getCurrent( CurrentUnit.AMPS ) );
+//		telemetry.addData( "currentR", robot.rightLift.getCurrent( CurrentUnit.AMPS ) );
+//		telemetry.addData( "powerL", robot.leftLift.getPower( ) );
+//		telemetry.addData( "powerR", robot.rightLift.getPower( ) );
+////		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
+//		telemetry.addData( "pos (ticks) L", robot.leftLift.motor.getCurrentPosition( ) );
+//		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
+//		telemetry.addData( "pos (ticks) R", robot.rightLift.motor.getCurrentPosition( ) );
+//		telemetry.addData( "pos (in) R", robot.rightLift.getPositionInch( ) );
+//		telemetry.addData( "target pos (in) L", robot.leftLift.getTargetPosition( ) );
+//		telemetry.addData( "target pos (in) R", robot.rightLift.getTargetPosition( ) );
 
 //		telemetry.addLine( );
 
@@ -243,13 +282,16 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //		telemetry.addData( "isOverJunction", robot.isOverJunction( ) );
 //		telemetry.addData( "pos", robot.drive.getPoseEstimate( ) );
 //	telemetry.addData( "powerOveridden", powerOverridden );
-//		telemetry.addData( "turret heading", robot.turret.getTurretHeading( ) );
+		telemetry.addData( "turret heading", robot.turret.getTurretHeading( ) );
 //		telemetry.addData( "left limit", robot.turret.getLeftLimit( ) );
 //		telemetry.addData( "right limit", robot.turret.getRightLimit( ) );
 //		telemetry.addData( "too far left:", robot.turret.getTurretHeading( ) < robot.turret.getLeftLimit( ) );
 //		telemetry.addData( "too far right:", robot.turret.getTurretHeading( ) > robot.turret.getRightLimit( ) );
 
-		telemetry.addData( "linkagePosition", linkagePos );
+//		telemetry.addData( "linkagePosition", linkagePos );
+		telemetry.addData( "current state", opModeState );
+		telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
+		telemetry.addData( "turret target", robot.turret.getTargetPosition() );
 
 		double loop = System.nanoTime( );
 		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );
@@ -286,27 +328,13 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	}
 
 	public void dpadToTurretPos( ) {
-		if( controller2.dpad_up.onPress( ) && controller2.dpad_right.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 45 );
-		} else if( controller2.dpad_up.onPress( ) && controller2.dpad_left.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, -45 );
-		} else if( controller2.dpad_down.onPress( ) && controller2.dpad_left.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, -135 );
-		} else if( controller2.dpad_down.onPress( ) && controller2.dpad_right.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, -225 );
-		} else if( controller2.dpad_up.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, 0 );
-		} else if( controller2.dpad_left.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, -90 );
-		} else if( controller2.dpad_down.onPress( ) ) {
-			movingTurret = true;
-			robot.turret.setRotationPower( 0.5, -180 );
+		if (turretState != PowerControl.USING_PID) {
+			robot.turret.setTurretPower( 0 );
+			turretState = PowerControl.USING_PID;
+		}
+
+		if (controller2.dpad_left.onPress()) {
+
 		}
 	}
 }

@@ -120,16 +120,16 @@ public class Lift {
 		encoderState = state;
 	}
 
-	public void setLiftTarget( int target ) {
+	public void setTarget( int target ) {
 		this.target = target;
 	}
 
-	public void setLiftTargetInches( int inches ) {
-		target = convertDistTicks( inches, 2 * spoolRadius * Math.PI );
+	public void setTargetInches( double inches ) {
+		setTarget( convertDistTicks( inches, 2 * spoolRadius * Math.PI ) );
 	}
 
-	public void updateLiftPID() {
-		motor.setPower( controller.calculate( motor.getCurrentPosition() ) );
+	public void updatePID() {
+		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) );
 	}
 
 	// basic lift setters
@@ -422,7 +422,7 @@ public class Lift {
 	// getters for the lift position
 
 	public int getTargetPosition( ) {
-		return motor.getTargetPosition( );
+		return target;
 	}
 
 	public double getTargetPositionInch( ) {
