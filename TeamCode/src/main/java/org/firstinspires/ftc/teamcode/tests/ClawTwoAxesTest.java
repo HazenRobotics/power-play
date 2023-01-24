@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw.ClawState;
 import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw.HorizontalClawState;
 import org.firstinspires.ftc.teamcode.subsystems.TwoAxesClaw.VerticalClawState;
 
-@TeleOp(name = "TwoAxesClawTest", group = "tests")
+@TeleOp(name = "TwoAxesClawTest", group = "Test")
 @Disabled
 public class ClawTwoAxesTest extends OpMode {
 

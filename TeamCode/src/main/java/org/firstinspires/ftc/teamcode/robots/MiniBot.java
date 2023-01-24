@@ -11,13 +11,10 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
-import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveMini;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveUnparalleled;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -27,6 +24,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
 import org.firstinspires.ftc.teamcode.utils.RGBLights;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
+import org.firstinspires.ftc.teamcode.utils.localization.PPField.Junction;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline.SignalPosition;
 
@@ -35,13 +33,13 @@ public class MiniBot extends Robot {
 	public OpMode opMode;
 	public HardwareMap hardwareMap;
 
-//	public MecanumDrive mecanumDrive;
+	//	public MecanumDrive mecanumDrive;
 	public MecanumDriveUnparalleled drive;
 
 	public Lift leftLift;
 	public Lift rightLift;
 	public Linkage linkage;
-//	public ServoTurret turret;
+	//	public ServoTurret turret;
 	public Turret turret;
 	//	public Claw claw;
 //	public RotatingClaw claw;
@@ -55,6 +53,7 @@ public class MiniBot extends Robot {
 
 	public boolean rightSide;
 
+	public final float[] liftHeightToggles = { 0, Junction.GROUND.height( ), Junction.LOW.height( ), Junction.MEDIUM.height( ), Junction.HIGH.height( ) };
 
 //	Pose2d lastPose = drive.getPoseEstimate( );
 
@@ -136,8 +135,8 @@ public class MiniBot extends Robot {
 
 		drive = new MecanumDriveUnparalleled( hardwareMap );
 
-		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController(0.02, 0, 0.00012) );
-		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController(0.02, 0, 0.00012) );
+		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
+		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
 
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
@@ -336,17 +335,17 @@ public class MiniBot extends Robot {
 		return new Vector2d( x, y );
 	}
 
-	public void liftPower(double power) {
+	public void liftPower( double power ) {
 		leftLift.setPower( power );
 		rightLift.setPower( power );
 	}
 
-	public void liftToHeightPower( double power, double height) {
+	public void liftToHeightPower( double power, double height ) {
 		leftLift.setHeightPower( power, height );
 		rightLift.setHeightPower( power, height );
 	}
 
-	public void liftToHeightPowerNotAsync( double power, double height) {
+	public void liftToHeightPowerNotAsync( double power, double height ) {
 		leftLift.setHeightPower( power, height, false, true );
 		rightLift.setHeightPower( power, height, false, true );
 	}
@@ -451,8 +450,8 @@ public class MiniBot extends Robot {
 		Pose2d pose = drive.getPoseEstimate( );
 		double maxX = 14 + ROBOT_MAX_LENGTH;
 		double maxY = 58 + ROBOT_MAX_WIDTH;
-		return ( pose.getX( ) > -maxX && pose.getX( ) < maxX ) &&
-				( pose.getY( ) > maxY || pose.getY( ) < -maxY );
+		return (pose.getX( ) > -maxX && pose.getX( ) < maxX) &&
+				(pose.getY( ) > maxY || pose.getY( ) < -maxY);
 	}
 
 

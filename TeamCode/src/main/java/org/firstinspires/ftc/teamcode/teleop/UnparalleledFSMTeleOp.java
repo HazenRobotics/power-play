@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 
-@TeleOp(group = "TeleOp")
+@TeleOp(name = "🎮 SM Mini TeleOP", group = "ANewTeleOp")
 //@Disabled
 public class UnparalleledFSMTeleOp extends LinearOpMode {
 
@@ -26,8 +25,10 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	double maxCurrent = 5;
 	double robotTiltAngle = 0;
 	double linkagePos = 0;
-	ElapsedTime timer = new ElapsedTime(  );
+	ElapsedTime timer = new ElapsedTime( );
 	double loopTime = 0;
+	int linkageTogglePos = 0;
+	int junctionHeightIndex = 0;
 
 	public enum Speeds {
 
@@ -91,12 +92,12 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		controller1.update( );
 		controller2.update( );
 
-		waitForStart();
+		waitForStart( );
 
-		while(opModeIsActive()) {
-			switch(state) {
+		while( opModeIsActive( ) ) {
+			switch( state ) {
 				case DRIVER_CONTROLLED:
-					subsystemControls();
+					subsystemControls( );
 //					if ( controller1.b.onPress() ) {
 //						timer.reset();
 //						lift.target = 0;
@@ -114,14 +115,14 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //					}
 					break;
 				case EXTEND_LINKAGE:
-					if (timer.nanoseconds() > 2 * 1000000000 && controller1.a.onPress()) {
-						robot.claw.close();
-						timer.reset();
+					if( timer.nanoseconds( ) > 2 * 1000000000 && controller1.a.onPress( ) ) {
+						robot.claw.close( );
+						timer.reset( );
 						state = TeleOpStates.GRAB_CONE;
 					}
 					break;
 				case GRAB_CONE:
-					if (timer.nanoseconds() > 0.15 * 1000000000) {
+					if( timer.nanoseconds( ) > 0.15 * 1000000000 ) {
 //						lift.target = lift.HIGH_POS.height;
 //					    turret.target = turret.CYCLE_POS;
 					}
@@ -134,21 +135,21 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 					state = TeleOpStates.DRIVER_CONTROLLED;
 			}
 
-			if (gamepad1.y && state != TeleOpStates.DRIVER_CONTROLLED) {
+			if( gamepad1.y && state != TeleOpStates.DRIVER_CONTROLLED ) {
 				state = TeleOpStates.DRIVER_CONTROLLED;
 //				lift.target = 0;
 //				turret.target = 0;
 			}
 
-			if (state != TeleOpStates.DRIVER_CONTROLLED) {
+			if( state != TeleOpStates.DRIVER_CONTROLLED ) {
 				updatePID( );
 			}
 
-			driveRobot();
+			driveRobot( );
 		}
 	}
 
-	public void driveRobot() {
+	public void driveRobot( ) {
 		robot.drive.setWeightedDrivePower(
 				new Pose2d(
 						-gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
@@ -158,13 +159,13 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		);
 	}
 
-	public void updatePID() {
+	public void updatePID( ) {
 		// update the PID loops for the lift and turret
 //		lift.setPower(liftPIDController.calc(liftHeight, liftTarget));
 //		turret.setPower(turretPIDController.calc(turretHeading, turretTarget));
 	}
 
-	public void subsystemControls() {
+	public void subsystemControls( ) {
 		if( !movingLift ) {
 			robot.liftPower( (gamepad1.right_trigger + gamepad2.right_trigger) - ((gamepad1.left_trigger + gamepad2.left_trigger)) /*+ power*/ );
 		} else if( gamepad1.right_trigger + gamepad1.left_trigger + gamepad2.right_trigger + gamepad2.left_trigger > 0.05 ) {
@@ -186,9 +187,12 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
 
-		linkagePos += ((gamepad1.right_bumper || gamepad2.right_bumper ? 0.025 : 0) - (gamepad1.left_bumper || gamepad2.left_bumper ? 0.025 : 0));
-		linkagePos = Math.min( robot.linkage.extensionServoLimit, Math.max( linkagePos, 0 ) );
-		robot.linkage.setPosition( linkagePos );
+		linkagePos += ((/*gamepad1.right_bumper ||*/ gamepad2.right_bumper ? 0.5 : 0) - (/*gamepad1.left_bumper ||*/ gamepad2.left_bumper ? 0.5 : 0));
+		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
+//		linkagePos += (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : 0));
+		linkagePos = Math.min( robot.linkage.extensionLength, Math.max( linkagePos, robot.linkage.retractionLength ) );
+		robot.linkage.moveToExtensionDistance( linkagePos );
+
 
 		dpadToLiftPos( );
 		dpadToTurretPos( );
@@ -224,7 +228,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		telemetry.addData( "currentL", robot.leftLift.getCurrent( CurrentUnit.AMPS ) );
 		telemetry.addData( "currentR", robot.rightLift.getCurrent( CurrentUnit.AMPS ) );
 		telemetry.addData( "powerL", robot.leftLift.getPower( ) );
-		telemetry.addData( "powerR", robot.rightLift.getPower() );
+		telemetry.addData( "powerR", robot.rightLift.getPower( ) );
 //		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
 		telemetry.addData( "pos (ticks) L", robot.leftLift.motor.getCurrentPosition( ) );
 		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
@@ -247,10 +251,10 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 		telemetry.addData( "linkagePosition", linkagePos );
 
-		double loop = System.nanoTime();
-		telemetry.addData("hz ", 1000000000 / (loop - loopTime));
+		double loop = System.nanoTime( );
+		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );
 		loopTime = loop;
-		telemetry.update();
+		telemetry.update( );
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
 
@@ -258,26 +262,27 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	}
 
 	public void dpadToLiftPos( ) {
-		if( controller1.dpad_up.onPress( ) /*|| controller2.dpad_up.onPress( )*/ ) {
-			movingLift = true;
-			robot.junctionToLiftPos( PPField.Junction.HIGH );
-//			telemetry.addLine( "high: " + PPField.Junction.HIGH.height( ) );
-		}
-		if( controller1.dpad_left.onPress( ) /*|| controller2.dpad_left.onPress( )*/ ) {
-			movingLift = true;
-			robot.junctionToLiftPos( PPField.Junction.MEDIUM );
-//			telemetry.addLine( "medium: " + PPField.Junction.MEDIUM.height( ) );
-		}
-		if( controller1.dpad_down.onPress( ) /*|| controller2.dpad_down.onPress( )*/ ) {
-			movingLift = true;
-			robot.junctionToLiftPos( PPField.Junction.LOW );
-//			telemetry.addLine( "low: " + PPField.Junction.LOW.height( ) );
-		}
-		if( controller1.dpad_right.onPress( ) /*|| controller2.dpad_right.onPress( )*/ ) {
-			movingLift = true;
-			robot.junctionToLiftPos( PPField.Junction.GROUND );
-//			telemetry.addLine( "ground: " + PPField.Junction.GROUND.height( ) );
-		}
+//		junctionHeightIndex += gam
+//		if( controller1.dpad_up.onPress( ) /*|| controller2.dpad_up.onPress( )*/ ) {
+//			movingLift = true;
+//			robot.junctionToLiftPos( PPField.Junction.HIGH );
+////			telemetry.addLine( "high: " + PPField.Junction.HIGH.height( ) );
+//		}
+//		if( controller1.dpad_left.onPress( ) /*|| controller2.dpad_left.onPress( )*/ ) {
+//			movingLift = true;
+//			robot.junctionToLiftPos( PPField.Junction.MEDIUM );
+////			telemetry.addLine( "medium: " + PPField.Junction.MEDIUM.height( ) );
+//		}
+//		if( controller1.dpad_down.onPress( ) /*|| controller2.dpad_down.onPress( )*/ ) {
+//			movingLift = true;
+//			robot.junctionToLiftPos( PPField.Junction.LOW );
+////			telemetry.addLine( "low: " + PPField.Junction.LOW.height( ) );
+//		}
+//		if( controller1.dpad_right.onPress( ) /*|| controller2.dpad_right.onPress( )*/ ) {
+//			movingLift = true;
+//			robot.junctionToLiftPos( PPField.Junction.GROUND );
+////			telemetry.addLine( "ground: " + PPField.Junction.GROUND.height( ) );
+//		}
 	}
 
 	public void dpadToTurretPos( ) {

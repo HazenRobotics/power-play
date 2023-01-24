@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.drives.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
 @Config
-@TeleOp
+@TeleOp(group = "Test" )
 public class PIDF_Lift extends OpMode {
 
 	private PIDController leftController;
