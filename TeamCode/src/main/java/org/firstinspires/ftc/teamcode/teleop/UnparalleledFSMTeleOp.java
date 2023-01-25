@@ -29,6 +29,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	ElapsedTime timer = new ElapsedTime( );
 	double loopTime = 0;
 	int junctionHeightIndex = 0;
+	// TODO: this ^
 	double linkageDeliveryPosition = 11;
 	int turretDeliveryPosition = -139;
 
@@ -213,7 +214,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 	public void subsystemControls( ) {
 		if( liftState != PowerControl.USING_PID ) {
-			robot.liftPower( (gamepad1.right_trigger + gamepad2.right_trigger) - ((gamepad1.left_trigger + gamepad2.left_trigger)) /*+ power*/ );
+			robot.liftPower( (gamepad1.right_trigger + gamepad2.right_trigger) - ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.35) /*+ power*/ );
 		} else if( gamepad1.right_trigger + gamepad1.left_trigger + gamepad2.right_trigger + gamepad2.left_trigger > 0.05 ) {
 			liftState = PowerControl.POWER_BASED;
 		}

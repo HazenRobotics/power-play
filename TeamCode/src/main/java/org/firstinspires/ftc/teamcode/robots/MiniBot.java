@@ -210,7 +210,7 @@ public class MiniBot extends Robot {
 	public void updatePIDs() {
 		leftLift.updatePID();
 		rightLift.updatePID();
-		turret.updatePID( 0.1 );
+		turret.updatePID( 0.2 );
 	}
 
 	public void setLiftTarget( int target ) {
