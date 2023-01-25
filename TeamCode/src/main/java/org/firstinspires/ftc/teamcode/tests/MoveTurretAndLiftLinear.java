@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.tests;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robots.MiniBot;
@@ -36,7 +35,7 @@ public class MoveTurretAndLiftLinear extends LinearOpMode {
 				robot.turret.setRotate( 0.5, desiredTurretPos, false );
 				while ( (robot.leftLift.isBusy() || robot.turret.isBusy()) && opModeIsActive( ) ) {
 					telemetry.addData( "lift position", robot.leftLift.getMotorPosition() );
-					telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
+					telemetry.addData( "lift target", robot.leftLift.getTarget() );
 					telemetry.update();
 				}
 				telemetry.addLine("finished");

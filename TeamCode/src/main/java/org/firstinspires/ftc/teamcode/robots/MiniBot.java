@@ -17,6 +17,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.roadrunner.MecanumDriveUnparalleled;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
+import org.firstinspires.ftc.teamcode.subsystems.CameraAngler;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.SingleServoClaw;
@@ -50,6 +51,7 @@ public class MiniBot extends Robot {
 	public AprilTagsUtil signalUtil;
 	public BNO055IMU gyro;
 	public RGBLights lights;
+	public CameraAngler angler;
 
 	public boolean rightSide;
 
@@ -84,11 +86,12 @@ public class MiniBot extends Robot {
 	public static final float ROBOT_LENGTH = 13.5f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
 	//	public static final float ROBOT_WIDTH = 14.125f;
-	public static final float ROBOT_MAX_WIDTH = 13.375f;
+	public static final float ROBOT_MAX_WIDTH = 13.75f;
 
 	public static final float ROBOT_BACK_OFFSET = 6f;
 
 	public static final float CLAW_OFFSET = 12.0f;
+	public static final float CLAW_CAMERA_OFFSET = 6.0f;
 
 	public static boolean redSide = true;
 
@@ -138,6 +141,9 @@ public class MiniBot extends Robot {
 		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
 		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
 
+		leftLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
+		rightLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
+
 //		claw = new Claw( hardwareMap, "lClaw", "rClaw", new double[]{ 0.65, 0.75 }, new double[]{ 0.35, 0.25 } );
 
 //		claw = new RotatingClaw( hardwareMap, "claw", "clawR", new double[]{ 0.35, 0.65 } );
@@ -163,6 +169,8 @@ public class MiniBot extends Robot {
 
 		lights = new RGBLights( hardwareMap, "blinkin" );
 
+		angler = new CameraAngler(hardwareMap, "angler", 0, 0.3, 5, 85 );
+
 		for( LynxModule module : hardwareMap.getAll( LynxModule.class ) )
 			module.setBulkCachingMode( LynxModule.BulkCachingMode.AUTO );
 	}
@@ -178,6 +186,7 @@ public class MiniBot extends Robot {
 	public void initSubsystems( ) {
 		signalUtil.init( );
 //		claw.setState( SingleServoClaw.ClawState.CLOSED );
+		claw.close();
 		waitSeconds( 0.25 );
 //		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
@@ -197,6 +206,22 @@ public class MiniBot extends Robot {
 //				robotXyCoords.getX() + Math.cos( turret.getTurretHeading() ),
 //				lift.getMotorPositionInch());
 //	}
+
+	public void updatePIDs() {
+		leftLift.updatePID();
+		rightLift.updatePID();
+		turret.updatePID( 0.1 );
+	}
+
+	public void setLiftTarget( int target ) {
+		leftLift.setTarget( target );
+		rightLift.setTarget( target );
+	}
+
+	public void setLiftTargetInches( double inches ) {
+		leftLift.setTargetInches( inches );
+		rightLift.setTargetInches( inches );
+	}
 
 	public boolean isOverJunction( ) {
 
@@ -436,6 +461,9 @@ public class MiniBot extends Robot {
 
 	public TrajectorySequenceBuilder getTrajectorySequenceBuilder( ) {
 		return drive.trajectorySequenceBuilder( drive.getPoseEstimate( ) );
+	}
+	public TrajectorySequenceBuilder getTrajectorySequenceBuilder( Pose2d pose ) {
+		return drive.trajectorySequenceBuilder( pose );
 	}
 
 	public TrajectoryBuilder getTrajectoryBuilder( ) {

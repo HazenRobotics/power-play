@@ -271,7 +271,7 @@ public class Turret {
 		return motor.getCurrent( currentUnit );
 	}
 
-	public int getTargetPosition() {
+	public int getTarget() {
 		return target;
 	}
 

@@ -14,13 +14,13 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 //@Disabled
 public class DoubleLiftTest extends OpMode {
 
-	DcMotor left;
-	DcMotor right;
+	DcMotorEx left;
+	DcMotorEx right;
 
 	@Override
 	public void init( ) {
-		left = hardwareMap.dcMotor.get( "left" );
-		right = hardwareMap.dcMotor.get( "right" );
+		left = hardwareMap.get( DcMotorEx.class, "leftLift" );
+		right = hardwareMap.get( DcMotorEx.class, "leftLift" );
 		right.setDirection( DcMotorSimple.Direction.REVERSE );
 	}
 

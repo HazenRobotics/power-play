@@ -65,7 +65,7 @@ public class TwoWheelTrackingLocalizerUnparalleled extends TwoTrackingWheelLocal
 
 		// TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
 		parallelEncoder.setDirection( Encoder.Direction.FORWARD );
-		perpendicularEncoder.setDirection( Encoder.Direction.FORWARD );
+		perpendicularEncoder.setDirection( Encoder.Direction.REVERSE );
 	}
 
 	public static double encoderTicksToInches( double ticks ) {

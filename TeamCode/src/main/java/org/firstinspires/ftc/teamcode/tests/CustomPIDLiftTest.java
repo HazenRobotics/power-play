@@ -43,7 +43,7 @@ public class CustomPIDLiftTest extends LinearOpMode {
 			robot.leftLift.updatePID();
 			robot.rightLift.updatePID();
 
-			telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
+			telemetry.addData( "lift target", robot.leftLift.getTarget() );
 			telemetry.addData( "lift power", robot.leftLift.getPower() );
 			telemetry.update();
 		}

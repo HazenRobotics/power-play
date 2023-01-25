@@ -32,10 +32,8 @@ public class LinkageCycle implements MeepMeepPath {
 
 
 		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
-				.splineTo( new Vector2d( PPField.TILE_SIZE * 1.2 + MiniBot.ROBOT_MAX_LENGTH / 2.0, -PPField.TILE_SIZE * 2  ), Math.toRadians( 90 ) )
-				.lineToLinearHeading( new Pose2d( (PPField.TILE_SIZE * 3.0/2.0) + MiniBot.ROBOT_MAX_LENGTH / 2.0, -PPField.TILE_SIZE / 2 , Math.toRadians( 0 )) )
-//				.splineTo( new Vector2d( PPField.TILE_SIZE + MiniBot.ROBOT_MAX_LENGTH / 2.0, -PPField.TILE_SIZE / 2 ), 90 )
-
+				.splineTo( new Vector2d( 38, -40 ), Math.toRadians( 0 ) )
+				.splineTo( new Vector2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .5  ), Math.toRadians( 0 ) )
 				.build();
 
 	}

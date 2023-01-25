@@ -38,11 +38,11 @@ public class Lift {
 	MovementState movementState = MovementState.REST;
 
 	public enum EncoderState {
-		WITH_ENCODER, WITHOUT_ENCODER;
+		WITH_ENCODER, WITHOUT_ENCODER
 	}
 
 	public enum MovementState {
-		REST, HOLDING, MOVING;
+		REST, HOLDING, MOVING
 	}
 
 	/**
@@ -421,7 +421,7 @@ public class Lift {
 
 	// getters for the lift position
 
-	public int getTargetPosition( ) {
+	public int getTarget( ) {
 		return target;
 	}
 

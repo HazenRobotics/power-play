@@ -33,7 +33,7 @@ public class MoveTurretAndLift extends OpMode {
 			robot.turret.setRotate( 0.5, desiredTurretPos, false );
 			while ( (robot.leftLift.isBusy() || robot.turret.isBusy()) && robot.opModeIsActive( ) ) {
 				telemetry.addData( "lift position", robot.leftLift.getMotorPosition() );
-				telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
+				telemetry.addData( "lift target", robot.leftLift.getTarget() );
 				telemetry.update();
 			}
 			telemetry.addLine("finished");

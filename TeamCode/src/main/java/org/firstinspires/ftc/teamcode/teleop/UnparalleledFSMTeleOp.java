@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,6 +29,8 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	ElapsedTime timer = new ElapsedTime( );
 	double loopTime = 0;
 	int junctionHeightIndex = 0;
+	double linkageDeliveryPosition = 11;
+	int turretDeliveryPosition = -139;
 
 	public enum Speeds {
 
@@ -63,8 +66,6 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		EXTEND_LINKAGE,
 		GRAB_CONE,
 		RETRACT_LINKAGE,
-		EXTEND_LIFT,
-		ROTATE_TURRET,
 		EXTEND_LINKAGE_AGAIN,
 		DROP_CONE,
 		RESET
@@ -92,8 +93,6 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		telemetry.update( );
 
 		robot = new MiniBot( this );
-		robot.leftLift.setEncoder( Lift.EncoderState.WITH_ENCODER );
-		robot.rightLift.setEncoder( Lift.EncoderState.WITH_ENCODER );
 		robot.claw.init( );
 
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
@@ -116,14 +115,14 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 						robot.linkage.moveToExtensionDistance( 3 );
 						liftState = PowerControl.USING_PID;
 						turretState = PowerControl.USING_PID;
-						robot.leftLift.setTargetInches( -0.1 );
-						robot.rightLift.setTargetInches( -0.1 );
+						robot.leftLift.setTargetInches( 0.1 );
+						robot.rightLift.setTargetInches( 0.1 );
 						robot.turret.setTarget( 0 );
 						opModeState = TeleOpStates.RESET;
 					}
 					break;
 				case RESET:
-					if (robot.leftLift.getPositionInch() < 0.5 && (robot.turret.getTurretHeading() < 2 && robot.turret.getTurretHeading() > -2)) {
+					if (robot.leftLift.getPositionInch() < 1.5 && (robot.turret.getTurretHeading() < 3 && robot.turret.getTurretHeading() > -2)) {
 					    robot.claw.open();
 						robot.linkage.moveToExtensionDistance( 14 );
 					    timer.reset();
@@ -131,7 +130,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 					}
 					break;
 				case EXTEND_LINKAGE:
-					if( timer.nanoseconds( ) > 0.5 * 1000000000 && controller1.a.onPress( ) ) {
+					if( controller1.a.onPress( ) ) {
 						robot.claw.close( );
 						timer.reset( );
 						opModeState = TeleOpStates.GRAB_CONE;
@@ -141,31 +140,29 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 					if (timer.nanoseconds() > 0.35 * 1000000000) {
 						robot.linkage.moveToExtensionDistance( 2 );
 						timer.reset();
-						opModeState = TeleOpStates.GRAB_CONE;
+						opModeState = TeleOpStates.RETRACT_LINKAGE;
 					}
+					break;
 				case RETRACT_LINKAGE:
 					if( timer.nanoseconds( ) > 0.15 * 1000000000 ) {
 						robot.leftLift.setTargetInches( robot.liftHeights[4] + 3.5 );
-						robot.rightLift.setTargetInches( robot.liftHeights[4] + + 3.5 );
-
-						opModeState = TeleOpStates.EXTEND_LIFT;
-					}
-					break;
-				case EXTEND_LIFT:
-					if( robot.leftLift.getPositionInch() > robot.liftHeights[4]) {
-						robot.turret.setTargetHeading( -139 );
+						robot.rightLift.setTargetInches( robot.liftHeights[4] + 3.5 );
+						robot.turret.setTargetHeading( turretDeliveryPosition );
 						timer.reset();
-						opModeState = TeleOpStates.DROP_CONE;
+
+						opModeState = TeleOpStates.EXTEND_LINKAGE_AGAIN;
 					}
 					break;
 				case EXTEND_LINKAGE_AGAIN:
 					if( timer.nanoseconds( ) > 0.2 * 1000000000 ) {
-						robot.linkage.moveToExtensionDistance( 11 );
+						linkagePos = linkageDeliveryPosition;
 						opModeState = TeleOpStates.DROP_CONE;
 					}
 				case DROP_CONE:
+					linkageDeliveryPosition = linkagePos;
 					if(controller1.a.onPress()) {
 						robot.claw.open();
+						linkagePos = robot.linkage.getExtensionDistance();
 						opModeState = TeleOpStates.DRIVER_CONTROLLED;
 					}
 					break;
@@ -189,6 +186,8 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 				robot.turret.updatePID(0.2);
 			}
 
+
+			robot.angler.pointCameraToPosition( robot.linkage.getExtensionDistance() + MiniBot.CLAW_CAMERA_OFFSET, robot.leftLift.getMotorPositionInch() + 0.001  );
 			displayTelemetry( );
 			driveRobot( );
 			updateControllers();
@@ -203,6 +202,13 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 						-gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 )
 				)
 		);
+	}
+
+	public void updateLinkagePos( ) {
+		linkagePos	 += ((/*gamepad1.right_bumper ||*/ gamepad2.right_bumper ? 0.5 : 0) - (/*gamepad1.left_bumper ||*/ gamepad2.left_bumper ? 0.5 : 0));
+		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
+		linkagePos = Math.min( robot.linkage.extensionLength, Math.max( linkagePos, robot.linkage.retractionLength ) );
+		robot.linkage.moveToExtensionDistance( linkagePos );
 	}
 
 	public void subsystemControls( ) {
@@ -229,11 +235,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 			dpadToTurretPos();
 		}
 
-		linkagePos += ((/*gamepad1.right_bumper ||*/ gamepad2.right_bumper ? 0.5 : 0) - (/*gamepad1.left_bumper ||*/ gamepad2.left_bumper ? 0.5 : 0));
-		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
-//		linkagePos += (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : 0));
-		linkagePos = Math.min( robot.linkage.extensionLength, Math.max( linkagePos, robot.linkage.retractionLength ) );
-		robot.linkage.moveToExtensionDistance( linkagePos );
+		updateLinkagePos( );
 	}
 
 	public void updateControllers() {
@@ -288,10 +290,16 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //		telemetry.addData( "too far left:", robot.turret.getTurretHeading( ) < robot.turret.getLeftLimit( ) );
 //		telemetry.addData( "too far right:", robot.turret.getTurretHeading( ) > robot.turret.getRightLimit( ) );
 
-//		telemetry.addData( "linkagePosition", linkagePos );
-		telemetry.addData( "current state", opModeState );
-		telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
-		telemetry.addData( "turret target", robot.turret.getTargetPosition() );
+////		telemetry.addData( "linkagePosition", linkagePos );
+//		telemetry.addData( "current state", opModeState );
+//		telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
+//		telemetry.addData( "turret target", robot.turret.getTargetPosition() );
+
+		telemetry.addData( "linkage distance from camera", robot.linkage.getExtensionDistance() + MiniBot.CLAW_CAMERA_OFFSET );
+		telemetry.addData( "lift distance from servo", robot.leftLift.getMotorPositionInch() );
+		telemetry.addData( "intended angle" ,Math.toDegrees( Math.atan( robot.linkage.getExtensionDistance() + MiniBot.CLAW_CAMERA_OFFSET / (robot.leftLift.getMotorPositionInch() + 0.001)  ) ));
+		telemetry.addData( "actual angle", robot.angler.servoToAngle( robot.angler.servo.getPosition() ) );
+		telemetry.addData( "servo pos", robot.angler.servo.getPosition() );
 
 		double loop = System.nanoTime( );
 		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );

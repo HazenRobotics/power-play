@@ -218,8 +218,8 @@ public class MiniTeleOp extends OpMode {
 		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
 		telemetry.addData( "pos (ticks) R", robot.leftLift.getPosition( ) );
 		telemetry.addData( "pos (in) R", robot.rightLift.getPositionInch( ) );
-		telemetry.addData( "target pos (in) L", robot.leftLift.getTargetPosition( ) );
-		telemetry.addData( "target pos (in) R", robot.rightLift.getTargetPosition( ) );
+		telemetry.addData( "target pos (in) L", robot.leftLift.getTarget( ) );
+		telemetry.addData( "target pos (in) R", robot.rightLift.getTarget( ) );
 
 //		telemetry.addLine( );
 
