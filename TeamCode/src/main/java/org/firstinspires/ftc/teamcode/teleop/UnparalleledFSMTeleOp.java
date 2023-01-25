@@ -36,7 +36,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 		DRIVE( 0.6, 0.8 ),
 		STRAFE( 1.0, 1.0 ),
-		ROTATE( .4, 0.9 );
+		ROTATE( 0.55, 0.9 );
 
 		Speeds( double min, double max ) {
 			this.min = min;

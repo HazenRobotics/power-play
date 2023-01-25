@@ -114,9 +114,8 @@ public class MiniBot {
 		}
 	}
 
-
 	/**
-	 * @param angle the heading to face the Junction (degrees)
+	 * @param angle            the heading to face the Junction (degrees)
 	 * @return the position/heading (Pose2D) of where to go
 	 */
 	public static Pose2d getJunctionOffsetPos( double angle, int junctionX, int junctionY ) {
@@ -160,5 +159,7 @@ public class MiniBot {
 	public static int[] getQuadrantSign( boolean red, boolean right ) {
 		return new int[]{ (red ? 1 : -1) * ( right ? 1 : -1), (red ? -1 : 1) };
 	}
+
+
 
 }

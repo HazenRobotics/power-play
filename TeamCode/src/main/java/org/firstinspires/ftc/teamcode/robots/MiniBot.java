@@ -29,6 +29,8 @@ import org.firstinspires.ftc.teamcode.utils.localization.PPField.Junction;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline.SignalPosition;
 
+import java.util.Scanner;
+
 public class MiniBot extends Robot {
 
 	public OpMode opMode;
@@ -60,7 +62,7 @@ public class MiniBot extends Robot {
 //	Pose2d lastPose = drive.getPoseEstimate( );
 
 
-	/*public enum89. RobotDimensions {
+	/*public enum RobotDimensions {
 		FL( 7f, 6.625f ),
 		BL( 7f, 6.625f ),
 		FR( 6f, 7.5f ),
@@ -83,13 +85,15 @@ public class MiniBot extends Robot {
 		}
 	}*/
 
-	public static final float ROBOT_LENGTH = 13.5f;
+	public static final float ROBOT_LENGTH = 14.75f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
 	//	public static final float ROBOT_WIDTH = 14.125f;
 	public static final float ROBOT_MAX_WIDTH = 13.75f;
 
 	public static final float ROBOT_BACK_OFFSET = 6f;
 
+	public static final float CLAW_OFFSET_X = 3.25f; // 3 1/4
+	public static final float CLAW_OFFSET_Y = 1.375f; // 1 3/8
 	public static final float CLAW_OFFSET = 12.0f;
 	public static final float CLAW_CAMERA_OFFSET = 6.0f;
 
@@ -154,7 +158,7 @@ public class MiniBot extends Robot {
 
 		claw = new SingleServoClaw( hardwareMap, "claw", 1, 0.65 );
 
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45, new PIDController( 0.005,0, 0.0002 ) );
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45, new PIDController( 0.005, 0, 0.0002 ) );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 
@@ -169,7 +173,7 @@ public class MiniBot extends Robot {
 
 		lights = new RGBLights( hardwareMap, "blinkin" );
 
-		angler = new CameraAngler(hardwareMap, "angler", 0, 0.3, 5, 85 );
+		angler = new CameraAngler( hardwareMap, "angler", 0, 0.3, 5, 85 );
 
 		for( LynxModule module : hardwareMap.getAll( LynxModule.class ) )
 			module.setBulkCachingMode( LynxModule.BulkCachingMode.AUTO );
@@ -186,7 +190,7 @@ public class MiniBot extends Robot {
 	public void initSubsystems( ) {
 		signalUtil.init( );
 //		claw.setState( SingleServoClaw.ClawState.CLOSED );
-		claw.close();
+		claw.close( );
 		waitSeconds( 0.25 );
 //		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
@@ -207,9 +211,9 @@ public class MiniBot extends Robot {
 //				lift.getMotorPositionInch());
 //	}
 
-	public void updatePIDs() {
-		leftLift.updatePID();
-		rightLift.updatePID();
+	public void updatePIDs( ) {
+		leftLift.updatePID( );
+		rightLift.updatePID( );
 		turret.updatePID( 0.1 );
 	}
 
@@ -462,6 +466,7 @@ public class MiniBot extends Robot {
 	public TrajectorySequenceBuilder getTrajectorySequenceBuilder( ) {
 		return drive.trajectorySequenceBuilder( drive.getPoseEstimate( ) );
 	}
+
 	public TrajectorySequenceBuilder getTrajectorySequenceBuilder( Pose2d pose ) {
 		return drive.trajectorySequenceBuilder( pose );
 	}
@@ -488,6 +493,38 @@ public class MiniBot extends Robot {
 	 */
 	public static boolean getRedSide( ) {
 		return redSide;
+	}
+
+//	public double getJunctionTurretHeading( int junctionX, int junctionY ) {
+//		return getJunctionTurretHeading( drive.getPoseEstimate( ), junctionX, junctionY );
+//	}
+
+	public static void main( String args[] ) {
+		Scanner input = new Scanner( System.in );
+		int[] junctionPos = { 1, 0 };
+		String[] inputs = { "", "", "" };
+		System.out.print( "Enter robotPos: " );
+		inputs = input.nextLine( ).split( " " );
+		while( inputs.length > 0 ) {
+
+			Pose2d pos = new Pose2d( Double.parseDouble( inputs[0] ), Double.parseDouble( inputs[1] ), Double.parseDouble( inputs[2] ) );
+			double heading = getJunctionTurretHeading( pos, junctionPos[0], junctionPos[1] );
+
+			System.out.println( "Turret Heading: " + heading );
+			System.out.print( "Enter robotPos: " );
+			inputs = input.nextLine( ).split( " " );
+
+		}
+	}
+
+	public static double getJunctionTurretHeading( Pose2d robotPos, int junctionX, int junctionY ) {
+		Vector2d junctionPos = PPField.getJunctionPose( junctionX, junctionY, false );
+
+		double robotAngleOffset = Math.atan2( robotPos.getY( ) - junctionPos.getY( ), robotPos.getX( ) - junctionPos.getX( ) );
+		// get robot offset from pole
+		// use that to get robot's angle
+
+		return Math.toDegrees( (robotPos.getHeading( ) - robotAngleOffset) % 2 * Math.PI );
 	}
 
 }

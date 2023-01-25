@@ -10,11 +10,11 @@ import java.util.ArrayList;
 public class MeepMeepTesting {
 
 	public static void main( String[] args ) {
-		MeepMeep meepMeep = new MeepMeep( 600 );
+		MeepMeep meepMeep = new MeepMeep( 900 );
 
 		RoadRunnerBotEntity myBot = new DefaultBotBuilder( meepMeep )
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-				.setConstraints( 30, 30, Math.toRadians( 60 ), Math.toRadians( 60 ), 13 )
+				.setConstraints( 30, 30, Math.toRadians( 60 ), Math.toRadians( 60 ), 8.6 )
 				.followTrajectorySequence( drive -> {
 							try {
 								return ((MeepMeepPath) Class.forName( args[0] ).newInstance( )).getTrajectorySequence( drive );
