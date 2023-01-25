@@ -241,27 +241,6 @@ public class MiniBot extends Robot {
 		return Math.abs( x % dist ) < play && Math.abs( y % dist ) < play;
 	}
 
-	public void setClawPos( Vector3D clawPos, double... powers ) {
-
-		Vector2d xyPos = new Vector2d( clawPos.getX( ), clawPos.getY( ) );
-
-		setClawPos( xyPos, xyPos.angle( ), AngleUnit.RADIANS, powers );
-	}
-
-	public void setClawPos( Vector2d clawPos, double rotation, AngleUnit angleUnit, double... powers ) {
-		if( powers.length == 0 )
-			return;
-		if( powers.length == 1 )
-			powers = new double[]{ powers[0], powers[0], powers[0] };
-		if( powers.length == 2 )
-			powers = new double[]{ powers[0], powers[0], powers[1] };
-		if( powers.length == 3 )
-			powers = new double[]{ powers[0], powers[1], powers[2] };
-
-//		lift.setHeightPower( powers[0], clawPos.getX( ) );
-//		horizontalLift.setHeightPower( powers[1], clawPos.getY( ) );
-//		turret.setRotationPower( powers[2], rotation, angleUnit );
-	}
 
 	/**
 	 * @param right true if on the right side from the perspective of the driver
@@ -322,8 +301,8 @@ public class MiniBot extends Robot {
 	 * robot.signalUtil.init( );
 	 *
 	 * @param red   true if on the red side
-	 * @param right
-	 * @return
+	 * @param right true if on the right side from team/driver pov
+	 * @return the Vector2d position for where to park
 	 */
 	public Vector2d parkPosInit( boolean red, boolean right ) {
 
@@ -495,36 +474,29 @@ public class MiniBot extends Robot {
 		return redSide;
 	}
 
-//	public double getJunctionTurretHeading( int junctionX, int junctionY ) {
-//		return getJunctionTurretHeading( drive.getPoseEstimate( ), junctionX, junctionY );
-//	}
-
-	public static void main( String args[] ) {
-		Scanner input = new Scanner( System.in );
-		int[] junctionPos = { 1, 0 };
-		String[] inputs = { "", "", "" };
-		System.out.print( "Enter robotPos: " );
-		inputs = input.nextLine( ).split( " " );
-		while( inputs.length > 0 ) {
-
-			Pose2d pos = new Pose2d( Double.parseDouble( inputs[0] ), Double.parseDouble( inputs[1] ), Double.parseDouble( inputs[2] ) );
-			double heading = getJunctionTurretHeading( pos, junctionPos[0], junctionPos[1] );
-
-			System.out.println( "Turret Heading: " + heading );
-			System.out.print( "Enter robotPos: " );
-			inputs = input.nextLine( ).split( " " );
-
-		}
+	public double getJunctionTurretHeading( int junctionX, int junctionY ) {
+		return getJunctionTurretHeading( drive.getPoseEstimate( ), junctionX, junctionY );
 	}
+
+	/**
+	 *
+	 * @param angle angle in degrees
+	 */
+	public static double normalizePM180( double angle ) {
+		angle = ( angle % 360 + 360 ) % 360; // [0, 360]
+		return angle < 180 ? angle % 180 : angle - 360;
+	}
+
+	public static final double TWO_PI = 2 * Math.PI;
 
 	public static double getJunctionTurretHeading( Pose2d robotPos, int junctionX, int junctionY ) {
 		Vector2d junctionPos = PPField.getJunctionPose( junctionX, junctionY, false );
 
-		double robotAngleOffset = Math.atan2( robotPos.getY( ) - junctionPos.getY( ), robotPos.getX( ) - junctionPos.getX( ) );
-		// get robot offset from pole
-		// use that to get robot's angle
+		double robotAngleOffset = Math.atan2( robotPos.getY( ) - junctionPos.getY( ),
+				robotPos.getX( ) - junctionPos.getX( ) ) + Math.PI;
+		double angle = -( ( TWO_PI + robotAngleOffset - robotPos.getHeading( ) ) % TWO_PI );
 
-		return Math.toDegrees( (robotPos.getHeading( ) - robotAngleOffset) % 2 * Math.PI );
+		return normalizePM180( Math.toDegrees( angle ) );
 	}
 
 }
