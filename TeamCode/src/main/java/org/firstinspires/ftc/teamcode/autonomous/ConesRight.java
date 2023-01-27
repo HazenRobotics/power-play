@@ -195,7 +195,7 @@ public class ConesRight extends LinearOpMode {
 			telemetry.update( );
 		}
 
-		Vector2d parkPos = robot.parkPosInit( right );
+//		Vector2d parkPos = robot.parkPosInit( right );
 
 		waitForStart( );
 
@@ -214,11 +214,11 @@ public class ConesRight extends LinearOpMode {
 
 		robot.drive.followTrajectory( toParkTrajectory );
 
-		Trajectory parkTrajectory = robot.drive.trajectoryBuilder( robot.drive.getPoseEstimate( ) )
-				.lineTo( parkPos )
-				.build( );
-
-		robot.drive.followTrajectory( parkTrajectory );
+//		Trajectory parkTrajectory = robot.drive.trajectoryBuilder( robot.drive.getPoseEstimate( ) )
+//				.lineTo( parkPos )
+//				.build( );
+//
+//		robot.drive.followTrajectory( parkTrajectory );
 
 		MiniBot.endAutoPos = robot.drive.getPoseEstimate( );
 

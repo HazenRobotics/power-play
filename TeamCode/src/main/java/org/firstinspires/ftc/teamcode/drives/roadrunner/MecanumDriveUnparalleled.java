@@ -119,10 +119,10 @@ public class MecanumDriveUnparalleled extends MecanumDrive {
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-        frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft" );
-        backLeft = hardwareMap.get( DcMotorEx.class, "backLeft/para" );
-        frontRight = hardwareMap.get( DcMotorEx.class, "frontRight/perp" );
-        backRight = hardwareMap.get( DcMotorEx.class, "backRight" );
+        frontLeft = hardwareMap.get( DcMotorEx.class, "frontLeft/para" );
+        backLeft = hardwareMap.get( DcMotorEx.class, "backLeft" );
+        frontRight = hardwareMap.get( DcMotorEx.class, "frontRight" );
+        backRight = hardwareMap.get( DcMotorEx.class, "backRight/perp" );
 
         motors = Arrays.asList( frontLeft, backLeft, backRight, frontRight );
 
@@ -143,10 +143,10 @@ public class MecanumDriveUnparalleled extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        frontLeft.setDirection( DcMotorSimple.Direction.REVERSE );
+        frontLeft.setDirection( DcMotorSimple.Direction.FORWARD );
         backLeft.setDirection( DcMotorSimple.Direction.REVERSE );
-        frontRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
-        backRight.setDirection( DcMotorSimple.Direction.FORWARD ); // for strafing
+        frontRight.setDirection( DcMotorSimple.Direction.FORWARD ); // for strafing
+        backRight.setDirection( DcMotorSimple.Direction.REVERSE ); // for strafing
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));

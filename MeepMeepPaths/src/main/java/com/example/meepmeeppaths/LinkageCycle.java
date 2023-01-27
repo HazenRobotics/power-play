@@ -1,5 +1,8 @@
 package com.example.meepmeeppaths;
 
+import static com.example.meepmeeppaths.teamcodeRequirements.PPField.THREE_HALVES_TILE;
+import static com.example.meepmeeppaths.teamcodeRequirements.PPField.TILE_SIZE;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.example.meepmeeppaths.teamcodeRequirements.MiniBot;
@@ -29,12 +32,21 @@ public class LinkageCycle implements MeepMeepPath {
 
 		System.out.println( MiniBot.getJunctionOffsetPos( MiniBot.getAngleOnSide( red, right ), 12, quadSign[1] == -1 ? 90 : 270 , quadSign[0], 0 ));
 
-
-
 		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
-				.splineTo( new Vector2d( 38, -40 ), Math.toRadians( 0 ) )
-				.splineTo( new Vector2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .5  ), Math.toRadians( 0 ) )
+				.lineToLinearHeading( new Pose2d (36, -48, Math.toRadians( 0 ) ))
+				.lineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .65 , Math.toRadians( 90 ) ))
+				.waitSeconds( .5 )
+				.setReversed( true )
+//				.splineToLinearHeading(new Pose2d(  PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 )), Math.toRadians( 0 ))
+				.lineToLinearHeading(new Pose2d(  PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 )) )
+				.setReversed( false )
+				.lineToLinearHeading( new Pose2d( MiniBot.justParkInit( red, right ).getX(), MiniBot.justParkInit( red, right ).getY(), Math.toRadians( 270 ) ))
 				.build();
+
+//		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
+//				.splineTo( new Vector2d( 34, -54 ), Math.toRadians( 0 ) )
+//				.splineToLinearHeading( new Pose2d(PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) ), Math.toRadians( 0 ) )
+//				.build();
 
 	}
 }

@@ -128,7 +128,7 @@ public class Lift {
 		setTarget( convertDistTicks( inches, 2 * spoolRadius * Math.PI ) );
 	}
 
-	public void updatePID() {
+	public void updatePID( double multiplier ) {
 		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) );
 	}
 
@@ -242,7 +242,7 @@ public class Lift {
 	public void setHeightPower( double power, double height ) {
 		if( height - posOffset < 0 )
 			height = posOffset;
-		double distanceToMove = calcLiftDistanceFromHeight( height ) - getPositionInch( );
+		double distanceToMove = calcLiftDistanceFromHeight( height ) - getMotorPositionInch( );
 
 		moveDistancePower( power, distanceToMove, true, false );
 	}
@@ -255,7 +255,7 @@ public class Lift {
 	public void setHeightPower( double power, double height, boolean async, boolean stopMotor ) {
 		if( height - posOffset < 0 )
 			height = posOffset;
-		double distanceToMove = calcLiftDistanceFromHeight( height ) - getPositionInch( );
+		double distanceToMove = calcLiftDistanceFromHeight( height ) - getMotorPositionInch( );
 
 		moveDistancePower( power, distanceToMove, async, stopMotor );
 	}
@@ -279,7 +279,7 @@ public class Lift {
 	 * if the motor is below LIFT_SWITCH_LIMIT it will disable it to conserve the motor
 	 */
 	public void disableMotorIfUnused( ) {
-		if( getPositionInch( ) <= LIFT_SWITCH_LIMIT )
+		if( getMotorPositionInch( ) <= LIFT_SWITCH_LIMIT )
 			motor.setMotorDisable( );
 	}
 
@@ -433,24 +433,12 @@ public class Lift {
 		return liftPosition;
 	}
 
-	public int getPosition( ) {
-		return liftPosition + motor.getCurrentPosition( );
-	}
-
-	public double getPositionInch( ) {
-		return convertTicksDist( getPosition( ), 2 * spoolRadius * Math.PI );
-	}
-
 	public int getMotorPosition( ) {
 		return motor.getCurrentPosition( );
 	}
 
 	public double getMotorPositionInch( ) {
 		return convertTicksDist( getMotorPosition( ), 2 * spoolRadius * Math.PI );
-	}
-
-	public double getBucketDistance( ) {
-		return calcBucketDistanceFromPosition( getPosition( ) );
 	}
 
 	// setters and getters for angleUnit

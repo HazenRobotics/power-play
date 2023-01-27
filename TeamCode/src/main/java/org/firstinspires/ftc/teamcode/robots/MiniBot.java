@@ -28,6 +28,7 @@ import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField.Junction;
 import org.firstinspires.ftc.teamcode.vision.AprilTagsUtil;
 import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline.SignalPosition;
+import org.firstinspires.ftc.teamcode.vision.pipelines.SignalDetector;
 
 import java.util.Scanner;
 
@@ -52,7 +53,7 @@ public class MiniBot extends Robot {
 	//	public SignalUtil signalUtil;
 	public AprilTagsUtil signalUtil;
 	public BNO055IMU gyro;
-	public RGBLights lights;
+//	public RGBLights lights;
 	public CameraAngler angler;
 
 	public boolean rightSide;
@@ -106,8 +107,6 @@ public class MiniBot extends Robot {
 	public enum LiftPosition {
 		BOTTOM, JNCTN_GROUND, JNCTN_LOW, JNCTN_MEDIUM, JNCTN_HIGH
 	}
-
-//	public static final Vector3D clawOffSet = new Vector3D( 0, 12, 3 );
 
 	/**
 	 * Creates a Mini Robot
@@ -171,7 +170,7 @@ public class MiniBot extends Robot {
 		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
 		initGyro( );
 
-		lights = new RGBLights( hardwareMap, "blinkin" );
+//		lights = new RGBLights( hardwareMap, "blinkin" );
 
 		angler = new CameraAngler( hardwareMap, "angler", 0, 0.3, 5, 85 );
 
@@ -191,7 +190,7 @@ public class MiniBot extends Robot {
 		signalUtil.init( );
 //		claw.setState( SingleServoClaw.ClawState.CLOSED );
 		claw.close( );
-		waitSeconds( 0.25 );
+		linkage.moveToExtensionDistance( 0 );
 //		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
 
@@ -212,9 +211,15 @@ public class MiniBot extends Robot {
 //	}
 
 	public void updatePIDs( ) {
-		leftLift.updatePID( );
-		rightLift.updatePID( );
+		leftLift.updatePID( 0.5 );
+		rightLift.updatePID( 0.5 );
 		turret.updatePID( 0.1 );
+	}
+
+	public void updatePIDs( double liftMult, double turretMult ) {
+		leftLift.updatePID( liftMult );
+		rightLift.updatePID( liftMult );
+		turret.updatePID( turretMult );
 	}
 
 	public void setLiftTarget( int target ) {
@@ -277,7 +282,7 @@ public class MiniBot extends Robot {
 	 * @param right true if on right side of the field
 	 * @return the position to park
 	 */
-	public Vector2d parkPosInit( boolean right ) {
+	public Vector2d parkPosInit( boolean right, SignalPosition position ) {
 
 		SignalPosition signalPosition = signalUtil.getSignalPosition( );
 //		SignalDetector.SignalPosition signalPosition = SignalDetector.SignalPosition.RIGHT;
@@ -286,14 +291,14 @@ public class MiniBot extends Robot {
 //		SignalDetector.SignalPosition signalPosition = null;
 
 		double tilePos = 0.05;
-		if( signalPosition == SignalPosition.LEFT )
+		if( position == SignalPosition.LEFT )
 			tilePos = -1;
-		else if( signalPosition == SignalPosition.RIGHT )
+		else if( position == SignalPosition.RIGHT )
 			tilePos = 1;
 
 		float THREE_HALVES = 3f / 2 * TILE_CONNECTOR + THREE_HALVES_TILE;
 
-		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -THREE_HALVES * 1 );
+		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -TILE_SIZE / 2 );
 	}
 
 	/**

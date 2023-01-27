@@ -62,7 +62,7 @@ public class MiniBot {
 
 		double x, y;
 
-		SignalPosition signalPosition = SignalPosition.RIGHT;
+		SignalPosition signalPosition = SignalPosition.MIDDLE;
 
 		double tilePos = 0.05;
 		if( signalPosition == SignalPosition.LEFT )
@@ -72,10 +72,10 @@ public class MiniBot {
 
 		if( red ) {
 			x = right ? (THREE_HALVES_TILE + tilePos * TILE_SIZE) : -(THREE_HALVES_TILE - tilePos * TILE_SIZE);
-			y = -THREE_HALVES_TILE;
+			y = -TILE_SIZE / 2;
 		} else {
 			x = right ? -(THREE_HALVES_TILE + tilePos * TILE_SIZE) : (THREE_HALVES_TILE - tilePos * TILE_SIZE);
-			y = THREE_HALVES_TILE;
+			y = TILE_SIZE / 2;
 		}
 
 		return new Vector2d( x, y );

@@ -99,11 +99,17 @@ public class Turret {
 	}
 
 	public void setTargetHeading( double angle ) {
+		if (angle > rightLimit)
+			angle -= 360;
+
+		if (angle < leftLimit)
+			return;
+
 		setTarget( convertHeadingToTicks( angle ) );
 	}
 
 	public void updatePID(double multiplier) {
-		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) * multiplier );
+		setTurretPower( controller.calculate( motor.getCurrentPosition(), target ) * multiplier );
 	}
 
 	/**
@@ -231,6 +237,10 @@ public class Turret {
 		return getTurretHeading( unit );
 	}
 
+	public double getFieldCentricTurretHeading( double robotHeading ) {
+		return robotHeading - getTurretHeading( );
+	}
+
 	public double getTurretHeading( AngleUnit angleUnit ) {
 		double heading = (2 * Math.PI * getPosition( )) / (gearRatio * pulsesPerRevolution);
 
@@ -273,6 +283,10 @@ public class Turret {
 
 	public int getTarget() {
 		return target;
+	}
+
+	public int getTargetHeading() {
+		return convertTicksToHeading( target );
 	}
 
 }

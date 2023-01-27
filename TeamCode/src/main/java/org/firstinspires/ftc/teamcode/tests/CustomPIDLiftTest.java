@@ -40,8 +40,8 @@ public class CustomPIDLiftTest extends LinearOpMode {
 			robot.leftLift.setTargetInches( target );
 			robot.rightLift.setTargetInches( target );
 
-			robot.leftLift.updatePID();
-			robot.rightLift.updatePID();
+			robot.leftLift.updatePID( 1 );
+			robot.rightLift.updatePID( 1 );
 
 			telemetry.addData( "lift target", robot.leftLift.getTarget() );
 			telemetry.addData( "lift power", robot.leftLift.getPower() );

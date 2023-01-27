@@ -26,7 +26,7 @@ public class LiftRunPositionTriggers extends OpMode {
 		if( Math.abs( gamepad1.right_trigger + gamepad1.left_trigger ) > 0.05 ) {
 			lift.setTeleOpPowerMode();
 			lift.setPower( gamepad1.right_trigger - gamepad1.left_trigger );
-			lastPos = lift.getPositionInch( );
+			lastPos = lift.getMotorPositionInch( );
 		} else if (Math.abs( lastPos - lift.getMotorPositionInch() ) > 0.5 ) {
 			lift.setHeightPower( 0.25, lastPos, true, false  );
 		}

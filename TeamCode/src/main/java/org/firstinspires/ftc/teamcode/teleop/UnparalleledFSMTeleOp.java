@@ -29,15 +29,15 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	ElapsedTime timer = new ElapsedTime( );
 	double loopTime = 0;
 	int junctionHeightIndex = 0;
-	// TODO: this ^
+	double turretTarget;
 	double linkageDeliveryPosition = 11;
-	int turretDeliveryPosition = -139;
+	double turretDeliveryPosition = -139;
 
 	public enum Speeds {
 
 		DRIVE( 0.6, 0.8 ),
 		STRAFE( 1.0, 1.0 ),
-		ROTATE( 0.55, 0.9 );
+		ROTATE( 0.5, 0.85 );
 
 		Speeds( double min, double max ) {
 			this.min = min;
@@ -79,7 +79,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 	TeleOpStates opModeState = TeleOpStates.DRIVER_CONTROLLED;
 	PowerControl liftState = PowerControl.POWER_BASED;
-	PowerControl turretState = PowerControl.POWER_BASED;
+	PowerControl turretState = PowerControl.USING_PID;
 
 
 	@Override
@@ -108,25 +108,32 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		waitForStart( );
 
 		while( opModeIsActive( ) ) {
+			if( controller1.x.onPress( ) && opModeState != TeleOpStates.DRIVER_CONTROLLED ) {
+				opModeState = TeleOpStates.DRIVER_CONTROLLED;
+				liftState = PowerControl.POWER_BASED;
+				turretState = PowerControl.POWER_BASED;
+				linkagePos = robot.linkage.getExtensionDistance( );
+			}
+
 			switch( opModeState ) {
 				case DRIVER_CONTROLLED:
 					subsystemControls( );
-					if ( controller1.x.onPress() ) {
-						timer.reset();
-						robot.linkage.moveToExtensionDistance( 3 );
+					if( controller1.x.onPress( ) ) {
+						timer.reset( );
+						linkagePos = 3;
 						liftState = PowerControl.USING_PID;
 						turretState = PowerControl.USING_PID;
-						robot.leftLift.setTargetInches( 0.1 );
-						robot.rightLift.setTargetInches( 0.1 );
+						robot.leftLift.setTargetInches( 0.5 );
+						robot.rightLift.setTargetInches( 0.5 );
 						robot.turret.setTarget( 0 );
 						opModeState = TeleOpStates.RESET;
 					}
 					break;
 				case RESET:
-					if (robot.leftLift.getPositionInch() < 1.5 && (robot.turret.getTurretHeading() < 3 && robot.turret.getTurretHeading() > -2)) {
-					    robot.claw.open();
-						robot.linkage.moveToExtensionDistance( 14 );
-					    timer.reset();
+					if( robot.leftLift.getMotorPositionInch( ) < 1.5 && (robot.turret.getTurretHeading( ) < 3 && robot.turret.getTurretHeading( ) > -2) ) {
+						robot.claw.open( );
+						linkagePos = 14;
+						timer.reset( );
 						opModeState = TeleOpStates.EXTEND_LINKAGE;
 					}
 					break;
@@ -138,9 +145,9 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 					}
 					break;
 				case GRAB_CONE:
-					if (timer.nanoseconds() > 0.35 * 1000000000) {
-						robot.linkage.moveToExtensionDistance( 2 );
-						timer.reset();
+					if( timer.nanoseconds( ) > 0.35 * 1000000000 ) {
+						linkagePos = 2;
+						timer.reset( );
 						opModeState = TeleOpStates.RETRACT_LINKAGE;
 					}
 					break;
@@ -149,7 +156,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 						robot.leftLift.setTargetInches( robot.liftHeights[4] + 3.5 );
 						robot.rightLift.setTargetInches( robot.liftHeights[4] + 3.5 );
 						robot.turret.setTargetHeading( turretDeliveryPosition );
-						timer.reset();
+						timer.reset( );
 
 						opModeState = TeleOpStates.EXTEND_LINKAGE_AGAIN;
 					}
@@ -159,11 +166,17 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 						linkagePos = linkageDeliveryPosition;
 						opModeState = TeleOpStates.DROP_CONE;
 					}
+					break;
 				case DROP_CONE:
-					linkageDeliveryPosition = linkagePos;
-					if(controller1.a.onPress()) {
-						robot.claw.open();
-						linkagePos = robot.linkage.getExtensionDistance();
+					linkageDeliveryPosition += (gamepad1.right_bumper ? 0.2 : 0) - (gamepad1.left_bumper ? 0.2 : 0);
+					linkageDeliveryPosition = Math.min( robot.linkage.extensionLength, Math.max( linkageDeliveryPosition, robot.linkage.retractionLength ) );
+					linkagePos = linkageDeliveryPosition;
+
+					turretDeliveryPosition += (controller1.dpad_right.onPress( ) ? 2 : 0) - (controller1.dpad_left.onPress( ) ? 2 : 0);
+					robot.turret.setTargetHeading( turretDeliveryPosition );
+
+					if( controller1.a.onPress( ) ) {
+						robot.claw.open( );
 						opModeState = TeleOpStates.DRIVER_CONTROLLED;
 					}
 					break;
@@ -171,27 +184,23 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 					opModeState = TeleOpStates.DRIVER_CONTROLLED;
 			}
 
-			if( gamepad1.y && opModeState != TeleOpStates.DRIVER_CONTROLLED ) {
-				opModeState = TeleOpStates.DRIVER_CONTROLLED;
-				liftState = PowerControl.POWER_BASED;
-				turretState = PowerControl.POWER_BASED;
-				linkagePos = robot.linkage.getExtensionDistance();
-			}
 
 
-			if(liftState == PowerControl.USING_PID){
-				robot.leftLift.updatePID();
-				robot.rightLift.updatePID();
+
+			if( liftState == PowerControl.USING_PID ) {
+				robot.leftLift.updatePID( 1 );
+				robot.rightLift.updatePID( 1 );
 			}
 			if( turretState == PowerControl.USING_PID ) {
-				robot.turret.updatePID(0.2);
+				robot.turret.updatePID( 0.2 );
 			}
 
 
-			robot.angler.pointCameraToPosition( robot.linkage.getExtensionDistance() + MiniBot.CLAW_CAMERA_OFFSET, robot.leftLift.getMotorPositionInch() + 0.001  );
+			robot.angler.pointCameraToPosition( robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET, robot.leftLift.getMotorPositionInch( ) + 0.001 );
+			robot.linkage.moveToExtensionDistance( linkagePos );
 			displayTelemetry( );
 			driveRobot( );
-			updateControllers();
+			updateControllers( );
 		}
 	}
 
@@ -206,7 +215,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	}
 
 	public void updateLinkagePos( ) {
-		linkagePos	 += ((/*gamepad1.right_bumper ||*/ gamepad2.right_bumper ? 0.5 : 0) - (/*gamepad1.left_bumper ||*/ gamepad2.left_bumper ? 0.5 : 0));
+		linkagePos += (gamepad2.right_bumper ? 0.2 : 0) - (gamepad2.left_bumper ? 0.2 : 0);
 		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
 		linkagePos = Math.min( robot.linkage.extensionLength, Math.max( linkagePos, robot.linkage.retractionLength ) );
 		robot.linkage.moveToExtensionDistance( linkagePos );
@@ -232,14 +241,18 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
 
-		if (controller2.dpad_left.onPress() || controller2.dpad_right.onPress()) {
-			dpadToTurretPos();
+		if( controller1.dpad_up.onPress( ) || controller1.dpad_down.onPress( ) ) {
+			dpadToLiftPos( );
+		}
+
+		if( controller2.dpad_left.onPress( ) || controller2.dpad_right.onPress( ) ) {
+			dpadToTurretPos( );
 		}
 
 		updateLinkagePos( );
 	}
 
-	public void updateControllers() {
+	public void updateControllers( ) {
 		controller1.update( );
 		controller2.update( );
 	}
@@ -272,12 +285,8 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //		telemetry.addData( "powerL", robot.leftLift.getPower( ) );
 //		telemetry.addData( "powerR", robot.rightLift.getPower( ) );
 ////		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
-//		telemetry.addData( "pos (ticks) L", robot.leftLift.motor.getCurrentPosition( ) );
-//		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
-//		telemetry.addData( "pos (ticks) R", robot.rightLift.motor.getCurrentPosition( ) );
-//		telemetry.addData( "pos (in) R", robot.rightLift.getPositionInch( ) );
-//		telemetry.addData( "target pos (in) L", robot.leftLift.getTargetPosition( ) );
-//		telemetry.addData( "target pos (in) R", robot.rightLift.getTargetPosition( ) );
+		telemetry.addData( "pos (ticks) L", robot.leftLift.getMotorPosition( ) );
+		telemetry.addData( "pos (ticks) R", robot.rightLift.getMotorPosition( ) );
 
 //		telemetry.addLine( );
 
@@ -291,16 +300,16 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //		telemetry.addData( "too far left:", robot.turret.getTurretHeading( ) < robot.turret.getLeftLimit( ) );
 //		telemetry.addData( "too far right:", robot.turret.getTurretHeading( ) > robot.turret.getRightLimit( ) );
 
-////		telemetry.addData( "linkagePosition", linkagePos );
+		telemetry.addData( "linkagePosition", linkagePos );
 //		telemetry.addData( "current state", opModeState );
 //		telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
 //		telemetry.addData( "turret target", robot.turret.getTargetPosition() );
 
-		telemetry.addData( "linkage distance from camera", robot.linkage.getExtensionDistance() + MiniBot.CLAW_CAMERA_OFFSET );
-		telemetry.addData( "lift distance from servo", robot.leftLift.getMotorPositionInch() );
-		telemetry.addData( "intended angle" ,Math.toDegrees( Math.atan( robot.linkage.getExtensionDistance() + MiniBot.CLAW_CAMERA_OFFSET / (robot.leftLift.getMotorPositionInch() + 0.001)  ) ));
-		telemetry.addData( "actual angle", robot.angler.servoToAngle( robot.angler.servo.getPosition() ) );
-		telemetry.addData( "servo pos", robot.angler.servo.getPosition() );
+		telemetry.addData( "linkage distance from camera", robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET );
+		telemetry.addData( "lift distance from servo", robot.leftLift.getMotorPositionInch( ) );
+		telemetry.addData( "intended angle", Math.toDegrees( Math.atan( robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET / (robot.leftLift.getMotorPositionInch( ) + 0.001) ) ) );
+		telemetry.addData( "actual angle", robot.angler.servoToAngle( robot.angler.servo.getPosition( ) ) );
+		telemetry.addData( "servo pos", robot.angler.servo.getPosition( ) );
 
 		double loop = System.nanoTime( );
 		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );
@@ -313,37 +322,31 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	}
 
 	public void dpadToLiftPos( ) {
-//		junctionHeightIndex += gam
-//		if( controller1.dpad_up.onPress( ) /*|| controller2.dpad_up.onPress( )*/ ) {
-//			movingLift = true;
-//			robot.junctionToLiftPos( PPField.Junction.HIGH );
-////			telemetry.addLine( "high: " + PPField.Junction.HIGH.height( ) );
-//		}
-//		if( controller1.dpad_left.onPress( ) /*|| controller2.dpad_left.onPress( )*/ ) {
-//			movingLift = true;
-//			robot.junctionToLiftPos( PPField.Junction.MEDIUM );
-////			telemetry.addLine( "medium: " + PPField.Junction.MEDIUM.height( ) );
-//		}
-//		if( controller1.dpad_down.onPress( ) /*|| controller2.dpad_down.onPress( )*/ ) {
-//			movingLift = true;
-//			robot.junctionToLiftPos( PPField.Junction.LOW );
-////			telemetry.addLine( "low: " + PPField.Junction.LOW.height( ) );
-//		}
-//		if( controller1.dpad_right.onPress( ) /*|| controller2.dpad_right.onPress( )*/ ) {
-//			movingLift = true;
-//			robot.junctionToLiftPos( PPField.Junction.GROUND );
-////			telemetry.addLine( "ground: " + PPField.Junction.GROUND.height( ) );
-//		}
+
+		liftState = PowerControl.USING_PID;
+
+		if( controller1.dpad_up.onPress( ) && junctionHeightIndex < 4 ) {
+			junctionHeightIndex++;
+		} else if( controller1.dpad_up.onPress( ) && junctionHeightIndex >= 0 ) {
+			junctionHeightIndex++;
+		}
+
+		robot.setLiftTargetInches( robot.liftHeights[junctionHeightIndex] );
 	}
 
 	public void dpadToTurretPos( ) {
-		if (turretState != PowerControl.USING_PID) {
-			robot.turret.setTurretPower( 0 );
-			turretState = PowerControl.USING_PID;
+		turretState = PowerControl.USING_PID;
+
+		turretTarget = robot.turret.getTurretHeading( );
+
+		double roundedTarget = Math.round( turretTarget / 45 ) * 45;
+
+		if( controller2.dpad_left.onPress( ) ) {
+			turretTarget = roundedTarget - 45;
+		} else if( controller2.dpad_right.onPress( ) ) {
+			turretTarget = roundedTarget + 45;
 		}
 
-		if (controller2.dpad_left.onPress()) {
-
-		}
+		robot.turret.setTargetHeading( turretTarget );
 	}
 }

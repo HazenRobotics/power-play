@@ -40,7 +40,7 @@ public class JustParkRight extends LinearOpMode {
 		robot.claw.setState( SingleServoClaw.ClawState.CLOSED );
 		robot.junctionToLiftPos( PPField.Junction.GROUND );
 
-		Vector2d parkPos = robot.parkPosInit( right );
+//		Vector2d parkPos = robot.parkPosInit( right );
 		Vector2d conePos = MiniBot.getSignalPos( right );
 
 		robot.signalUtil.stopCamera( );
@@ -48,12 +48,12 @@ public class JustParkRight extends LinearOpMode {
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
 		robot.drive.setPoseEstimate( robot.getStartPos( right ) );
 
-		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
-				.lineTo( conePos )
-				.lineTo( parkPos )
-				.build( );
-
-		robot.drive.followTrajectorySequence( mainTrajectory );
+//		TrajectorySequence mainTrajectory = robot.getTrajectorySequenceBuilder( )
+//				.lineTo( conePos )
+//				.lineTo( parkPos )
+//				.build( );
+//
+//		robot.drive.followTrajectorySequence( mainTrajectory );
 
 	}
 }

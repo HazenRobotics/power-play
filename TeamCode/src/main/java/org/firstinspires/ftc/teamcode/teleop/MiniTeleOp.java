@@ -162,16 +162,16 @@ public class MiniTeleOp extends OpMode {
 			gamepad1.rumble( 100 );
 		else if( !robot.isOverJunction( ) )
 			gamepad1.stopRumble( );
-
-		if( time.startTime( ) / 1000 > 110 ) {
-			robot.lights.showStatus( RGBLights.StatusLights.CELEBRATION );
-			telemetry.addLine( "End Game started" );
-		}
-
-		if( robot.inSubstation( ) ) {
-			robot.lights.showStatus( RGBLights.StatusLights.ERROR );
-			telemetry.addLine( "Over substation" );
-		}
+//
+//		if( time.startTime( ) / 1000 > 110 ) {
+//			robot.lights.showStatus( RGBLights.StatusLights.CELEBRATION );
+//			telemetry.addLine( "End Game started" );
+//		}
+//
+//		if( robot.inSubstation( ) ) {
+//			robot.lights.showStatus( RGBLights.StatusLights.ERROR );
+//			telemetry.addLine( "Over substation" );
+//		}
 		// update controllers and telemetry
 		displayTelemetry( );
 		controller1.update( );
@@ -214,10 +214,10 @@ public class MiniTeleOp extends OpMode {
 		telemetry.addData( "powerL", robot.leftLift.getPower( ) );
 		telemetry.addData( "powerR", robot.rightLift.getPower() );
 //		telemetry.addData( "velocity", robot.lift.getVelocity( ) );
-		telemetry.addData( "pos (ticks) L", robot.leftLift.getPosition( ) );
-		telemetry.addData( "pos (in) L", robot.rightLift.getPositionInch( ) );
-		telemetry.addData( "pos (ticks) R", robot.leftLift.getPosition( ) );
-		telemetry.addData( "pos (in) R", robot.rightLift.getPositionInch( ) );
+		telemetry.addData( "pos (ticks) L", robot.leftLift.getMotorPosition( ) );
+		telemetry.addData( "pos (in) L", robot.rightLift.getMotorPositionInch( ) );
+		telemetry.addData( "pos (ticks) R", robot.leftLift.getMotorPosition( ) );
+		telemetry.addData( "pos (in) R", robot.rightLift.getMotorPositionInch( ) );
 		telemetry.addData( "target pos (in) L", robot.leftLift.getTarget( ) );
 		telemetry.addData( "target pos (in) R", robot.rightLift.getTarget( ) );
 
