@@ -52,7 +52,7 @@ public class MiniBot extends Robot {
 	public SingleServoClaw claw;
 	//	public SignalUtil signalUtil;
 	public AprilTagsUtil signalUtil;
-	public BNO055IMU gyro;
+//	public BNO055IMU gyro;
 //	public RGBLights lights;
 	public CameraAngler angler;
 
@@ -167,8 +167,8 @@ public class MiniBot extends Robot {
 
 		signalUtil = new AprilTagsUtil( hardwareMap, "webcam1", telemetry );
 
-		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
-		initGyro( );
+//		gyro = hardwareMap.get( BNO055IMU.class, "imu" );
+//		initGyro( );
 
 //		lights = new RGBLights( hardwareMap, "blinkin" );
 
@@ -189,16 +189,16 @@ public class MiniBot extends Robot {
 	public void initSubsystems( ) {
 		signalUtil.init( );
 //		claw.setState( SingleServoClaw.ClawState.CLOSED );
-		claw.close( );
+//		claw.close( );
 		linkage.moveToExtensionDistance( 0 );
 //		claw.setState( TiltingClaw.VerticalClawState.STOWED );
 	}
 
-	private void initGyro( ) {
-		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters( );
-		parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-		gyro.initialize( parameters );
-	}
+//	private void initGyro( ) {
+//		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters( );
+//		parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+//		gyro.initialize( parameters );
+//	}
 
 //	public Vector3D getClawPos () {
 //		final Pose2d robotPose = drive.getPoseEstimate();

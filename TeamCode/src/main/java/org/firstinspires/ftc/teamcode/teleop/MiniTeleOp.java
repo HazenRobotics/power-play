@@ -95,10 +95,10 @@ public class MiniTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-		gyroOrientation = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES );
+//		gyroOrientation = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES );
 
-		robotTiltAngle = gyroOrientation.secondAngle;
-		robotHeading = gyroOrientation.firstAngle;
+//		robotTiltAngle = gyroOrientation.secondAngle;
+//		robotHeading = gyroOrientation.firstAngle;
 
 		if( controller2.x.onPress( ) )
 			robot.turret.resetTurret( );

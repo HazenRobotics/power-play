@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -26,14 +28,6 @@ public class LinkageCycle extends LinearOpMode {
 		PARK
 	}
 
-	public enum InitialDriveState {
-		DRIVE_FIRST_CONE,
-		MOVE_LIFT_AND_TURRET,
-		DROP_CONE,
-		RESET,
-		TO_CYCLE
-	}
-
 	public enum CycleState {
 		MOVE_TO_CONE_PICKUP,
 		GRAB_CONE,
@@ -44,7 +38,6 @@ public class LinkageCycle extends LinearOpMode {
 	}
 
 	AutoState autoState;
-	InitialDriveState initialDriveState;
 	CycleState cycleState;
 	double coneStackHeight = -0.5;
 	double cycleTurretHeading;
@@ -59,7 +52,7 @@ public class LinkageCycle extends LinearOpMode {
 
 		robot = new MiniBot( this );
 		autoState = AutoState.INITIAL_DRIVE;
-		initialDriveState = InitialDriveState.DRIVE_FIRST_CONE;
+		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
 
 		robot.initSubsystems( );
 
@@ -82,155 +75,129 @@ public class LinkageCycle extends LinearOpMode {
 		robot.drive.setLocalizer( robot.drive.getLocalizer( ) );
 		robot.drive.setPoseEstimate( robot.getStartPos( red, right ) );
 
-		TrajectorySequence firstConeTraj = robot.getTrajectorySequenceBuilder( )
-				.addTemporalMarker( () -> {
-					robot.setLiftTargetInches( 5 );
-					robot.turret.setTargetHeading( -138 );
-				} )
-				.splineTo( new Vector2d( 36, -48 ), Math.toRadians( 90 ) )
-				.addTemporalMarker( 1.5, ( ) -> {
-					robot.setLiftTargetInches( cycleLiftHeight );
-				} )
-				.addTemporalMarker( 1.6, ( ) -> {
-					robot.turret.setTargetHeading( cycleTurretHeading );
-					robot.linkage.moveToExtensionDistance( 14 );
-				} )
-				.addTemporalMarker( 2.5, () -> {
-					robot.linkage.moveToExtensionDistance( 13.5 );
-				} )
-				.splineTo( new Vector2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 ), Math.toRadians( 0 ) )
-				.addTemporalMarker( ( ) -> {
-					robot.claw.open( );
-					robot.setLiftTargetInches( coneStackHeight );
-					robot.turret.setTargetHeading( 0 );
-					robot.linkage.moveToExtensionDistance( 11.5 );
 
-					autoState = AutoState.CYCLE;
-					cycleState = CycleState.MOVE_TO_CONE_PICKUP;
-				} )
-				.build( );
 
-//		TrajectorySequence firstCone = robot.getTrajectorySequenceBuilder()
-//				.lineToLinearHeading( new Pose2d (36, -48, Math.toRadians( 0 ) ))
-//				.lineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .65 , Math.toRadians( 90 ) ))
-//				.build();
-//
-//		TrajectorySequence toCycle = robot.getTrajectorySequenceBuilder()
-//				.setReversed( true )
-//				.lineToLinearHeading(new Pose2d(  PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 )) )
+//		TrajectorySequence firstConeTraj = robot.getTrajectorySequenceBuilder( )
 //				.addTemporalMarker( () -> {
-//					autoState = AutoState.PARK;
+//					robot.setLiftTargetInches( 5 );
+//					robot.turret.setTargetHeading( -138 );
 //				} )
-//				.build();
+//				.splineTo( new Vector2d( 36, -48 ), Math.toRadians( 90 ) )
+//				.addTemporalMarker( 1.5, ( ) -> {
+//					robot.setLiftTargetInches( cycleLiftHeight );
+//				} )
+//				.addTemporalMarker( 1.6, ( ) -> {
+//					robot.turret.setTargetHeading( cycleTurretHeading );
+//					robot.linkage.moveToExtensionDistance( 14 );
+//				} )
+//				.addTemporalMarker( 2.5, () -> {
+//					robot.linkage.moveToExtensionDistance( 13.5 );
+//				} )
+//				.splineTo( new Vector2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 ), Math.toRadians( 0 ) )
+//				.addTemporalMarker( ( ) -> {
+//					robot.claw.open( );
+//					robot.setLiftTargetInches( coneStackHeight );
+//					robot.turret.setTargetHeading( 0 );
+//					robot.linkage.moveToExtensionDistance( 11.5 );
+//
+//					autoState = AutoState.CYCLE;
+//					cycleState = CycleState.MOVE_TO_CONE_PICKUP;
+//				} )
+//				.build( );
 
-		robot.drive.followTrajectorySequenceAsync( firstConeTraj );
+		TrajectorySequence toCycle = robot.getTrajectorySequenceBuilder()
+				.lineToLinearHeading( new Pose2d (36, -48, Math.toRadians( 0 ) ))
+				.lineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .65 , Math.toRadians( 90 ) ))
+				.setReversed( true )
+				.lineToLinearHeading(new Pose2d(  PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 )) )
+				.addTemporalMarker( () -> {
+					robot.linkage.moveToExtensionDistance( 6 );
+				} )
+				.waitSeconds( .5 )
+				.addTemporalMarker( () -> {
+					robot.claw.close();
+					timer.reset();
+//					cycleState = CycleState.GRAB_CONE;
+					autoState = AutoState.PARK;
+				} )
+				.build();
+
+
+		robot.drive.followTrajectorySequenceAsync( toCycle );
 
 		telemetry.addLine( "done" );
 		telemetry.update( );
 
-		while( !opModeIsActive() ) {
+		while( !opModeIsActive() && opModeInInit()  ) {
 			signalPos = robot.signalUtil.getSignalPosition();
 			telemetry.addData( "position", signalPos );
 			telemetry.update( );
 		}
 
-
 		waitForStart( );
 		robot.signalUtil.stopCamera( );
+		robot.claw.close();
+		robot.waitSeconds( 0.25 );
+
+
 
 		while( opModeIsActive( ) ) {
 			currentLiftHeight = (robot.leftLift.getMotorPositionInch( ) + robot.rightLift.getMotorPositionInch()) / 2;
 			turretHeading = robot.turret.getTurretHeading( );
-//			robot.drive.update();
+			robot.drive.update();
 			robot.updatePIDs( 0.5, 0.1 );
 
 			displayTelemetry();
 
 			switch( autoState ) {
-//				case INITIAL_DRIVE:
-//					switch(initialDriveState) {
-//						case DRIVE_FIRST_CONE:
-//							robot.drive.followTrajectorySequence( firstCone );
-//							robot.setLiftTargetInches( PPField.Junction.HIGH.height( ) );
-//							robot.turret.setTargetHeading( robot.getJunctionTurretHeading( 1, 0 ) );
-//							robot.linkage.moveToExtensionDistance( 11 );
-//							initialDriveState = InitialDriveState.MOVE_LIFT_AND_TURRET;
+				case INITIAL_DRIVE:
+					robot.setLiftTargetInches( 1 );
+					break;
+				case CYCLE:
+//					switch( cycleState ) {
+//						case MOVE_TO_CONE_PICKUP:
+//							if( Math.abs( currentLiftHeight - coneStackHeight ) < 0.25 && (turretHeading < 3 && turretHeading > -3) ) {
+//								timer.reset();
+//								robot.claw.close( );
+//								cycleState = CycleState.GRAB_CONE;
+//							}
 //							break;
-//						case MOVE_LIFT_AND_TURRET:
-//							if( currentLiftHeight - PPField.Junction.HIGH.height( ) < 0.25 && (turretHeading < robot.turret.getTargetHeading( ) + 2 && turretHeading > robot.turret.getTargetHeading( ) - 2) ) {
-//								timer.reset( );
+//						case GRAB_CONE:
+//							if (timer.nanoseconds() > .5 * 1000000000) {
+//								robot.setLiftTargetInches( cycleLiftHeight );
+//								cycleState = CycleState.LIFT_LIFT_TO_DELIVERY;
+//							}
+//							break;
+//						case LIFT_LIFT_TO_DELIVERY:
+//							if( Math.abs( currentLiftHeight - 10 ) < 0.5) {
+//								cycleTurretHeading = robot.getJunctionTurretHeading( (red && right) || (!red && !right) ? 1 : -1, 0 );
+//								robot.turret.setTargetHeading( cycleTurretHeading );
+//								robot.linkage.moveToExtensionDistance( 11.5 );
+//							}
+//							break;
+//						case TURN_TURRET_TO_DELIVERY:
+//							if( Math.abs( currentLiftHeight - cycleLiftHeight ) < 0.5 && (turretHeading < cycleTurretHeading + 0.5 && turretHeading > cycleTurretHeading - 0.5) ) {
+//								timer.reset();
 //								robot.claw.open( );
-//								initialDriveState = InitialDriveState.DROP_CONE;
+//								coneStackHeight--;
+//								if (coneStackHeight < 0) {
+//									autoState = AutoState.PARK;
+//									break;
+//								}
+//
+//								cycleState = CycleState.DROP_CONE;
 //							}
 //							break;
 //						case DROP_CONE:
-//							if( timer.milliseconds( ) > 500 ) {
-//								initialDriveState = InitialDriveState.RESET;
-//							}
-//							break;
-//						case RESET:
-//							robot.setLiftTargetInches( 3 );
-//							robot.turret.setTargetHeading( robot.getJunctionTurretHeading( 1, 0 ) );
-//							robot.linkage.moveToExtensionDistance( 3 );
-//							initialDriveState = InitialDriveState.TO_CYCLE;
-//							break;
-//						case TO_CYCLE:
-//							if( currentLiftHeight - PPField.Junction.HIGH.height( ) < 0.25 && (turretHeading < robot.turret.getTargetHeading( ) + 2 && turretHeading > robot.turret.getTargetHeading( ) - 2) ) {
-//								robot.drive.followTrajectorySequence( toCycle );
-//								autoState = AutoState.PARK;
+//							if(timer.nanoseconds() > 0.5 * 1000000000) {
+//								robot.setLiftTargetInches( coneStackHeight );
+//								robot.turret.setTargetHeading( 0 );
+//								robot.linkage.moveToExtensionDistance( 11.5 );
+//								cycleState = CycleState.MOVE_TO_CONE_PICKUP;
 //							}
 //							break;
 //					}
 //					break;
-				case CYCLE:
-					switch( cycleState ) {
-						case MOVE_TO_CONE_PICKUP:
-							if (coneStackHeight < 0) {
-								autoState = AutoState.PARK;
-								break;
-							}
-							if( Math.abs( currentLiftHeight - coneStackHeight ) < 0.25 && (turretHeading < 3 && turretHeading > -3) ) {
-								timer.reset();
-								robot.claw.close( );
-								cycleState = CycleState.GRAB_CONE;
-							}
-							break;
-						case GRAB_CONE:
-							if (timer.nanoseconds() > .5 * 1000000000) {
-								robot.setLiftTargetInches( cycleLiftHeight );
-								cycleState = CycleState.LIFT_LIFT_TO_DELIVERY;
-							}
-							break;
-						case LIFT_LIFT_TO_DELIVERY:
-							if( Math.abs( currentLiftHeight - 10 ) < 0.5) {
-								cycleTurretHeading = robot.getJunctionTurretHeading( (red && right) || (!red && !right) ? 1 : -1, 0 );
-								robot.turret.setTargetHeading( cycleTurretHeading );
-								robot.linkage.moveToExtensionDistance( 11.5 );
-							}
-							break;
-						case TURN_TURRET_TO_DELIVERY:
-							if( Math.abs( currentLiftHeight - cycleLiftHeight ) < 0.5 && (turretHeading < cycleTurretHeading + 0.5 && turretHeading > cycleTurretHeading - 0.5) ) {
-								timer.reset();
-								robot.claw.open( );
-								coneStackHeight--;
-								if (coneStackHeight < 0) {
-									autoState = AutoState.PARK;
-									break;
-								}
-
-								cycleState = CycleState.DROP_CONE;
-							}
-							break;
-						case DROP_CONE:
-							if(timer.nanoseconds() > 0.5 * 1000000000) {
-								robot.setLiftTargetInches( coneStackHeight );
-								robot.turret.setTargetHeading( 0 );
-								robot.linkage.moveToExtensionDistance( 11.5 );
-								cycleState = CycleState.MOVE_TO_CONE_PICKUP;
-							}
-							break;
-					}
-					break;
 				case PARK:
 					if (signalPos == AprilTagDetectionPipeline.SignalPosition.LEFT)
 						robot.drive.followTrajectorySequence( leftParkTrajectory );
@@ -251,6 +218,7 @@ public class LinkageCycle extends LinearOpMode {
 		telemetry.addData( "turret heading", turretHeading );
 		telemetry.addData( "lift target heading", robot.leftLift.getTargetPositionInch() );
 		telemetry.addData( "lift position", currentLiftHeight );
+		telemetry.addData( "linkage position", robot.linkage.getExtensionDistance() );
 		telemetry.addData( "cone stack height", coneStackHeight );
 		telemetry.addData( "determined turret cycle angle", cycleTurretHeading );
 		telemetry.addData( "time", timer.nanoseconds() );

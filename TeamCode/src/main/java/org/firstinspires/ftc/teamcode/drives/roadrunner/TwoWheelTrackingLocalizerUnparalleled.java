@@ -67,7 +67,7 @@ public class TwoWheelTrackingLocalizerUnparalleled extends TwoTrackingWheelLocal
 		perpendicularEncoder = new Encoder( hardwareMap.get( DcMotorEx.class, "backRight/perp" ) );
 
 		// TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
-		parallelEncoder.setDirection( Encoder.Direction.FORWARD );
+		parallelEncoder.setDirection( Encoder.Direction.REVERSE );
 		perpendicularEncoder.setDirection( Encoder.Direction.REVERSE );
 	}
 
