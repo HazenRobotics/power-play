@@ -112,6 +112,10 @@ public class Turret {
 		setTurretPower( controller.calculate( motor.getCurrentPosition(), target ) * multiplier );
 	}
 
+	public void setPIDValues(double p, double i, double d) {
+		controller.setPID( p,i,d );
+	}
+
 	/**
 	 * @param power    power to turn at
 	 * @param position the rotation of the turret in the predetermined AngleUnit

@@ -58,7 +58,7 @@ public class MiniBot extends Robot {
 
 	public boolean rightSide;
 
-	public final float[] liftHeights = { 0, Junction.GROUND.height( ), Junction.LOW.height( ), Junction.MEDIUM.height( ), Junction.HIGH.height( ) };
+	public final float[] liftHeights = { 0, Junction.LOW.height( ), Junction.MEDIUM.height( ), Junction.HIGH.height( ) };
 
 //	Pose2d lastPose = drive.getPoseEstimate( );
 
@@ -141,8 +141,8 @@ public class MiniBot extends Robot {
 
 		drive = new MecanumDriveUnparalleled( hardwareMap );
 
-		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
-		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
+		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.01, 0, 0.0002 ) );
+		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.01, 0, 0.0002 ) );
 
 		leftLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
 		rightLift.setEncoder( Lift.EncoderState.WITHOUT_ENCODER );
@@ -157,7 +157,7 @@ public class MiniBot extends Robot {
 
 		claw = new SingleServoClaw( hardwareMap, "claw", 1, 0.65 );
 
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45, new PIDController( 0.005, 0, 0.0002 ) );
+		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45, new PIDController( 0.0015, 0, 0.0001 ) );
 
 //		signalUtil = new SignalUtil( hardwareMap, "webcam1", telemetry );
 

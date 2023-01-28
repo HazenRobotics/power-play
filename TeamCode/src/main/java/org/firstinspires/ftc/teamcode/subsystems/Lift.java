@@ -107,9 +107,10 @@ public class Lift {
 	public void resetLift( ) {
 		motor.setPower( 0 );
 		motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
-		setEncoder( EncoderState.WITH_ENCODER );
-		movementState = MovementState.REST;
-		liftPosition = 0;
+		motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+//		setEncoder( EncoderState.WITH_ENCODER );
+//		movementState = MovementState.REST;
+//		liftPosition = 0;
 	}
 
 	/**
@@ -129,7 +130,11 @@ public class Lift {
 	}
 
 	public void updatePID( double multiplier ) {
-		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) );
+		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) * multiplier );
+	}
+
+	public void setPIDValues(double p, double i, double d) {
+		controller.setPID( p, i, d );
 	}
 
 	// basic lift setters

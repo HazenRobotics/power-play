@@ -95,7 +95,7 @@ public class MiniTeleOp extends OpMode {
 	@Override
 	public void loop( ) {
 
-//		gyroOrientation = robot.gyro.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES );
+		gyroOrientation = robot.drive.imu.getAngularOrientation( AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES );
 
 //		robotTiltAngle = gyroOrientation.secondAngle;
 //		robotHeading = gyroOrientation.firstAngle;
