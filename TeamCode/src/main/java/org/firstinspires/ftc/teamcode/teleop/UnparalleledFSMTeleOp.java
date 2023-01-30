@@ -132,8 +132,8 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 						linkagePos = 3;
 						liftState = PowerControl.USING_PID;
 						turretState = PowerControl.USING_PID;
-						robot.leftLift.setTargetInches( 0.5 );
-						robot.rightLift.setTargetInches( 0.5 );
+						robot.leftLift.setTargetInches( 0 );
+						robot.rightLift.setTargetInches( 0 );
 						robot.turret.setTarget( 0 );
 						opModeState = TeleOpStates.RESET;
 					}

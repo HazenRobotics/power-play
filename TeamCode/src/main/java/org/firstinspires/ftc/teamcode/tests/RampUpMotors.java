@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.drives.MecanumDrive;
 
 @Autonomous(group = "test")
-//@Disabled
+@Disabled
 public class RampUpMotors extends LinearOpMode {
 
 	MecanumDrive drive;
