@@ -38,9 +38,9 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 	public enum Speeds {
 
-		DRIVE( 0.6, 0.8 ),
-		STRAFE( 0.9, 1.0 ),
-		ROTATE( 0.5, 0.85 );
+		DRIVE( 0.5, 1 ),
+		STRAFE( 0.5, 1 ),
+		ROTATE( 0.5, 1 );
 
 		Speeds( double min, double max ) {
 			this.min = min;
@@ -82,7 +82,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 	TeleOpStates opModeState = TeleOpStates.DRIVER_CONTROLLED;
 	PowerControl liftState = PowerControl.POWER_BASED;
-	PowerControl turretState = PowerControl.USING_PID;
+	PowerControl turretState = PowerControl.POWER_BASED;
 
 
 	@Override
@@ -127,16 +127,16 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 			switch( opModeState ) {
 				case DRIVER_CONTROLLED:
 					subsystemControls( );
-					if( controller1.x.onPress( ) ) {
-						timer.reset( );
-						linkagePos = 3;
-						liftState = PowerControl.USING_PID;
-						turretState = PowerControl.USING_PID;
-						robot.leftLift.setTargetInches( 0 );
-						robot.rightLift.setTargetInches( 0 );
-						robot.turret.setTarget( 0 );
-						opModeState = TeleOpStates.RESET;
-					}
+//					if( controller1.x.onPress( ) ) {
+//						timer.reset( );
+//						linkagePos = 3;
+//						liftState = PowerControl.USING_PID;
+//						turretState = PowerControl.USING_PID;
+//						robot.leftLift.setTargetInches( 0 );
+//						robot.rightLift.setTargetInches( 0 );
+//						robot.turret.setTarget( 0 );
+//						opModeState = TeleOpStates.RESET;
+//					}
 					break;
 				case RESET:
 					if( robot.leftLift.getMotorPositionInch( ) < 1.5 && (robot.turret.getTurretHeading( ) < 3 && robot.turret.getTurretHeading( ) > -2) ) {
@@ -201,8 +201,9 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 				robot.rightLift.updatePID( 1 );
 			}
 			if( turretState == PowerControl.USING_PID ) {
-				robot.turret.updatePID( 0.75 );
+				robot.turret.updatePID( 0.5 );
 			}
+//among us
 
 			robot.angler.pointCameraToPosition( robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET, robot.leftLift.getMotorPositionInch( ) + 0.001 );
 			robot.linkage.moveToExtensionDistance( linkagePos );
@@ -250,18 +251,20 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 			robot.turret.resetTurret( );
 		}
 
-		if( turretState != PowerControl.USING_PID ) {
-			robot.turret.setTurretPower( controller2.right_stick_x * 0.5 );
-		} else if( gamepad2.right_stick_x > 0.1 ) {
-			turretState = PowerControl.POWER_BASED;
-		}
+//		if( turretState != PowerControl.USING_PID ) {
+//			robot.turret.setTurretPower( controller2.right_stick_x * 0.5 );
+//		} else if( gamepad2.right_stick_x > 0.1 ) {
+//			turretState = PowerControl.POWER_BASED;
+//		}
+
+		robot.turret.setTurretPower( (gamepad1.dpad_right ? 0.25 : 0) - (gamepad1.dpad_left ? 0.25 : 0) );
 
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
 
-		if( controller1.dpad_up.onPress( ) || controller1.dpad_down.onPress( ) || controller2.dpad_up.onPress( ) || controller2.dpad_down.onPress( ) ) {
-			dpadToLiftPos( );
-		}
+//		if( controller1.dpad_up.onPress( ) || controller1.dpad_down.onPress( ) || controller2.dpad_up.onPress( ) || controller2.dpad_down.onPress( ) ) {
+//			dpadToLiftPos( );
+//		}
 
 		if( controller2.dpad_left.onPress( ) || controller2.dpad_right.onPress( ) || controller2.y.onPress( ) ) {
 			dpadToTurretPos( );
