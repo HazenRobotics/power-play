@@ -10,8 +10,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.apache.commons.math3.analysis.function.Min;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drives.Drive;
+import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.MotorType;
@@ -20,47 +22,31 @@ import org.firstinspires.ftc.teamcode.utils.MotorType;
 @TeleOp(group = "Test" )
 public class PIDF_Tuning extends OpMode {
 
-	private PIDController controller;
+	MiniBot robot;
 
 	public static double p = 0, i = 0, d = 0;
-	public static double f = 0;
 
-	public static int target = 0;
-	public static int heading = 0;
-
-	private Turret turret;
-	private Lift leftLift;
-	private Lift rightLift;
+	public static double target = 0;
 
 	@Override
 	public void init( ) {
-		controller = new PIDController( p, i, d );
+
+		robot = new MiniBot( this );
 
 		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
 
-		leftLift = new Lift( hardwareMap, "leftLift", false, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
-		rightLift = new Lift( hardwareMap, "rightLift", true, /* clawOffSet.getZ( ) */ 0, 39.25 / 25.4 / 2, 90, AngleUnit.DEGREES, 384.5, 1, new PIDController( 0.02, 0, 0.00012 ) );
-
-
-		turret = new Turret( hardwareMap, "turr", false, AngleUnit.DEGREES, MotorType.Gobilda137.TICKS_PER_ROTATION, 170.0 / 30.0, -230, 45, new PIDController( 0,0,0 ) );
 	}
 
 	@Override
 	public void loop( ) {
-		controller.setPID( p, i, d );
+		robot.turret.setPIDValues( p, i, d );
 
-		int turretPos = turret.getPosition( );
-		target = turret.convertHeadingToTicks( heading );
+		robot.turret.setTargetHeading( target );
 
-		double pid = controller.calculate( turretPos, target );
+		robot.turret.updatePID( 1 );
 
-		double power = pid + f;
-
-		turret.setTurretPower( power );
-
-		telemetry.addData( "turret pos", turretPos );
+		telemetry.addData( "turret pos", robot.turret.getTurretHeading() );
 		telemetry.addData( "target", target );
-		telemetry.addData( "PID", pid );
 		telemetry.update();
 	}
 }

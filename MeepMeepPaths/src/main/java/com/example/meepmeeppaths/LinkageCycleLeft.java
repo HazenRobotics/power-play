@@ -5,15 +5,15 @@ import static com.example.meepmeeppaths.teamcodeRequirements.PPField.TILE_SIZE;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.example.meepmeeppaths.teamcodeRequirements.MiniBot.SignalPosition;
 import com.example.meepmeeppaths.teamcodeRequirements.MiniBot;
+import com.example.meepmeeppaths.teamcodeRequirements.MiniBot.SignalPosition;
 import com.example.meepmeeppaths.teamcodeRequirements.PPField;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import com.noahbres.meepmeep.roadrunner.trajectorysequence.TrajectorySequence;
 
-public class LinkageCycle implements MeepMeepPath {
+public class LinkageCycleLeft implements MeepMeepPath {
 
-	final boolean red = true, right = true;
+	final boolean red = true, right = false;
 	final int[] quadSign = MiniBot.getQuadrantSign( red, right );
 
 	@Override
@@ -32,7 +32,7 @@ public class LinkageCycle implements MeepMeepPath {
 
 		float THREE_HALVES = 3f / 2 * PPField.TILE_CONNECTOR + THREE_HALVES_TILE;
 
-		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -TILE_SIZE * 1.5 );
+		return new Vector2d( (right ? 1 : -1) * THREE_HALVES + tilePos * (TILE_SIZE), -TILE_SIZE / 2 );
 	}
 
 	@Override
@@ -50,19 +50,9 @@ public class LinkageCycle implements MeepMeepPath {
 
 		// first drive
 		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
-//				.lineToLinearHeading( new Pose2d (36, -48, Math.toRadians( 0 ) ))
-//				.lineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 ) ))
-//				.addTemporalMarker( () -> {
-//					robot.turret.setTargetHeading( -135 );
-//				} )
-				.setTangent( Math.toRadians( 60 ) )
-				.splineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .7, Math.toRadians( 0 ) ), Math.toRadians( 0 ) )
 
-//				.setTangent( Math.toRadians( 25 ) )
-//				.splineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) ), Math.toRadians( 0 ) )
-
-//				.setTangent( Math.toRadians( 25 ) )
-//				.splineToSplineHeading( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) ), Math.toRadians( 0 ) )
+				.setTangent( Math.toRadians( 80 ) )
+				.splineToLinearHeading( new Pose2d( -(PPField.TILE_SIZE * 2 + 1), -PPField.TILE_SIZE * .65, Math.toRadians( 180 ) ), Math.toRadians( 180 ) )
 
 //				.addTemporalMarker( () -> {
 //					timer.reset();
@@ -71,39 +61,21 @@ public class LinkageCycle implements MeepMeepPath {
 //					cycleState = CycleState.LIFT_LIFT_TO_DELIVERY;
 //				} )
 				.build( );
-//		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
-//				.splineToLinearHeading( new Pose2d (36, -48, Math.toRadians( 0 ) ), Math.toRadians( 0 ))
-//				.lineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 ) ))
-////				.addTemporalMarker( () -> {
-////					robot.turret.setTargetHeading( -135 );
-////				} )
-//				.setReversed( true )
-//				.lineToLinearHeading(new Pose2d(  PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 , Math.toRadians( 0 )) )
-////				.addTemporalMarker( () -> {
-////					timer.reset();
-////					robot.setLiftTargetInches( cycleLiftHeight );
-////					autoState = AutoState.CYCLE;
-////					cycleState = CycleState.LIFT_LIFT_TO_DELIVERY;
-////				} )
-//				.build();
-
-
 		// left park
-//		return drive.trajectorySequenceBuilder( MiniBot.getStartPos( red, right ) )
-////				.setReversed( true )
-//				.lineToLinearHeading( new Pose2d( TILE_SIZE * 1.5, -TILE_SIZE * 1.5, Math.toRadians( 90 ) ) )
-//				.lineToLinearHeading( new Pose2d( TILE_SIZE / 2 + TILE_SIZE * 1, -TILE_SIZE * 1.5, Math.toRadians( 90 ) ) )
+//		return drive.trajectorySequenceBuilder( new Pose2d( -(PPField.TILE_SIZE * 2 + 1), -PPField.TILE_SIZE * .65, Math.toRadians( 180 ) ) )
+//				.lineToLinearHeading( new Pose2d( parkPosInit( right, SignalPosition.LEFT ).getX( ),
+//						parkPosInit( right, SignalPosition.LEFT ).getY( ), Math.toRadians( 270 ) ) )
 //				.build( );
 
-		// middle park
-//		return drive.trajectorySequenceBuilder( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 ) )
+//		 middle park
+//		return drive.trajectorySequenceBuilder( new Pose2d( -(PPField.TILE_SIZE * 2 + 1), -PPField.TILE_SIZE * .65, Math.toRadians( 180 ) ) )
 //
 //				.lineToLinearHeading( new Pose2d( parkPosInit( right, SignalPosition.MIDDLE ).getX( ),
 //						parkPosInit( right, SignalPosition.MIDDLE ).getY( ), Math.toRadians( 270 ) ) )
 //				.build( );
 
 		// right park
-//		return drive.trajectorySequenceBuilder( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65 ) )
+//		return drive.trajectorySequenceBuilder( new Pose2d( -(PPField.TILE_SIZE * 2 + 1), -PPField.TILE_SIZE * .65, Math.toRadians( 180 ) ) )
 //				.lineToLinearHeading( new Pose2d( parkPosInit( right, SignalPosition.RIGHT ).getX( ),
 //						parkPosInit( right, SignalPosition.RIGHT ).getY( ), Math.toRadians( 270 ) ) )
 //				.build( );

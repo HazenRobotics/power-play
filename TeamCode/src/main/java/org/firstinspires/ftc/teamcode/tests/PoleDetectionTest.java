@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.vision.PoleUtil;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.vision.SignalUtil;
 import org.firstinspires.ftc.teamcode.vision.pipelines.PoleDetector;
 
 @Autonomous(group="vision")
+@Disabled
 public class PoleDetectionTest extends LinearOpMode {
 
 	@Override

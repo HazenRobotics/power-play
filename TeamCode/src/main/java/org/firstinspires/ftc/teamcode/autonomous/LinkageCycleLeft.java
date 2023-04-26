@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import static org.firstinspires.ftc.teamcode.autonomous.LinkageCycle.CycleState.EXTEND_LINKAGE_AGAIN;
-import static org.firstinspires.ftc.teamcode.autonomous.LinkageCycle.CycleState.GRAB_CONE;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -15,12 +12,12 @@ import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.utils.localization.PPField;
 import org.firstinspires.ftc.teamcode.vision.pipelines.AprilTagDetectionPipeline;
 
-@Autonomous(name = "Linkage Cycle", group = "Autos")
-public class LinkageCycle extends LinearOpMode {
+@Autonomous(name = "Linkage Cycle (Left)", group = "Autos")
+public class LinkageCycleLeft extends LinearOpMode {
 
 	MiniBot robot;
 
-	final boolean red = true, right = true;
+	final boolean red = true, right = false;
 
 	public enum AutoState {
 		INITIAL_DRIVE,
@@ -51,7 +48,7 @@ public class LinkageCycle extends LinearOpMode {
 	ParkState parkState = ParkState.RESET;
 	double coneStackHeight = 5;
 	double cycleTurretHeading;
-	double cycleLiftHeight = PPField.Junction.HIGH.height( ) + 2.5;
+	double cycleLiftHeight = PPField.Junction.HIGH.height( ) + 1.5;
 	double currentLiftHeight;
 	double turretHeading;
 	ElapsedTime timer = new ElapsedTime( );
@@ -105,11 +102,11 @@ public class LinkageCycle extends LinearOpMode {
 //				.setTangent( Math.toRadians( 50 ) )
 //				.lineToSplineHeading( new Pose2d( PPField.TILE_SIZE * 1.5, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) ) )
 
-				.setTangent( Math.toRadians( 60 ) )
-				.splineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) ), Math.toRadians( 0 ) )
+				.setTangent( Math.toRadians( 80 ) )
+				.splineToLinearHeading( new Pose2d( -(PPField.TILE_SIZE * 2 + 1), -PPField.TILE_SIZE * .65, Math.toRadians( 180 ) ), Math.toRadians( 180 ) )
 
 				.addTemporalMarker( 2.2, ( ) -> {
-					robot.turret.setTargetHeading( -142 );
+					robot.turret.setTargetHeading( -135 );
 				} )
 //				.setReversed( true )
 //				.lineToLinearHeading( new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) ) )
@@ -125,7 +122,7 @@ public class LinkageCycle extends LinearOpMode {
 
 
 
-		Pose2d parkStartPos = new Pose2d( PPField.TILE_SIZE * 2 + 1, -PPField.TILE_SIZE * .65, Math.toRadians( 0 ) );
+		Pose2d parkStartPos = new Pose2d( -(PPField.TILE_SIZE * 2 + 1), -PPField.TILE_SIZE * .65, Math.toRadians( 180 ) );
 		TrajectorySequence leftParkTrajectory = robot.getTrajectorySequenceBuilder( parkStartPos )
 //				.setReversed( true )
 				.lineToLinearHeading( new Pose2d( robot.parkPosInit( right, AprilTagDetectionPipeline.SignalPosition.LEFT ).getX( ),
@@ -141,7 +138,6 @@ public class LinkageCycle extends LinearOpMode {
 				.lineToLinearHeading( new Pose2d( robot.parkPosInit( right, AprilTagDetectionPipeline.SignalPosition.RIGHT ).getX( ),
 						robot.parkPosInit( right, AprilTagDetectionPipeline.SignalPosition.RIGHT ).getY( ), Math.toRadians( 270 ) ) )
 				.build( );
-
 
 		robot.drive.followTrajectorySequenceAsync( toCycle );
 
@@ -191,8 +187,8 @@ public class LinkageCycle extends LinearOpMode {
 							if( timer.milliseconds( ) > 300 ) {
 								timer.reset( );
 								robot.claw.close( );
-								robot.linkage.moveToExtensionDistance( 11 );
-								cycleState = GRAB_CONE;
+								robot.linkage.moveToExtensionDistance( 10 );
+								cycleState = CycleState.GRAB_CONE;
 							}
 							break;
 						case GRAB_CONE:
@@ -204,7 +200,7 @@ public class LinkageCycle extends LinearOpMode {
 						case LIFT_LIFT_TO_DELIVERY:
 							if( currentLiftHeight > 10 ) {
 								cycleTurretHeading = robot.getJunctionTurretHeading( (red && right) || (!red && !right) ? 1 : -1, 0 );
-								robot.turret.setTargetHeading( cycleTurretHeading + 6 );
+								robot.turret.setTargetHeading( cycleTurretHeading + 5 ); // 8
 								robot.linkage.moveToExtensionDistance( 6 );
 								cycleState = CycleState.TURN_TURRET_TO_DELIVERY;
 							}
@@ -212,8 +208,8 @@ public class LinkageCycle extends LinearOpMode {
 						case TURN_TURRET_TO_DELIVERY:
 							if( Math.abs( currentLiftHeight - cycleLiftHeight ) < 1 && (turretHeading < robot.turret.getTargetHeading( ) + 1 && turretHeading > robot.turret.getTargetHeading( ) - 1) ) {
 								timer.reset( );
-								robot.linkage.moveToExtensionDistance( 12.5 );
-								cycleState = EXTEND_LINKAGE_AGAIN;
+								robot.linkage.moveToExtensionDistance( 14 );
+								cycleState = CycleState.EXTEND_LINKAGE_AGAIN;
 							}
 							break;
 						case EXTEND_LINKAGE_AGAIN:
@@ -247,10 +243,9 @@ public class LinkageCycle extends LinearOpMode {
 				case PARK:
 					switch( parkState ) {
 						case RESET:
-							robot.claw.open();
-							robot.linkage.moveToExtensionDistance( 0 );
 							robot.turret.setTargetHeading( 0 );
 							robot.setLiftTargetInches( 1 );
+							robot.linkage.moveToExtensionDistance( 0 );
 							parkState = ParkState.PARK;
 							break;
 						case PARK:

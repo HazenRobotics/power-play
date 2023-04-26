@@ -62,7 +62,7 @@ public class MiniBot {
 
 		double x, y;
 
-		SignalPosition signalPosition = SignalPosition.MIDDLE;
+		SignalPosition signalPosition = SignalPosition.LEFT;
 
 		double tilePos = 0.05;
 		if( signalPosition == SignalPosition.LEFT )
