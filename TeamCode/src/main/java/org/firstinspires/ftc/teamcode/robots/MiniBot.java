@@ -37,20 +37,17 @@ public class MiniBot extends Robot {
 	public OpMode opMode;
 	public HardwareMap hardwareMap;
 
-	//	public MecanumDrive mecanumDrive;
 	public MecanumDriveUnparalleled drive;
 
 	public Lift leftLift;
 	public Lift rightLift;
+
 	public Linkage linkage;
-	//	public ServoTurret turret;
+
 	public Turret turret;
-	//	public Claw claw;
-//	public RotatingClaw claw;
-//	public TiltingClaw claw;
-//	public TwoAxesClaw claw;
+
 	public SingleServoClaw claw;
-	//	public SignalUtil signalUtil;
+
 	public AprilTagsUtil signalUtil;
 //	public BNO055IMU gyro;
 //	public RGBLights lights;
@@ -60,31 +57,6 @@ public class MiniBot extends Robot {
 
 	public final float[] liftHeights = { 0, Junction.LOW.height( ), Junction.MEDIUM.height( ), Junction.HIGH.height( ) };
 
-//	Pose2d lastPose = drive.getPoseEstimate( );
-
-
-	/*public enum RobotDimensions {
-		FL( 7f, 6.625f ),
-		BL( 7f, 6.625f ),
-		FR( 6f, 7.5f ),
-		BR( 6f, 6.875f );
-
-		RobotDimensions( float x, float y ) {
-			xOffset = x;
-			yOffset = y;
-		}
-
-		public float xOffset;
-		public float yOffset;
-
-		public float getXOffset( ) {
-			return xOffset;
-		}
-
-		public float getYOffset( ) {
-			return yOffset;
-		}
-	}*/
 
 	public static final float ROBOT_LENGTH = 14.75f;
 	public static final float ROBOT_MAX_LENGTH = 15.75f; // with claw
