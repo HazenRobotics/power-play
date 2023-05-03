@@ -28,7 +28,7 @@ public class MiniTeleOp extends OpMode {
 	GamepadEvents controller2;
 	boolean movingLift = false;
 	boolean movingTurret = false;
-	double maxCurrent = 5;
+	double maxCurrent = 4.9;
 	float power = 0.1f;
 	boolean powerOverridden = false;
 	Orientation gyroOrientation;

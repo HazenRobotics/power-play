@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.robots.MiniBot;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
+import java.util.Vector;
+
 @TeleOp(name = "🎮 SM Mini TeleOP", group = "ANewTeleOp")
 //@Disabled
 public class UnparalleledFSMTeleOp extends LinearOpMode {
@@ -35,6 +37,8 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	double linkageDeliveryPosition = 11;
 	double turretDeliveryPosition = -139;
 	double tilt;
+	double heading;
+	boolean fieldCentric = false;
 
 	public enum Speeds {
 
@@ -132,7 +136,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //						linkagePos = 3;
 //						liftState = PowerControl.USING_PID;
 //						turretState = PowerControl.USING_PID;
-//						robot.leftLift.setTargetInches( 0 );
+//						robot.	leftLift.setTargetInches( 0 );
 //						robot.rightLift.setTargetInches( 0 );
 //						robot.turret.setTarget( 0 );
 //						opModeState = TeleOpStates.RESET;
@@ -193,9 +197,6 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 					opModeState = TeleOpStates.DRIVER_CONTROLLED;
 			}
 
-
-
-
 			if( liftState == PowerControl.USING_PID ) {
 				robot.leftLift.updatePID( 1 );
 				robot.rightLift.updatePID( 1 );
@@ -215,22 +216,36 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 	public void driveRobot( ) {
 
-		if( Math.abs( tilt + 90 ) > 10 )
+		if( Math.abs( tilt + 90 ) > 10 ) {
 			robot.drive.setWeightedDrivePower(
 					new Pose2d(
-							Math.signum( tilt + 90 ) * Drive.normalize( Math.abs( tilt + 90  ), 0, 70, 0, 0.8 ),
+							Math.signum( tilt + 90 ) * Drive.normalize( Math.abs( tilt + 90 ), 0, 70, 0, 0.8 ),
 							0,
 							0
 					)
 			);
-		else
+		} else if (fieldCentric) {
+			Vector2d input = new Vector2d(
+					-gamepad1.left_stick_y,
+					-gamepad1.left_stick_x
+			).rotated(robot.drive.getPoseEstimate().getHeading());
+
 			robot.drive.setWeightedDrivePower(
-				new Pose2d(
-						-gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
-						-gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
-						-gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 )
-				)
-		);
+					new Pose2d(
+							input.getX(),
+							input.getY(),
+							-gamepad1.right_stick_x
+					)
+			);
+		} else {
+			robot.drive.setWeightedDrivePower(
+					new Pose2d(
+							-gamepad1.left_stick_y * Speeds.DRIVE.speed( gamepad1 ),
+							-gamepad1.left_stick_x * Speeds.STRAFE.speed( gamepad1 ),
+							-gamepad1.right_stick_x * Speeds.ROTATE.speed( gamepad1 )
+					)
+			);
+		}
 	}
 
 	public void updateLinkagePos( ) {
@@ -242,14 +257,14 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 
 	public void subsystemControls( ) {
 		if( liftState != PowerControl.USING_PID ) {
-			robot.liftPower( (gamepad1.right_trigger + gamepad2.right_trigger) - ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.5) /*+ power*/ );
+			robot.liftPower( ((gamepad1.right_trigger + gamepad2.right_trigger) * 0.75) - ((gamepad1.left_trigger + gamepad2.left_trigger) * 0.25) /*+ power*/ );
 		} else if( gamepad1.right_trigger + gamepad1.left_trigger + gamepad2.right_trigger + gamepad2.left_trigger > 0.05 ) {
 			liftState = PowerControl.POWER_BASED;
 		}
 
-		if( controller2.x.onPress( ) ) {
-			robot.turret.resetTurret( );
-		}
+//		if( controller2.x.onPress( ) ) {
+//			robot.turret.resetTurret( );
+//		}
 
 //		if( turretState != PowerControl.USING_PID ) {
 //			robot.turret.setTurretPower( controller2.right_stick_x * 0.5 );
@@ -257,7 +272,7 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //			turretState = PowerControl.POWER_BASED;
 //		}
 
-		robot.turret.setTurretPower( (gamepad1.dpad_right ? 0.25 : 0) - (gamepad1.dpad_left ? 0.25 : 0) );
+		robot.turret.setTurretPower( (gamepad1.dpad_right ? 0.15 : 0) - (gamepad1.dpad_left ? 0.15 : 0) );
 
 		if( controller1.a.onPress( ) || controller2.a.onPress( ) )
 			robot.claw.toggle( );
@@ -266,9 +281,12 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //			dpadToLiftPos( );
 //		}
 
-		if( controller2.dpad_left.onPress( ) || controller2.dpad_right.onPress( ) || controller2.y.onPress( ) ) {
-			dpadToTurretPos( );
-		}
+//		if( controller2.dpad_left.onPress( ) || controller2.dpad_right.onPress( ) || controller2.y.onPress( ) ) {
+//			dpadToTurretPos( );
+//		}
+
+		if (controller1.y.onPress())
+			fieldCentric = !fieldCentric;
 
 		updateLinkagePos( );
 	}
@@ -326,20 +344,25 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 //		telemetry.addData( "lift target", robot.leftLift.getTargetPosition() );
 //		telemetry.addData( "turret target", robot.turret.getTargetPosition() );
 
-		telemetry.addData( "linkage distance from camera", robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET );
-		telemetry.addData( "lift distance from servo", robot.leftLift.getMotorPositionInch( ) );
-		telemetry.addData( "intended angle", Math.toDegrees( Math.atan( robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET / (robot.leftLift.getMotorPositionInch( ) + 0.001) ) ) );
-		telemetry.addData( "actual angle", robot.angler.servoToAngle( robot.angler.servo.getPosition( ) ) );
-		telemetry.addData( "servo pos", robot.angler.servo.getPosition( ) );
+//		telemetry.addData( "linkage distance from camera", robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET );
+//		telemetry.addData( "lift distance from servo", robot.leftLift.getMotorPositionInch( ) );
+//		telemetry.addData( "intended angle", Math.toDegrees( Math.atan( robot.linkage.getExtensionDistance( ) + MiniBot.CLAW_CAMERA_OFFSET / (robot.leftLift.getMotorPositionInch( ) + 0.001) ) ) );
+//		telemetry.addData( "actual angle", robot.angler.servoToAngle( robot.angler.servo.getPosition( ) ) );
+//		telemetry.addData( "servo pos", robot.angler.servo.getPosition( ) );
 
 		telemetry.addData( "tilt angle", tilt );
+		telemetry.addData("turret power", robot.turret.getPower());
 
 		double loop = System.nanoTime( );
 		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );
 		loopTime = loop;
-		telemetry.update( );
+//		telemetry.update( );
 
 //		telemetry.addLine( "Docs:\nDrive:\nNormal mecanum drive\nSubSystems:\nA = Claw\nTriggers = Lift Up and Down" );
+
+		telemetry.addData( "poseX", robot.drive.getPoseEstimate().getX());
+		telemetry.addData( "poseY", robot.drive.getPoseEstimate().getY());
+		telemetry.addData( "heading", robot.drive.getPoseEstimate().getHeading());
 
 		telemetry.update( );
 	}
