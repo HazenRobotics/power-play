@@ -24,9 +24,11 @@ public class PIDF_Tuning extends OpMode {
 
 	DcMotorEx motor;
 
+	public double TICKS_PER_REV = 537.7;
+
 	public static double p = 0, i = 0, d = 0;
 
-	public static double target = 0;
+	public static double angle = 0;
 
 	PIDController controller;
 
@@ -34,6 +36,7 @@ public class PIDF_Tuning extends OpMode {
 	public void init( ) {
 		controller = new PIDController( p, i, d );
 		motor = hardwareMap.get( DcMotorEx.class, "rotate" );
+		motor.setDirection( DcMotorSimple.Direction.REVERSE );
 
 		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
 
@@ -43,10 +46,39 @@ public class PIDF_Tuning extends OpMode {
 	public void loop( ) {
 		controller.setPID( p, i, d );
 
-		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) );
+		double motorAngle = convertTicksToAngle( motor.getCurrentPosition( ) );
 
-		telemetry.addData( "rotate pos", motor.getCurrentPosition() );
-		telemetry.addData( "target", target );
+		double difference = -findShortestAngularTravel( motorAngle, angle );
+
+		motor.setPower( controller.calculate( motorAngle, motorAngle + difference ) );
+
+		if (gamepad1.x) {
+			angle = 0;
+			motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+			motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+		}
+
+		telemetry.addData( "rotate pos", convertTicksToAngle( motor.getCurrentPosition() ) );
+		telemetry.addData( "target angle", angle );
 		telemetry.update();
+
+	}
+
+	public double convertTicksToAngle(double ticks) {
+		double angle = (ticks % TICKS_PER_REV) * (360.0 / TICKS_PER_REV);
+		return angle < 0 ? angle + 360 : angle;
+	}
+
+	public double convertAngleToTicks( double angle ) {
+		return (angle / 360) * TICKS_PER_REV;
+	}
+
+	public double findShortestAngularTravel (double motAngle, double joyAngle ) {
+		double temp = Math.abs( joyAngle - motAngle ) % 360;
+		double distance = temp > 180 ? 360 - temp : temp;
+
+		int sign = (motAngle - joyAngle >= 0 && motAngle - joyAngle <= 180) || (motAngle - joyAngle <= -180 && motAngle - joyAngle >= -360) ? 1 : -1;
+
+		return distance * sign;
 	}
 }
