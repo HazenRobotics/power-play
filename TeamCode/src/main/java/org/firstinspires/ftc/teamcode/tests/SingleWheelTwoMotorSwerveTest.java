@@ -24,7 +24,7 @@ public class SingleWheelTwoMotorSwerveTest extends LinearOpMode {
 	double difference;
 	double maxPower = 0;
 
-	PIDController controller = new PIDController( 0.005, 0, 0.0001 );
+	PIDController controller = new PIDController( 0.06, 0, 0.001 );
 
 
 	@Override
