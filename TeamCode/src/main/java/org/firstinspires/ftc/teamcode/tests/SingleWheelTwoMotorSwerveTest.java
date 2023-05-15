@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.robots.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.SwervePod;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp
@@ -17,83 +17,72 @@ public class SingleWheelTwoMotorSwerveTest extends LinearOpMode {
 	double TICKS_PER_REV = 537.7;
 
 	GamepadEvents controller1;
-	DcMotorEx rotateMotor, driveMotor;
-	Vector2d vector;
-	double joystickAngle;
-	double loopTime = 0;
-	double difference;
-	double maxPower = 0;
+	SwervePod pod;
 
-	PIDController controller = new PIDController( 0.06, 0, 0.001 );
+	double loopTime = 0;
+	double forwardDifference, reverseDifference, usedDifference;
+	double reverseDirection;
+	double joyAngle, joyMag, joyX, joyY;
 
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
-		rotateMotor = hardwareMap.get( DcMotorEx.class, "rotate" );
-		rotateMotor.setDirection( DcMotorSimple.Direction.REVERSE );
-		driveMotor = hardwareMap.get( DcMotorEx.class, "drive" );
+		pod = new SwervePod( hardwareMap, "drive" , false, "rotate", true, new double[] {0.5, 0.04}, 537.7 );
+
 		controller1 = new GamepadEvents( gamepad1 );
 		Robot.writeToDefaultFile( "start of file", false, false );
 
 		waitForStart( );
 
 		while( !isStopRequested( ) && opModeIsActive( ) ) {
-			vector = new Vector2d( gamepad1.left_stick_x, -gamepad1.left_stick_y );
 
-			if( vector.magnitude( ) > 0.1 )
-				joystickAngle = Math.toDegrees( vector.angle( ) ) + 180;
+			joyX = gamepad1.left_stick_x;
+			joyY = -gamepad1.left_stick_y;
+			joyMag = Math.sqrt( joyY * joyY + joyX * joyX );
 
-//			driveMotor.setPower( vector.magnitude( ) * .25 );
+			if( joyMag > 0.1 ) joyAngle = Math.atan2( joyY, joyX );
 
-			double motorAngle = convertTicksToAngle( rotateMotor.getCurrentPosition( ) );
+			joyAngle += joyAngle < 0 ? 360 : 0;
 
-			difference = -findShortestAngularTravel( motorAngle, joystickAngle );
+			pod.setPodAngleTarget( joyAngle );
 
-			rotateMotor.setPower( controller.calculate( motorAngle, motorAngle + difference ) );
-			maxPower = Math.max( maxPower, rotateMotor.getPower() );
+			pod.updatePD();
 
-			if( controller1.x.onPress( ) ) {
-				rotateMotor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
-				rotateMotor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-			}
+//			forwardDifference = findShortestAngularTravel( joyAngle, motorAngle );
+//			reverseDifference = findShortestAngularTravel( joyAngle, motorAngle + 180 );
+
+//			if( Math.abs( reverseDifference ) < Math.abs( forwardDifference ) ) {
+//				usedDifference = reverseDifference;
+//				reverseDirection = -1;
+//			} else {
+//				usedDifference = forwardDifference;
+//				reverseDirection = 1;
+//			}
+
+//			driveMotor.setPower( joyMag * reverseDirection );
+
+//			if( controller1.x.onPress( ) ) {
+//				rotateMotor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+//				rotateMotor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+//			}
 
 			displayTelemetry( );
 			controller1.update( );
 		}
 	}
 
-	public double convertTicksToAngle(double ticks) {
-		double angle = (ticks % TICKS_PER_REV) * (360.0 / TICKS_PER_REV);
-		return angle < 0 ? angle + 360 : angle;
-	}
-	
-	public double convertAngleToTicks( double angle ) {
-		return (angle / 360) * TICKS_PER_REV;
-	}
-
-	public double findShortestAngularTravel (double motAngle, double joyAngle ) {
-		double temp = Math.abs( joyAngle - motAngle ) % 360;
-		double distance = temp > 180 ? 360 - temp : temp;
-
-		int sign = (motAngle - joyAngle >= 0 && motAngle - joyAngle <= 180) || (motAngle - joyAngle <= -180 && motAngle - joyAngle >= -360) ? 1 : -1;
-
-		return distance * sign;
-	}
-
-
-
 	public void displayTelemetry( ) {
 		telemetry.addData( "joystick_x", gamepad1.left_stick_x );
 		telemetry.addData( "joystick_y", -gamepad1.left_stick_y );
-		telemetry.addData( "joystick angle", joystickAngle );
-		telemetry.addData( "joystick magnitude", vector.magnitude( ) );
-		telemetry.addData( "drive motor power", driveMotor.getPower( ) );
-		telemetry.addData( "rotate motor power", rotateMotor.getPower( ) );
-		telemetry.addData( "rotate motor angle", convertTicksToAngle( rotateMotor.getCurrentPosition( ) ) );
-		telemetry.addData( "rotate motor ticks", rotateMotor.getCurrentPosition( ) );
-		telemetry.addData( "joy stick angle to ticks", convertAngleToTicks( joystickAngle ) );
-		telemetry.addData( "difference", difference );
-		telemetry.addData( "max power", maxPower );
+		telemetry.addData( "joystick angle", joyAngle );
+		telemetry.addData( "joystick magnitude", joyMag );
+		telemetry.addData( "drive motor power", pod.driveMotor.getPower( ) );
+		telemetry.addData( "rotate motor power", pod.rotateMotor.getPower( ) );
+		telemetry.addData( "rotate motor angle", pod.getPodAngle() );
+		telemetry.addData( "forwardDifference", forwardDifference );
+		telemetry.addData( "reverseDifference", reverseDifference );
+		telemetry.addData( "usedDifference", usedDifference );
+		telemetry.addData( "reverseDirection", reverseDirection );
 
 		double loop = System.nanoTime( );
 		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );

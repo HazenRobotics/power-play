@@ -1,28 +1,84 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.apache.commons.math3.util.MathUtils.TWO_PI;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.utils.SwervePDController;
 
 public class SwervePod {
 
+	public DcMotorEx driveMotor, rotateMotor;
 	double TICKS_PER_REV;
-	DcMotorEx driveMotor, rotateMotor;
+	SwervePDController controller;
 
-	public SwervePod() {
+	double targetAngle = Math.PI / 2;
 
+
+	public SwervePod(HardwareMap hw) {
+		this(hw, "drive", false, "rotate", true, new double[] {0,0}, 537.7 );
+	}
+
+	public SwervePod( HardwareMap hw, String driveM, boolean driveReverse,
+					  String rotateM, boolean rotateReverse,
+					  double[] PD, double TPR ) {
+		driveMotor = hw.get( DcMotorEx.class, driveM );
+		driveMotor.setDirection( driveReverse ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD );
+		rotateMotor = hw.get( DcMotorEx.class, rotateM );
+		rotateMotor.setDirection( rotateReverse ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD );
+
+		controller = new SwervePDController( PD[0], PD[1] );
+		TICKS_PER_REV = TPR;
+	}
+
+	public void setPD(double p, double d) {
+		controller.setPD( p, d );
+	}
+
+	public void updatePD() {
+		rotateMotor.setPower( -controller.update( targetAngle, getPodAngle() ) );
+	}
+
+	public double getError( ) {
+		return controller.getError();
+	}
+
+	public void setWheelPower(double power) {
+		driveMotor.setPower( power );
+	}
+
+	public void reverseDriveMotor(  ) {
+		driveMotor.setDirection( driveMotor.getDirection() == DcMotorSimple.Direction.FORWARD ?
+				DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD );
+	}
+
+	public boolean getDriveMotorReversed( ) {
+		return driveMotor.getDirection() == DcMotorSimple.Direction.REVERSE;
+	}
+
+	public void setPodAngleTarget( double target ) {
+		targetAngle = target;
+	}
+
+	public double getPodAngle( ) {
+		return convertTicksToAngle( rotateMotor.getCurrentPosition() );
+	}
+
+	public void resetPodAngle( ) {
+		rotateMotor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+		rotateMotor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
 	}
 
 	public double convertTicksToAngle(double ticks) {
-		double angle = (ticks % TICKS_PER_REV) * (360.0 / TICKS_PER_REV);
-		return angle < 0 ? angle + 360 : angle;
+		double angle = (ticks % TICKS_PER_REV) * (TWO_PI / TICKS_PER_REV);
+		return angle < 0 ? angle + TWO_PI : angle;
 	}
 
-	public double findShortestAngularTravel (double motAngle, double joyAngle ) {
-		double temp = Math.abs( joyAngle - motAngle ) % 360;
-		double distance = temp > 180 ? 360 - temp : temp;
-
-		int sign = (motAngle - joyAngle >= 0 && motAngle - joyAngle <= 180) || (motAngle - joyAngle <= -180 && motAngle - joyAngle >= -360) ? 1 : -1;
-
-		return distance * sign;
+	public double convertAngleToTicks( double angle ) {
+		return (angle / 360) * TICKS_PER_REV;
 	}
 
 }
