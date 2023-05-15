@@ -60,6 +60,10 @@ public class SwervePod {
 		driveMotor.setPower( power );
 	}
 
+	public void setWheelVelocity( double velocity ) {
+		driveMotor.setVelocity( velocity );
+	}
+
 	public void reverseDriveMotor( ) {
 		driveMotor.setDirection( driveMotor.getDirection( ) == DcMotorSimple.Direction.FORWARD ?
 				DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD );
