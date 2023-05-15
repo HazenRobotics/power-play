@@ -18,10 +18,20 @@ public class SwervePod {
 	double targetAngle = Math.PI / 2;
 
 
-	public SwervePod(HardwareMap hw) {
-		this(hw, "drive", false, "rotate", true, new double[] {0,0}, 537.7 );
+	public SwervePod( HardwareMap hw ) {
+		this( hw, "drive", false, "rotate", true, new double[]{ 0, 0 }, 537.7 );
 	}
 
+	/**
+	 *
+	 * @param hw
+	 * @param driveM
+	 * @param driveReverse
+	 * @param rotateM
+	 * @param rotateReverse
+	 * @param PD
+	 * @param TPR
+	 */
 	public SwervePod( HardwareMap hw, String driveM, boolean driveReverse,
 					  String rotateM, boolean rotateReverse,
 					  double[] PD, double TPR ) {
@@ -34,29 +44,29 @@ public class SwervePod {
 		TICKS_PER_REV = TPR;
 	}
 
-	public void setPD(double p, double d) {
+	public void setPD( double p, double d ) {
 		controller.setPD( p, d );
 	}
 
-	public void updatePD() {
-		rotateMotor.setPower( -controller.update( targetAngle, getPodAngle() ) );
+	public void updatePD( ) {
+		rotateMotor.setPower( -controller.update( targetAngle, getPodAngle( ) ) );
 	}
 
 	public double getError( ) {
-		return controller.getError();
+		return controller.getError( );
 	}
 
-	public void setWheelPower(double power) {
+	public void setWheelPower( double power ) {
 		driveMotor.setPower( power );
 	}
 
-	public void reverseDriveMotor(  ) {
-		driveMotor.setDirection( driveMotor.getDirection() == DcMotorSimple.Direction.FORWARD ?
+	public void reverseDriveMotor( ) {
+		driveMotor.setDirection( driveMotor.getDirection( ) == DcMotorSimple.Direction.FORWARD ?
 				DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD );
 	}
 
 	public boolean getDriveMotorReversed( ) {
-		return driveMotor.getDirection() == DcMotorSimple.Direction.REVERSE;
+		return driveMotor.getDirection( ) == DcMotorSimple.Direction.REVERSE;
 	}
 
 	public void setPodAngleTarget( double target ) {
@@ -64,7 +74,7 @@ public class SwervePod {
 	}
 
 	public double getPodAngle( ) {
-		return convertTicksToAngle( rotateMotor.getCurrentPosition() );
+		return convertTicksToAngle( rotateMotor.getCurrentPosition( ) );
 	}
 
 	public void resetPodAngle( ) {
@@ -72,7 +82,7 @@ public class SwervePod {
 		rotateMotor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
 	}
 
-	public double convertTicksToAngle(double ticks) {
+	public double convertTicksToAngle( double ticks ) {
 		double angle = (ticks % TICKS_PER_REV) * (TWO_PI / TICKS_PER_REV);
 		return angle < 0 ? angle + TWO_PI : angle;
 	}
