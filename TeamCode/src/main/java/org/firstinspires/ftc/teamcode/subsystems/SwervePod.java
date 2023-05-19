@@ -48,7 +48,7 @@ public class SwervePod {
 		controller.setPID( p, i, d );
 	}
 
-	public void updatePD( ) {
+	public void updateRotatePD( ) {
 		rotateMotor.setPower( -controller.update( targetAngle, getPodAngle( ) ) );
 	}
 

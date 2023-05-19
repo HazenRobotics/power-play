@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.drives;
 
-import com.arcrobotics.ftclib.geometry.Vector2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.SwervePod;
@@ -79,6 +78,7 @@ public class FourWheelSwerveDrive implements Drive {
 
 			swervePods[i].setWheelPower( wheelSpeeds[i] );
 			swervePods[i].setPodAngleTarget( wheelAngles[i] );
+			swervePods[i].updateRotatePD();
 		}
 
 

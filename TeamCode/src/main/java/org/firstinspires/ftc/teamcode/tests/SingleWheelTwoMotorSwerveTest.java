@@ -4,14 +4,9 @@ import static org.apache.commons.math3.util.MathUtils.TWO_PI;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.teamcode.robots.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.SwervePod;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
@@ -52,7 +47,7 @@ public class SingleWheelTwoMotorSwerveTest extends LinearOpMode {
 			if (Math.abs(joyAngle - pod.getPodAngle()) > Math.toRadians( 3 ))
 				pod.setPodAngleTarget( joyAngle );
 
-			pod.updatePD();
+			pod.updateRotatePD();
 
 //			forwardDifference = findShortestAngularTravel( joyAngle, motorAngle );
 //			reverseDifference = findShortestAngularTravel( joyAngle, motorAngle + 180 );
