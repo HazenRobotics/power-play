@@ -22,16 +22,21 @@ import org.firstinspires.ftc.teamcode.utils.MotorType;
 @TeleOp(group = "Test" )
 public class PIDF_Tuning extends OpMode {
 
-	MiniBot robot;
+	DcMotorEx motor;
+
+	public double TICKS_PER_REV = 537.7;
 
 	public static double p = 0, i = 0, d = 0;
 
 	public static double target = 0;
 
+	PIDController controller;
+
 	@Override
 	public void init( ) {
-
-		robot = new MiniBot( this );
+		controller = new PIDController( p, i, d );
+		motor = hardwareMap.get( DcMotorEx.class, "rotate" );
+		motor.setDirection( DcMotorSimple.Direction.REVERSE );
 
 		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
 
@@ -39,14 +44,19 @@ public class PIDF_Tuning extends OpMode {
 
 	@Override
 	public void loop( ) {
-		robot.turret.setPIDValues( p, i, d );
+		controller.setPID( p, i, d );
 
-		robot.turret.setTargetHeading( target );
+		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) );
 
-		robot.turret.updatePID( 1 );
+		if (gamepad1.x) {
+			target = 0;
+			motor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );
+			motor.setMode( DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+		}
 
-		telemetry.addData( "turret pos", robot.turret.getTurretHeading() );
-		telemetry.addData( "target", target );
+		telemetry.addData( "rotate pos", motor.getCurrentPosition() );
+		telemetry.addData( "target angle", target );
 		telemetry.update();
+
 	}
 }
