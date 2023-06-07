@@ -44,8 +44,18 @@ public class AidanTTeleop extends OpMode {
 		if (controller.a.onPress()){
 			arm.move();
 		}
-
-
 		controller.update();
 	}
 }
+
+
+//classname
+
+	//subsystem 1
+		//subsystem methods
+	//subsystem 2
+		//subsystem methods
+	//...
+
+	//use of subsystems in conjunction (theoretical usage, i.e. linkage & claw together)
+
