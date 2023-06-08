@@ -60,7 +60,7 @@ public class SingleWheelTwoMotorSwerveTest extends LinearOpMode {
 //				reverseDirection = 1;
 //			}
 
-//			driveMotor.setPower( joyMag * reverseDirection );
+			pod.setWheelPower( joyMag /** reverseDirection*/ );
 
 //			if( controller1.x.onPress( ) ) {
 //				rotateMotor.setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER );

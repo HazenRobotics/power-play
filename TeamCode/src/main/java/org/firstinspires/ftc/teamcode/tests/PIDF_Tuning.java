@@ -26,7 +26,7 @@ public class PIDF_Tuning extends OpMode {
 
 	public double TICKS_PER_REV = 537.7;
 
-	public static double p = 0, i = 0, d = 0;
+	public static double p = 0, i = 0, d = 0, f = 0;
 
 	public static double target = 0;
 
@@ -46,7 +46,7 @@ public class PIDF_Tuning extends OpMode {
 	public void loop( ) {
 		controller.setPID( p, i, d );
 
-		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) );
+		motor.setPower( controller.calculate( motor.getCurrentPosition(), target ) + f );
 
 		if (gamepad1.x) {
 			target = 0;
