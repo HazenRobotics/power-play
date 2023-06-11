@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.Lessons;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
-
+@Autonomous(name = "LessonTester")
 public class LessonTester extends LinearOpMode {
 	Claw placeholder = new Claw( new double[]{ 0, 1 },hardwareMap.get( Servo.class,"test" ) );
 	Lesson test = placeholder; //replace with class you are testing
