@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ConnersArm {
 	Servo arm;
 	public ConnersArm( HardwareMap map ){
-		arm = map.get(Servo.class,"arm");
+		arm = map.get(Servo.class,"arm1");
 		armUp();
 	}
 
