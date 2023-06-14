@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.subsystems.ConnersArm;
 import org.firstinspires.ftc.teamcode.subsystems.ConnersEyes;
+import org.firstinspires.ftc.teamcode.subsystems.MegansClaw;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 @TeleOp(name = "AidanTTeleop", group = "TeleOp")
 public class AidanTTeleop extends OpMode {
@@ -17,6 +18,8 @@ public class AidanTTeleop extends OpMode {
 	//SubSystem for arm
 	ConnersArm arm;
 	ConnersEyes eyes;
+
+	MegansClaw claw;
 	@Override
 	public void init( ) {
 		for(int i=0;i<motors.length;i++){
@@ -27,6 +30,7 @@ public class AidanTTeleop extends OpMode {
 		controller = new GamepadEvents( gamepad1 );
 		arm = new ConnersArm(hardwareMap);
 		eyes = new ConnersEyes(hardwareMap);
+		claw = new MegansClaw( hardwareMap );
 	}
 
 	@Override
@@ -44,6 +48,10 @@ public class AidanTTeleop extends OpMode {
 		if (controller.a.onPress()){
 			arm.move();
 		}
+		if (controller.b.onPress()){
+			claw.motion();
+		}
+
 		controller.update();
 	}
 }
