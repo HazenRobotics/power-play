@@ -5,6 +5,7 @@ import static org.apache.commons.math3.util.MathUtils.TWO_PI;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.apache.commons.math3.util.FastMath;
@@ -14,7 +15,7 @@ public class Axon180Swerve extends LinearOpMode {
 
 	Servo rotate;
 	DcMotorEx drive;
-	double joyAngle, joyMag, joyX, joyY, reverseMotor = 1;
+	double joyAngle, joyMag, joyX, joyY, reverseMotor = 1, loopTime;
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
@@ -45,6 +46,11 @@ public class Axon180Swerve extends LinearOpMode {
 
 	public void updateTelemetry() {
 		telemetry.addData( "joyAngle", joyAngle );
+
+		double loop = System.nanoTime( );
+		telemetry.addData( "hz ", 1000000000 / (loop - loopTime) );
+		loopTime = loop;
+
 		telemetry.update();
 	}
 }
