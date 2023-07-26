@@ -224,19 +224,6 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 							0
 					)
 			);
-		} else if (fieldCentric) {
-			Vector2d input = new Vector2d(
-					-gamepad1.left_stick_y,
-					-gamepad1.left_stick_x
-			).rotated(robot.drive.getPoseEstimate().getHeading());
-
-			robot.drive.setWeightedDrivePower(
-					new Pose2d(
-							input.getX(),
-							input.getY(),
-							-gamepad1.right_stick_x
-					)
-			);
 		} else {
 			robot.drive.setWeightedDrivePower(
 					new Pose2d(
@@ -363,6 +350,9 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 		telemetry.addData( "poseX", robot.drive.getPoseEstimate().getX());
 		telemetry.addData( "poseY", robot.drive.getPoseEstimate().getY());
 		telemetry.addData( "heading", robot.drive.getPoseEstimate().getHeading());
+
+		telemetry.addData( "gyro data", robot.gyro.getAngularOrientation());
+
 
 		telemetry.update( );
 	}
