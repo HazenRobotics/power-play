@@ -233,7 +233,7 @@ public class MiniBot extends Robot {
 	 * @param right true if on the right side from the perspective of the driver
 	 * @return the starting position of the robot in these circumstances
 	 */
-	public Pose2d getStartPos( boolean red, boolean right ) {
+	public static Pose2d getStartPos( boolean red, boolean right ) {
 		double x, y, heading;
 		if( red ) { // red side
 			x = right ? (TILE_SIZE + 3 * TILE_CONNECTOR / 2 + ROBOT_MAX_WIDTH / 2) : -(2 * TILE_SIZE + 3 * TILE_CONNECTOR / 2 - ROBOT_MAX_WIDTH / 2);
