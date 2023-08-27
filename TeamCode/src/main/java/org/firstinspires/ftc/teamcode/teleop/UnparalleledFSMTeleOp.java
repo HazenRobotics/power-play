@@ -236,8 +236,8 @@ public class UnparalleledFSMTeleOp extends LinearOpMode {
 	}
 
 	public void updateLinkagePos( ) {
-		linkagePos += (gamepad2.right_bumper ? 0.2 : 0) - (gamepad2.left_bumper ? 0.2 : 0);
-		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
+		linkagePos += (gamepad1.right_bumper ? 0.2 : 0) - (gamepad1.left_bumper ? 0.2 : 0);
+//		linkagePos += (controller1.left_bumper.onPress( ) ? -robot.linkage.extensionLength / 2 : (controller1.right_bumper.onPress( ) ? robot.linkage.extensionLength / 2 : 0));
 		linkagePos = Math.min( robot.linkage.extensionLength, Math.max( linkagePos, robot.linkage.retractionLength ) );
 		robot.linkage.moveToExtensionDistance( linkagePos );
 	}
