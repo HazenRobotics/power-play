@@ -11,13 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.robots.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.SwervePod;
+import org.firstinspires.ftc.teamcode.subsystems.SwervePodTwoMotor;
 
 @Config
 @TeleOp(group = "Test")
 public class PIDSwerveTuning extends OpMode {
 
-	SwervePod pod;
+	SwervePodTwoMotor pod;
 
 	public static double p = 0, i = 0, d = 0;
 
@@ -30,7 +30,7 @@ public class PIDSwerveTuning extends OpMode {
 
 	@Override
 	public void init( ) {
-		pod = new SwervePod( hardwareMap, "drive", false, "rotate", true, new double[]{ 0, 0, 0 }, 537.7 );
+		pod = new SwervePodTwoMotor( hardwareMap, "drive", false, "rotate", true, new double[]{ 0, 0, 0 }, 537.7 );
 
 		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );
 		Robot.writeAFile("SwervePID.csv", "begin", true, true );

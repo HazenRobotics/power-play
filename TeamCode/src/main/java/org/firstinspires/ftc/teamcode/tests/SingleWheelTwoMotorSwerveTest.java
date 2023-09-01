@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robots.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.SwervePod;
+import org.firstinspires.ftc.teamcode.subsystems.SwervePodTwoMotor;
 import org.firstinspires.ftc.teamcode.utils.GamepadEvents;
 
 @TeleOp
@@ -17,7 +17,7 @@ public class SingleWheelTwoMotorSwerveTest extends LinearOpMode {
 	double TICKS_PER_REV = 537.7;
 
 	GamepadEvents controller1;
-	SwervePod pod;
+	SwervePodTwoMotor pod;
 
 	double loopTime = 0;
 	double forwardDifference, reverseDifference, usedDifference;
@@ -27,7 +27,7 @@ public class SingleWheelTwoMotorSwerveTest extends LinearOpMode {
 
 	@Override
 	public void runOpMode( ) throws InterruptedException {
-		pod = new SwervePod( hardwareMap, "drive" , false, "rotate", true, new double[] {0.5, 0, 0.04}, 537.7 );
+		pod = new SwervePodTwoMotor( hardwareMap, "drive" , false, "rotate", true, new double[] {0.5, 0, 0.04}, 537.7 );
 
 		controller1 = new GamepadEvents( gamepad1 );
 		telemetry = new MultipleTelemetry( telemetry, FtcDashboard.getInstance( ).getTelemetry( ) );

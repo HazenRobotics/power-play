@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.drives;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.subsystems.SwervePod;
+import org.firstinspires.ftc.teamcode.subsystems.SwervePodTwoMotor;
 
 public class FourWheelSwerveDrive implements Drive {
 
-	SwervePod[] swervePods = new SwervePod[4];
+	SwervePodTwoMotor[] swervePods = new SwervePodTwoMotor[4];
 	double wheelbase;
 	double trackwidth;
 
@@ -20,7 +20,7 @@ public class FourWheelSwerveDrive implements Drive {
 	 */
 	public FourWheelSwerveDrive( HardwareMap hardwareMap, String[] motorNames, boolean[] motorReverse, String[] servoPowerNames, String[] servoEncoderNames, boolean[] servoReversed, double wheelbase, double trackwidth ) {
 		for( int i = 0; i < swervePods.length; i++ )
-			swervePods[i] = new SwervePod( hardwareMap, motorNames[i], motorReverse[i], servoPowerNames[i], servoReversed[0], new double[]{ 0, 0, 0 }, 537.7 );
+			swervePods[i] = new SwervePodTwoMotor( hardwareMap, motorNames[i], motorReverse[i], servoPowerNames[i], servoReversed[0], new double[]{ 0, 0, 0 }, 537.7 );
 
 		this.wheelbase = wheelbase;
 		this.trackwidth = trackwidth;

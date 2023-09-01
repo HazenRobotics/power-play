@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.SwervePIDController;
 
-public class SwervePod {
+public class SwervePodTwoMotor {
 
 	public DcMotorEx driveMotor, rotateMotor;
 	double TICKS_PER_REV;
@@ -18,7 +18,7 @@ public class SwervePod {
 	double targetAngle = Math.PI / 2;
 
 
-	public SwervePod( HardwareMap hw ) {
+	public SwervePodTwoMotor( HardwareMap hw ) {
 		this( hw, "drive", false, "rotate", true, new double[]{ 0, 0, 0 }, 537.7 );
 	}
 
@@ -32,9 +32,9 @@ public class SwervePod {
 	 * @param PID
 	 * @param TPR
 	 */
-	public SwervePod( HardwareMap hw, String driveM, boolean driveReverse,
-					  String rotateM, boolean rotateReverse,
-					  double[] PID, double TPR ) {
+	public SwervePodTwoMotor( HardwareMap hw, String driveM, boolean driveReverse,
+							  String rotateM, boolean rotateReverse,
+							  double[] PID, double TPR ) {
 		driveMotor = hw.get( DcMotorEx.class, driveM );
 		driveMotor.setDirection( driveReverse ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD );
 		rotateMotor = hw.get( DcMotorEx.class, rotateM );
